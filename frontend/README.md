@@ -28,5 +28,3 @@ npm install
 ```bash
 npm run dev
 ```
-
-4. **Open your browser**
