@@ -1,0 +1,17 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /bdss
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost:3306/BDSS"
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+    username: root
+    password: duic
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+jwt:
+  signerKey: "oKcDfL+9MAHZvfa/gwhOpxfAHeMMGae/o3R1n44DPt8Qfzd2/HEm+fvRFjBTH8f0"

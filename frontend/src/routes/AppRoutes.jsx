@@ -4,12 +4,14 @@ import NotFound from "../pages/NotFound";
 import { Route, Routes } from "react-router";
 import Posts from "../components/posts";
 import Login from "../pages/Login";
+import Register from "../pages/Register";
 
 export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register/>} />
       <Route path="/posts" element={<Posts />} />
       <Route path="*" element={<NotFound />} />
     </Routes>

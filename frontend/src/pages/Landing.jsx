@@ -11,7 +11,7 @@ import BlogSection from "../components/BlogSection";
 export default function Home() {
   return (
     <>
-      <Navbar showMenu={false} />
+      <Navbar showMenu={true} />
       <Banner />
       <AboutSection />
 
