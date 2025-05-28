@@ -3,6 +3,7 @@ package com.swp.bdss.controller;
 import com.nimbusds.jose.JOSEException;
 import com.swp.bdss.dto.request.AuthenticationRequest;
 import com.swp.bdss.dto.request.IntrospectRequest;
+import com.swp.bdss.dto.request.LogoutRequest;
 import com.swp.bdss.dto.response.ApiResponse;
 import com.swp.bdss.dto.response.AuthenticationResponse;
 import com.swp.bdss.dto.response.IntrospectResponse;
@@ -45,6 +46,15 @@ public class AuthenticationController {
                 .data(isValid)
                 .build();
 
+    }
+
+    @PostMapping("/logout")
+    ApiResponse<Void> logout (@RequestBody LogoutRequest request) throws ParseException, JOSEException{
+        authenticationService.logout(request);
+        return ApiResponse.<Void>builder()
+                .code(6666)
+                .message("Logout successful")
+                .build();
     }
 
 }
