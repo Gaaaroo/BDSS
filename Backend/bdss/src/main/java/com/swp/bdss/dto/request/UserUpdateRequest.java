@@ -19,5 +19,5 @@ public class UserUpdateRequest {
     String phone;
     String address;
     String blood_type;
-
+    String role;
 }

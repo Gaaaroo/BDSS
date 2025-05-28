@@ -7,11 +7,13 @@ spring:
     url: "jdbc:mysql://localhost:3306/BDSS"
     driverClassName: "com.mysql.cj.jdbc.Driver"
     username: root
-    password: duic
+    password: root
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
 
 jwt:
-  signerKey: "oKcDfL+9MAHZvfa/gwhOpxfAHeMMGae/o3R1n44DPt8Qfzd2/HEm+fvRFjBTH8f0"
+  signerKey: "SWP391/HuynhChauDucVoa/gwhOpxfAHeMMGae/o3R1n44DPt8Qfzd2/HEm+fvRF"
+  valid-duration: 24
+  refreshable-duration: 48

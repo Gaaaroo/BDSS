@@ -8,9 +8,10 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.swp.bdss.dto.request.AuthenticationRequest;
 import com.swp.bdss.dto.request.IntrospectRequest;
+import com.swp.bdss.dto.request.LogoutRequest;
 import com.swp.bdss.dto.response.AuthenticationResponse;
 import com.swp.bdss.dto.response.IntrospectResponse;
-import com.swp.bdss.dto.response.UserResponse;
+import com.swp.bdss.entities.InvalidatedToken;
 import com.swp.bdss.entities.User;
 import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
@@ -28,6 +29,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -38,22 +40,49 @@ public class AuthenticationService {
     UserRepository userRepository;
 
     @NonFinal
-    @Value("${jwt.signerKey}") // spring injects giá trị lúc tuntime nên ko dc là FINAL
+    @Value("${jwt.signerKey}") // spring injects giá trị lúc runtime nên ko dc là FINAL
     protected String SIGNER_KEY;
+
+    @NonFinal
+    @Value("${jwt.valid-duration}")
+    protected long VALID_DURATION;
+
+    @NonFinal
+    @Value("${jwt.refreshable-duration}")
+    protected long REFRESHABLE_DURATION;
 
     public AuthenticationResponse isAuthenticated(AuthenticationRequest request) {
         var user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED ));
 
         boolean authenticated = user.getPassword().equals(request.getPassword());
-        if(!authenticated)
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
 
+        if(!authenticated) throw new AppException(ErrorCode.INCORRECT_PASSWORD);
 
         var token = generateToken(user);
         return AuthenticationResponse.builder()
                 .token(token)
                 .authenticated(true)
                 .build();
+    }
+
+    public void logout(LogoutRequest request) throws ParseException, JOSEException{
+        try {
+            var signToken = verifyToken(request.getToken());
+
+            String jit = signToken.getJWTClaimsSet().getJWTID();
+            Date expirationTime = signToken.getJWTClaimsSet().getExpirationTime();
+            Integer userId = signToken.getJWTClaimsSet().getIntegerClaim("userId");
+
+            InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                    .token_id(jit)
+                    .expiryTime(expirationTime)
+                    .user_id(userId)
+                    .build();
+
+            invalidatedTokenRepository.save(invalidatedToken);
+        } catch (AppException e) {
+            log.info("Token already invalidated");
+        }
     }
 
     private String generateToken(User user) {
@@ -66,9 +95,11 @@ public class AuthenticationService {
                 .issuer("bdss.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
+                        Instant.now().plus(VALID_DURATION, ChronoUnit.HOURS).toEpochMilli()
                 ))
-                .claim("customClaim", "Custom")
+                .jwtID(UUID.randomUUID().toString())
+                .claim("scope", "ROLE_" + user.getRole())
+                .claim("userId", user.getUser_id())
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
@@ -85,6 +116,7 @@ public class AuthenticationService {
         }
     }
 
+
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException {
         var token = request.getToken();
 
@@ -95,15 +127,10 @@ public class AuthenticationService {
             isValid = false;
         }
 
-        return IntrospectResponse.builder()
-                .valid(isValid)
-                .build();
-
-
+        return IntrospectResponse.builder().valid(isValid).build();
     }
 
     private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
-
 
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
@@ -120,7 +147,7 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
 
-
+        log.info("Token verified" + signedJWT);
         return signedJWT;
     }
 
