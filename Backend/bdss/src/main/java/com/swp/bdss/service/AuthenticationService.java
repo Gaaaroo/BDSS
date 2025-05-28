@@ -3,12 +3,18 @@ package com.swp.bdss.service;
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
 import com.swp.bdss.dto.request.AuthenticationRequest;
+import com.swp.bdss.dto.request.IntrospectRequest;
 import com.swp.bdss.dto.response.AuthenticationResponse;
+import com.swp.bdss.dto.response.IntrospectResponse;
 import com.swp.bdss.dto.response.UserResponse;
+import com.swp.bdss.entities.User;
 import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
+import com.swp.bdss.repository.InvalidatedTokenRepository;
 import com.swp.bdss.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -27,6 +34,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService {
+    private final InvalidatedTokenRepository invalidatedTokenRepository;
     UserRepository userRepository;
 
     @NonFinal
@@ -41,20 +49,20 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
 
 
-        var token = generateToken(user.getUsername());
+        var token = generateToken(user);
         return AuthenticationResponse.builder()
                 .token(token)
                 .authenticated(true)
                 .build();
     }
 
-    private String generateToken(String username) {
+    private String generateToken(User user) {
         //header
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         //body
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(username)
+                .subject(user.getUsername())
                 .issuer("bdss.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(
@@ -77,5 +85,43 @@ public class AuthenticationService {
         }
     }
 
-    
+    public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException {
+        var token = request.getToken();
+
+        boolean isValid = true;
+        try{
+            verifyToken(token);
+        }catch (AppException | ParseException e){
+            isValid = false;
+        }
+
+        return IntrospectResponse.builder()
+                .valid(isValid)
+                .build();
+
+
+    }
+
+    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
+
+
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        //ktra het han
+        Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        var verified = signedJWT.verify(verifier); //true - false
+
+        if(!(verified && expirationTime.after(new Date())))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+        if(invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())){
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+
+        return signedJWT;
+    }
+
 }
