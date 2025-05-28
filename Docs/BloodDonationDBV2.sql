@@ -123,6 +123,8 @@ CREATE TABLE Blog (
 GO
 
 ------------------------ My SQL Code
+-- create database BDSS
+-- use BDSS
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -134,16 +136,17 @@ CREATE TABLE users (
     phone VARCHAR(20) NOT NULL,
     address VARCHAR(255),
     blood_type VARCHAR(5) CHECK (blood_type IN ('A+', 'B+', 'AB+', 'O+', 'A-', 'B-', 'AB-', 'O-', 'Unknown')),
-    role VARCHAR(10) CHECK (role IN ('admin', 'staff', 'member', 'guest')) NOT NULL,
-    status VARCHAR(10) CHECK (status IN ('active', 'pending', 'banned')) DEFAULT 'pending',
+	role VARCHAR(10) NOT NULL CHECK (role IN ('ADMIN', 'STAFF', 'MEMBER')) DEFAULT 'MEMBER',
+	status VARCHAR(10) NOT NULL CHECK (status IN ('active', 'pending', 'banned')) DEFAULT 'pending',
+
     verify_code VARCHAR(10),
     code_expiration datetime
 );
 
-CREATE TABLE token (
-    token_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    token VARCHAR(255) NOT NULL,
+CREATE TABLE invalidated_token (
+    token_id varchar(255) not null PRIMARY KEY,
+    user_id integer not null,
+    expiry_time datetime(6),
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
