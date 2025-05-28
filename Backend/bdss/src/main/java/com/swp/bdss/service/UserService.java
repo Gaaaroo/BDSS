@@ -1,6 +1,7 @@
 package com.swp.bdss.service;
 
 import com.swp.bdss.dto.request.UserCreationRequest;
+import com.swp.bdss.dto.request.UserUpdateRequest;
 import com.swp.bdss.dto.response.UserResponse;
 import com.swp.bdss.entities.User;
 import com.swp.bdss.mapper.UserMapper;
@@ -34,6 +35,28 @@ public class UserService {
         
         User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
         return userMapper.toUserResponse(user);
+    }
+
+    public UserResponse updateUser(String userId, UserUpdateRequest request){
+        //an toàn hơn
+        //String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        //User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+
+
+        User user = userRepository.findById(Integer.parseInt(userId)).orElseThrow(() -> new RuntimeException("User not found"));
+
+        userMapper.updateUser(user, request);
+        user.setUsername(request.getUsername());
+        user.setPassword(request.getPassword());
+        user.setEmail(request.getEmail());
+        user.setAddress(request.getAddress());
+        user.setBlood_type(request.getBlood_type());
+        user.setDob(request.getDob());
+        user.setPhone(request.getPhone());
+        user.setFull_name(request.getFull_name());
+
+        return userMapper.toUserResponse(userRepository.save(user));
+
     }
 
 }

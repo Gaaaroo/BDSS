@@ -1,6 +1,7 @@
 package com.swp.bdss.controller;
 
 import com.swp.bdss.dto.request.UserCreationRequest;
+import com.swp.bdss.dto.request.UserUpdateRequest;
 import com.swp.bdss.dto.response.UserResponse;
 import com.swp.bdss.service.UserService;
 import lombok.AccessLevel;
@@ -26,5 +27,10 @@ public class UserController {
     @GetMapping("/myProfile")
     UserResponse getUserProfile(){
         return userService.getUserProfile();
+    }
+
+    @PutMapping("/{userId}")
+    UserResponse updateUser(@PathVariable("userId") String userId, @RequestBody UserUpdateRequest request){
+        return userService.updateUser(userId, request);
     }
 }
