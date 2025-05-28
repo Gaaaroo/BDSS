@@ -4,6 +4,8 @@ import com.swp.bdss.dto.request.UserCreationRequest;
 import com.swp.bdss.dto.request.UserUpdateRequest;
 import com.swp.bdss.dto.response.UserResponse;
 import com.swp.bdss.entities.User;
+import com.swp.bdss.exception.AppException;
+import com.swp.bdss.exception.ErrorCode;
 import com.swp.bdss.mapper.UserMapper;
 import com.swp.bdss.repository.UserRepository;
 //import org.springframework.security.core.context.SecurityContextHolder;
@@ -41,7 +43,7 @@ public class UserService {
         //String username = SecurityContextHolder.getContext().getAuthentication().getName();
         //User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
-        User user = userRepository.findById(Integer.parseInt(userId)).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(Integer.parseInt(userId)).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         userMapper.updateUser(user, request);
 
