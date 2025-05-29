@@ -2,7 +2,7 @@ import React from "react";
 import Banner from "../components/Banner";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import AboutSection from "../components/Aboutsection";
+import AboutSection from "../components/AboutSection";
 import { Sliders } from "lucide-react";
 import ImageCarousel from "../components/Slider";
 import HowItWorkSection from "../components/HowItWorkSection";
@@ -16,6 +16,7 @@ export default function Home() {
       <AboutSection />
 
       <HowItWorkSection />
+      <ImageCarousel />
       <BlogSection />
       <Footer />
 

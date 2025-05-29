@@ -2,7 +2,7 @@ import React from "react";
 
 const AboutSection = () => {
   return (
-    <section className="flex flex-col md:flex-row items-center justify-center text-justify pt-10 px-20 bg-white">
+    <section className="flex flex-col md:flex-row items-center justify-center text-justify pt-10 px-10 bg-white">
       <div className="md:w-1/2 w-full flex justify-center mb-8 md:mb-0 border-r-4 border-red-700">
         <img
           src="https://img.freepik.com/premium-vector/donating-blood-donation-bag-blood-donor-hemolytic-transfusion-bank-save-patient-live-hematology-clinical-laboratory-analysis-patient-support-charity-volunteering_284092-2672.jpg"
@@ -12,7 +12,7 @@ const AboutSection = () => {
       </div>
 
       <div className="md:w-1/2 w-full md:pl-12 text-xl">
-        <h2 className="text-4xl font-bold text-red-700 mb-4">About us</h2>
+        <h2 className="text-5xl font-bold text-red-700 mb-3">About Us</h2>
         <p className="text-gray-700 mb-3">
           BDSS (Blood Donation Support System) is committed to bridging the gap
           between blood donors and recipients. Our platform streamlines the

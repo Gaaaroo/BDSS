@@ -5,7 +5,7 @@ import Posts from "./components/posts";
 
 export default function App() {
   return (
-    <div className="max-w-[1920px] mx-auto">
+    <div>
       <AppRoutes />
     </div>
   );

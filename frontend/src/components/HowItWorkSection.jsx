@@ -5,25 +5,25 @@ const steps = [
     title: "Register or Login",
     description:
       "Sign up for a new account or log in to access your dashboard and start using our services.",
-    icon: <UserLock size={80} className=" text-red-700" />,
+    icon: <UserLock size={60} className=" text-red-700" />,
   },
   {
     title: "Donor's action",
     description:
       "As a donor, provide your information and specify your donation preferences to help those in need.",
-    icon: <UsersRound size={80} className=" text-red-700" />,
+    icon: <UsersRound size={60} className=" text-red-700" />,
   },
   {
     title: "Seeker's action",
     description:
       "If you are seeking help, submit your request and share your requirements to connect with donors.",
-    icon: <UserSearch size={80} className=" text-red-700" />,
+    icon: <UserSearch size={60} className=" text-red-700" />,
   },
   {
     title: "Donation Process",
     description:
       "Our platform matches donors and seekers, facilitating a smooth and secure donation process.",
-    icon: <Send size={80} className=" text-red-700" />,
+    icon: <Send size={60} className=" text-red-700" />,
   },
 ];
 
@@ -42,7 +42,7 @@ const HowItWorkSection = () => (
       style={{ zIndex: 0 }}
     />
     <div className="max-w-3xl mx-auto text-center relative z-10">
-      <h2 className="text-4xl font-bold text-red-700 mb-10">How It Works</h2>
+      <h2 className="text-5xl font-bold text-red-700 mb-10">How It Works</h2>
       <div className="flex flex-col items-center gap-8">
         {steps.map((step, idx) => {
           const isRight = idx % 2 === 1;
@@ -53,18 +53,17 @@ const HowItWorkSection = () => (
             >
               {/* Vertical line */}
               {idx < steps.length - 1 && (
-                <div className="absolute left-1/2 top-full w-1 h-16 bg-red-700 z-0 -translate-x-1/2" />
+                <div className="absolute left-1/2 top-full w-1 h-15 bg-red-700 z-0 -translate-x-1/2" />
               )}
               <div
                 className={`
                   relative z-10
-                  w-full max-w-2xl bg-white rounded-2xl shadow-lg px-12 py-10 flex items-center
+                  w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8 flex items-center
                   ${isRight ? "flex-row-reverse self-end" : "self-start"}
                   transition-all
                 `}
-                style={{ fontSize: "1.25rem" }}
               >
-                <div className={`text-6xl ${isRight ? "ml-10" : "mr-10"}`}>
+                <div className={`text-4xl ${isRight ? "ml-10" : "mr-10"}`}>
                   {step.icon}
                 </div>
                 <div className="flex flex-col items-start text-left">

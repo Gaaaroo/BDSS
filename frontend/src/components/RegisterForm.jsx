@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function RegisterForm() {
-      const navigate = useNavigate();
+  const navigate = useNavigate();
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -45,7 +45,7 @@ export default function RegisterForm() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <form
+      <form
         onSubmit={handleSubmit}
         className="bg-white p-8 rounded-lg shadow-md w-full max-w-sm"
       >
@@ -102,7 +102,9 @@ export default function RegisterForm() {
           />
         </div>
         <div className="mb-6">
-          <label className="block text-gray-700 mb-0.5">Confirmed Password</label>
+          <label className="block text-gray-700 mb-0.5">
+            Confirmed Password
+          </label>
           <input
             type="password"
             name="passwordConfirmed"
@@ -121,6 +123,5 @@ export default function RegisterForm() {
         </button>
       </form>
     </div>
-
   );
 }
