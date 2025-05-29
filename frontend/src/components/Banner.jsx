@@ -1,6 +1,13 @@
 import React from "react";
 import img from "../assets/images/cover-photo.jpg";
+import { useNavigate } from "react-router-dom";
+
 export default function Banner() {
+  const navigate = useNavigate();
+  const handleBloodButtonClick = () => {
+    navigate("/blood-info");
+  };
+
   return (
     <div className="relative w-full h-[450px] overflow-hidden">
       <div className="absolute inset-0 bg-white opacity-10"></div>
@@ -17,7 +24,10 @@ export default function Banner() {
             Become a Seeker
           </button>
         </div>
-        <button className="bg-gray-100 text-black text-[20px] px-4 py-2 rounded-3xl shadow font-bold w-52 transform transition-transform duration-200 hover:scale-110 mt-4">
+        <button
+          className="bg-gray-100 text-black text-[20px] px-4 py-2 rounded-3xl shadow font-bold w-52 transform transition-transform duration-200 hover:scale-110 mt-4"
+          onClick={handleBloodButtonClick}
+        >
           Blood type
         </button>
       </div>
