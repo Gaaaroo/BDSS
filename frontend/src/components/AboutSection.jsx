@@ -12,7 +12,7 @@ const AboutSection = () => {
       </div>
 
       <div className="md:w-1/2 w-full md:pl-12 text-xl">
-        <h2 className="text-4xl font-bold text-red-700 mb-3">About Us</h2>
+        <h2 className="text-5xl font-bold text-red-700 mb-3">About Us</h2>
         <p className="text-gray-700 mb-3">
           BDSS (Blood Donation Support System) is committed to bridging the gap
           between blood donors and recipients. Our platform streamlines the

@@ -42,7 +42,7 @@ const HowItWorkSection = () => (
       style={{ zIndex: 0 }}
     />
     <div className="max-w-3xl mx-auto text-center relative z-10">
-      <h2 className="text-4xl font-bold text-red-700 mb-10">How It Works</h2>
+      <h2 className="text-5xl font-bold text-red-700 mb-10">How It Works</h2>
       <div className="flex flex-col items-center gap-8">
         {steps.map((step, idx) => {
           const isRight = idx % 2 === 1;
