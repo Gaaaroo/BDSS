@@ -1,11 +1,9 @@
-
 import RegisterForm from "../components/RegisterForm";
 import Navbar from "../components/Navbar";
 
 const Register = () => {
   return (
-    <div className="">
-      <Navbar showMenu={false} />
+    <div>
       <RegisterForm />
     </div>
   );
