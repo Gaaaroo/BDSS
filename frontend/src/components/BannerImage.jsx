@@ -1,5 +1,5 @@
 import img from "../assets/images/cover-photo.jpg";
-import BloodSearch from "./BloodSearch";
+import BloodCompatibilityChecker from "./BloodCompatibilityChecker";
 import BloodDocs from "./BloodDocs";
 
 // const [bloodDoc, setBloodDoc] = useState({
@@ -16,7 +16,7 @@ export default function BannerImage() {
     <div className="relative w-full h-65 overflow-hidden">
       <div className="absolute inset-0 bg-white opacity-10"></div>
       <img src={img} alt="banner" className="w-full h-40 object-cover " />
-      <BloodSearch />
+      <BloodCompatibilityChecker />
 
     </div>
   );

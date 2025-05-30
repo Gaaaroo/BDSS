@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 export default function Banner() {
   const navigate = useNavigate();
   const handleBloodButtonClick = () => {
-    navigate("/blood-info");
+    navigate("/blood-compatibility"); 
   };
 
   return (
