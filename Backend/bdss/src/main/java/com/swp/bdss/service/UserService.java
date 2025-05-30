@@ -14,6 +14,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,18 +36,20 @@ public class UserService {
         return userMapper.toUserResponse(savedUser);
     }
 
-//    public UserResponse getUserProfile(){
-//        var context = SecurityContextHolder.getContext();
-//        String username = context.getAuthentication().getName();
-//
-//        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
-//        return userMapper.toUserResponse(user);
-//    }
+
+    public UserResponse getUserProfile(){
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        return userMapper.toUserResponse(user);
+    }
+
 
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         //an toàn hơn
-        //String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        //User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+//        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
         User user = userRepository.findById(Integer.parseInt(userId)).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 

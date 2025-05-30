@@ -25,10 +25,10 @@ public class UserController {
         return userService.createUser(request);
     }
 
-//    @GetMapping("/myProfile")
-//    UserResponse getUserProfile(){
-//        return userService.getUserProfile();
-//    }
+    @GetMapping("/myProfile")
+    UserResponse getUserProfile(){
+        return userService.getUserProfile();
+    }
 
     @PutMapping("/{userId}")
     UserResponse updateUser(@PathVariable("userId") String userId, @RequestBody UserUpdateRequest request){
