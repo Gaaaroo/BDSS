@@ -28,7 +28,7 @@ const steps = [
 ];
 
 const HowItWorkSection = () => (
-  <section className="py-12 bg-white-50 relative">
+  <section className="py-12 bg-white-50 relative bg-white">
     <img
       src="https://www.shutterstock.com/image-vector/red-blood-drop-cartoon-character-600nw-2521441917.jpg"
       alt=""
