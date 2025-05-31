@@ -30,11 +30,10 @@ public class UserService {
 
     public UserResponse createUser(UserCreationRequest request) {
         User user = userMapper.toUser(request);
-        if (request.getBlood_type() == null) {
-            request.setBlood_type("Unknown");
-        } else {
-            user.setBlood_type(request.getBlood_type());
-        }
+
+        user.setRole("MEMBER");
+        user.setStatus("pending");
+
         User savedUser = userRepository.save(user);
         return userMapper.toUserResponse(savedUser);
     }
@@ -52,17 +51,33 @@ public class UserService {
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
 
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         return userMapper.toUserResponse(user);
     }
 
+    public UserResponse updateProfile(UserUpdateRequest request){
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        userMapper.updateUser(user, request);
+
+        if (request.getBlood_type() == null) {
+            user.setBlood_type("Unknown");
+        } else {
+            user.setBlood_type(request.getBlood_type());
+        }
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
 
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         //an toàn hơn
 //        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 //        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
-        User user = userRepository.findById(Integer.parseInt(userId)).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user = userRepository.findById(Integer.parseInt(userId))
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         userMapper.updateUser(user, request);
         var role = request.getRole();

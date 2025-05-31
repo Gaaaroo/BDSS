@@ -13,6 +13,7 @@ import java.time.LocalDate;
 public class UserUpdateRequest {
     String username;
     String password;
+    String gender;
     String full_name;
     LocalDate dob;
     String email;
