@@ -28,10 +28,9 @@ public class User {
     String phone;
     String address;
     String blood_type;
+    String role;
     @Column(nullable = false)
-    String role = "MEMBER";
-    @Column(nullable = false)
-    String status = "pending";
+    String status;
     String verify_code;
     LocalDate code_expiration;
 }
