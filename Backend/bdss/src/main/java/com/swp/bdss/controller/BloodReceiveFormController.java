@@ -47,6 +47,14 @@ public class BloodReceiveFormController {
                 .build();
     }
 
+    @GetMapping("/myReceiveForm")
+    ApiResponse<List<BloodReceiveFormResponse>> getMyBloodReceiveForm(){
+        return ApiResponse.<List<BloodReceiveFormResponse>>builder()
+                .code(1000)
+                .data(bloodReceiveFormService.getMyBloodReceiveForm())
+                .build();
+    }
+
 
     @DeleteMapping
     String deleteBloodReceiveForm (@RequestParam String id){

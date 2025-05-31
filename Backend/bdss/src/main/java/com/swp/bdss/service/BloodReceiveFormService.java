@@ -59,10 +59,20 @@ public class BloodReceiveFormService {
     }
 
     public BloodReceiveFormResponse getBloodReceiveFormById(int id) {
-        BloodReceiveForm bloodReceiveForm = bloodReceiveFormRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_EXISTED));
-        BloodReceiveFormResponse bloodReceiveFormResponse = bloodReceiveFormMapper.toBloodReceiveFormResponse(bloodReceiveForm);
+        BloodReceiveForm bloodReceiveForm = bloodReceiveFormRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_EXISTED));
+        BloodReceiveFormResponse bloodReceiveFormResponse = bloodReceiveFormMapper
+                .toBloodReceiveFormResponse(bloodReceiveForm);
         bloodReceiveFormResponse.setReceive_id(bloodReceiveForm.getReceive_id());
         return bloodReceiveFormResponse;
+    }
+
+    public List<BloodReceiveFormResponse> getMyBloodReceiveForm() {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        List<BloodReceiveForm> list = bloodReceiveFormRepository.findAllByUserUsername(username);
+        return list.stream().map(bloodReceiveFormMapper::toBloodReceiveFormResponse).toList();
     }
 
     public void deleteBloodReceiveForm(String id) {
