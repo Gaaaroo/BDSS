@@ -16,7 +16,6 @@ import java.time.LocalDate;
 public class BloodReceiveForm {
     @Id
     int receive_id;
-
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     User user;
