@@ -28,7 +28,7 @@ const steps = [
 ];
 
 const HowItWorkSection = () => (
-  <section className="py-12 bg-white-50 relative bg-white">
+  <section className="py-12 bg-white relative">
     <img
       src="https://www.shutterstock.com/image-vector/red-blood-drop-cartoon-character-600nw-2521441917.jpg"
       alt=""
@@ -58,7 +58,7 @@ const HowItWorkSection = () => (
               <div
                 className={`
                   relative z-10
-                  w-full max-w-2xl bg-white rounded-2xl shadow-lg p-8 flex items-center
+                  w-full max-w-2xl rounded-2xl shadow-lg p-8 flex items-center
                   ${isRight ? "flex-row-reverse self-end" : "self-start"}
                   transition-all
                 `}
@@ -67,9 +67,9 @@ const HowItWorkSection = () => (
                   {step.icon}
                 </div>
                 <div className="flex flex-col items-start text-left">
-                  <h3 className="text-3xl font-bold mb-3">{`${idx + 1}. ${
-                    step.title
-                  }`}</h3>
+                  <h3 className="text-3xl font-medium mb-3 text-red-600">{`${
+                    idx + 1
+                  }. ${step.title}`}</h3>
                   <p className="text-gray-600 text-2xl">{step.description}</p>
                 </div>
               </div>

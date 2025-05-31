@@ -22,7 +22,7 @@ function ImageCarousel() {
         slidesPerView={1}
         navigation
         loop={true}
-        autoplay={{ delay: 10000, disableOnInteraction: false, duration: 2000 }}
+        autoplay={{ delay: 10000, disableOnInteraction: false, duration: 9000 }}
         effect="fade"
         fadeEffect={{ crossFade: true }}
         className="w-full h-[400px] group bg-white"
@@ -50,7 +50,7 @@ function ImageCarousel() {
           </div>
         </SwiperSlide>
 
-        <SwiperSlide className="bg-white">
+        <SwiperSlide className="bg-red-50 pt-3">
           <h1 className="text-center text-5xl font-bold text-red-700 pb-5">
             Pre-Blood Donation Checklist
           </h1>

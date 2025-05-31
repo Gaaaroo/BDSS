@@ -24,7 +24,7 @@ const blogs = [
 const BlogSection = () => (
   <>
     <h2 className="text-5xl font-bold text-red-700 mx-60 pt-15 ">Blogs</h2>
-    <div className="flex justify-center gap-30 py-15 bg-white">
+    <div className="flex justify-center gap-30 py-15 ">
       {blogs.map((blog, idx) => (
         <div
           key={idx}

@@ -11,7 +11,7 @@ export default function BloodDoc({ bloodType, image, description }) {
         alt={bloodType}
         className="w-12 h-12 mb-2 object-contain "
       />
-      <div className="font-bold">{bloodType}</div>
+      <div className="font-bold text-red-600">{bloodType}</div>
       <div className="text-sm text-gray-700 text-center">{description}</div>
     </li>
   );
