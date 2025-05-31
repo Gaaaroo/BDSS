@@ -12,7 +12,8 @@ import java.time.LocalDate;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BloodReceiveFormResponse {
-    String user_name;
+    int receive_id;
+    User user;
     String blood_type;
     String component_type;
     int quantity;
@@ -21,5 +22,4 @@ public class BloodReceiveFormResponse {
     String priority;
     LocalDate request_date;
     String status;
-
 }
