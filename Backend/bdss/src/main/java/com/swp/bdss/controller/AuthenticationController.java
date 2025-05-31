@@ -30,7 +30,7 @@ public class AuthenticationController {
     ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         var isAuthenticated = authenticationService.isAuthenticated(request);
         return ApiResponse.<AuthenticationResponse>builder()
-                .code(6868)
+                .code(1000)
                 .message(isAuthenticated.isAuthenticated() ? "Login successful" : "Login failed")
                 .data(isAuthenticated)
                 .build();
@@ -41,7 +41,7 @@ public class AuthenticationController {
     ApiResponse<IntrospectResponse> authenticate(@RequestBody IntrospectRequest request) throws ParseException, JOSEException {
         var isValid = authenticationService.introspect(request);
         return ApiResponse.<IntrospectResponse>builder()
-                .code(8686)
+                .code(1000)
                 .message(isValid.isValid() ? "Token valid" : "Token invalid")
                 .data(isValid)
                 .build();
