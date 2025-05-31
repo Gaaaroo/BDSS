@@ -16,9 +16,6 @@ import {
 } from "react-scroll";
 
 export default function Home() {
-  const [isLogin, setIsLogin] = React.useState("no");
-  const handleLogout = () => setIsLogin("yes");
-
   useEffect(() => {
     Events.scrollEvent.register("begin", (to, element) => {
       console.log("begin", to, element);
@@ -35,25 +32,27 @@ export default function Home() {
 
   return (
     <>
-      <div className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
-        <Navbar isLogin={isLogin} onLogout={handleLogout} />
+      <div className="fixed top-0 left-0 w-full z-50">
+        <Navbar mode="guest" />
       </div>
-      <Element name="top">
-        <Banner />
-      </Element>
-      <Element name="about">
-        <AboutSection />
-      </Element>
-      <Element name="howitworks">
-        <HowItWorkSection />
-      </Element>
-      <Element name="carousel">
-        <ImageCarousel />
-      </Element>
-      <Element name="blogs">
-        <BlogSection />
-      </Element>
-      <Footer />
+      <div className="pt-16">
+        <Element name="top">
+          <Banner />
+        </Element>
+        <Element name="about">
+          <AboutSection />
+        </Element>
+        <Element name="howitworks">
+          <HowItWorkSection />
+        </Element>
+        <Element name="carousel">
+          <ImageCarousel />
+        </Element>
+        <Element name="blogs">
+          <BlogSection />
+        </Element>
+        <Footer />
+      </div>
     </>
   );
 }
