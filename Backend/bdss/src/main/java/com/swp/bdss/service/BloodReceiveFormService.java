@@ -50,7 +50,6 @@ public class BloodReceiveFormService {
                 .toBloodReceiveFormResponse(bloodReceiveFormRepository.save(bloodReceiveForm));
         //set fullname cho response tại vì fullname nằm ở user và mapstruct ko lấy trường này -> null hoặc sai
         //bloodReceiveFormResponse.setUser_name(user.getUsername());
-
     }
 
     public List<BloodReceiveFormResponse> getAllBloodReceiveForm(){
