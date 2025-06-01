@@ -9,12 +9,15 @@ import com.nimbusds.jwt.SignedJWT;
 import com.swp.bdss.dto.request.AuthenticationRequest;
 import com.swp.bdss.dto.request.IntrospectRequest;
 import com.swp.bdss.dto.request.LogoutRequest;
+import com.swp.bdss.dto.request.UserCreationRequest;
 import com.swp.bdss.dto.response.AuthenticationResponse;
 import com.swp.bdss.dto.response.IntrospectResponse;
+import com.swp.bdss.dto.response.UserResponse;
 import com.swp.bdss.entities.InvalidatedToken;
 import com.swp.bdss.entities.User;
 import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
+import com.swp.bdss.mapper.UserMapper;
 import com.swp.bdss.repository.InvalidatedTokenRepository;
 import com.swp.bdss.repository.UserRepository;
 import lombok.AccessLevel;
@@ -38,6 +41,9 @@ import java.util.UUID;
 public class AuthenticationService {
     private final InvalidatedTokenRepository invalidatedTokenRepository;
     UserRepository userRepository;
+    UserMapper userMapper;
+    EmailService emailService;
+    OtpCodeService otpCodeService;
 
     @NonFinal
     @Value("${jwt.signerKey}") // spring injects giá trị lúc runtime nên ko dc là FINAL
@@ -63,6 +69,27 @@ public class AuthenticationService {
                 .token(token)
                 .authenticated(true)
                 .build();
+    }
+
+    //register user and send OTP
+    public UserResponse registerUserAndSendOtp(UserCreationRequest request) {
+        if(userRepository.findByEmail(request.getEmail()).isPresent()){
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
+
+        User user = userMapper.toUser(request);
+        user.setRole("MEMBER");
+        user.setStatus("pending");
+
+        User savedUser = userRepository.save(user);
+        log.info("{}{}",
+                savedUser.getUser_id(),
+                savedUser.getEmail()
+        );
+        // Generate code - Send email to the user
+        String otp = otpCodeService.saveOtpCode(savedUser);
+        emailService.sendOtpEmail(savedUser.getEmail(), otp);
+        return userMapper.toUserResponse(savedUser);
     }
 
     public void logout(LogoutRequest request) throws ParseException, JOSEException{
