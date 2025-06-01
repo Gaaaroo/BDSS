@@ -22,4 +22,5 @@ public class BloodReceiveFormResponse {
     String priority;
     LocalDate request_date;
     String status;
+
 }

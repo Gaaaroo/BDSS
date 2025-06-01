@@ -12,12 +12,6 @@ import java.time.LocalDate;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BloodDonateFormCreationRequest {
-    String full_name;
-    String gender;
-    LocalDate dob;
-    String email;
-    String phone;
-    String address;
-    String blood_type;
+
     String health_notes;
 }

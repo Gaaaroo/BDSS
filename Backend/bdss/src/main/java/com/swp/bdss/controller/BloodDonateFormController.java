@@ -10,6 +10,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -26,5 +28,20 @@ public class BloodDonateFormController {
                 .code(1111)
                 .data(bloodDonateFormService.createBloodDonateForm(request))
                 .build();
+    }
+
+    @GetMapping("/myDonateForm")
+    ApiResponse<List<BloodDonateFormResponse>> getMyBloodDonateForm(){
+        return ApiResponse.<List<BloodDonateFormResponse>>builder()
+                .code(0001)
+                .data(bloodDonateFormService.getUserBloodDonateForm())
+                .build();
+    }
+
+
+    @DeleteMapping
+    String deleteBloodDonateForm (@RequestParam String id){
+        bloodDonateFormService.deleteBloodDonateForm(id);
+        return "Delete successfully";
     }
 }

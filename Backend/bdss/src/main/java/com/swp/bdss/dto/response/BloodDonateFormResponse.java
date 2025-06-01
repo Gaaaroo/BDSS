@@ -1,5 +1,6 @@
 package com.swp.bdss.dto.response;
 
+import com.swp.bdss.entities.User;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,7 +12,9 @@ import java.time.LocalDate;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BloodDonateFormResponse {
-    String full_name;
+    int donate_id;
+    UserResponse user;
+    //String full_name;
     String health_notes;
     String status;
     LocalDate request_date;
