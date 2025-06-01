@@ -16,7 +16,6 @@ import java.time.LocalDate;
 public class BloodDonateForm {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     int donate_id;
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")

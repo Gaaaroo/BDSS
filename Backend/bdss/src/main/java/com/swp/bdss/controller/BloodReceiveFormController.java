@@ -1,6 +1,7 @@
 package com.swp.bdss.controller;
 
 import com.swp.bdss.dto.request.BloodReceiveFormCreationRequest;
+import com.swp.bdss.dto.request.BloodReceiveFormUpdateStatusRequest;
 import com.swp.bdss.dto.request.UserCreationRequest;
 import com.swp.bdss.dto.response.ApiResponse;
 import com.swp.bdss.dto.response.BloodReceiveFormResponse;
@@ -52,6 +53,15 @@ public class BloodReceiveFormController {
         return ApiResponse.<List<BloodReceiveFormResponse>>builder()
                 .code(1000)
                 .data(bloodReceiveFormService.getMyBloodReceiveForm())
+                .build();
+    }
+
+    @PutMapping("/updateStatus/{id}")
+    ApiResponse<BloodReceiveFormResponse> updateBloodReceiveFormStatus
+            (@PathVariable("id") int id, @RequestBody BloodReceiveFormUpdateStatusRequest request){
+        return ApiResponse.<BloodReceiveFormResponse>builder()
+                .code(1000)
+                .data(bloodReceiveFormService.updateBloodReceiveFormStatus(id, request))
                 .build();
     }
 

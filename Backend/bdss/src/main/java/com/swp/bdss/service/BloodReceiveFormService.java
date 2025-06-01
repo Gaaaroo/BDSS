@@ -1,6 +1,7 @@
 package com.swp.bdss.service;
 
 import com.swp.bdss.dto.request.BloodReceiveFormCreationRequest;
+import com.swp.bdss.dto.request.BloodReceiveFormUpdateStatusRequest;
 import com.swp.bdss.dto.response.BloodReceiveFormResponse;
 import com.swp.bdss.entities.BloodReceiveForm;
 import com.swp.bdss.entities.User;
@@ -47,7 +48,8 @@ public class BloodReceiveFormService {
 
         return bloodReceiveFormMapper
                 .toBloodReceiveFormResponse(bloodReceiveFormRepository.save(bloodReceiveForm));
-
+        //set fullname cho response tại vì fullname nằm ở user và mapstruct ko lấy trường này -> null hoặc sai
+        //bloodReceiveFormResponse.setUser_name(user.getUsername());
     }
 
     public List<BloodReceiveFormResponse> getAllBloodReceiveForm(){
@@ -73,6 +75,13 @@ public class BloodReceiveFormService {
 
         List<BloodReceiveForm> list = bloodReceiveFormRepository.findAllByUserUsername(username);
         return list.stream().map(bloodReceiveFormMapper::toBloodReceiveFormResponse).toList();
+    }
+
+    public BloodReceiveFormResponse updateBloodReceiveFormStatus(int receiveId, BloodReceiveFormUpdateStatusRequest request) {
+        BloodReceiveForm bloodReceiveForm = bloodReceiveFormRepository.findById(receiveId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        bloodReceiveForm.setStatus(request.getStatus());
+        return bloodReceiveFormMapper.toBloodReceiveFormResponse(bloodReceiveFormRepository.save(bloodReceiveForm));
     }
 
     public void deleteBloodReceiveForm(String id) {
