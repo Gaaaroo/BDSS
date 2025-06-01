@@ -3,6 +3,7 @@ package com.swp.bdss.controller;
 import com.swp.bdss.dto.request.BloodDonateFormCreationRequest;
 import com.swp.bdss.dto.response.ApiResponse;
 import com.swp.bdss.dto.response.BloodDonateFormResponse;
+import com.swp.bdss.dto.response.BloodReceiveFormResponse;
 import com.swp.bdss.service.BloodDonateFormService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -43,5 +44,21 @@ public class BloodDonateFormController {
     String deleteBloodDonateForm (@RequestParam String id){
         bloodDonateFormService.deleteBloodDonateForm(id);
         return "Delete successfully";
+    }
+
+    @GetMapping("/all")
+    ApiResponse<List<BloodDonateFormResponse>> getAllUserBloodDonateForm() {
+        return ApiResponse.<List<BloodDonateFormResponse>>builder()
+                .code(1000)
+                .data(bloodDonateFormService.getAllUserBloodDonateForm())
+                .build();
+    }
+
+    @GetMapping
+    ApiResponse<BloodDonateFormResponse> getBloodDonateFormById(@RequestParam String id){
+        return ApiResponse.<BloodDonateFormResponse>builder()
+                .code(0002)
+                .data(bloodDonateFormService.getBloodDonateFormByDonateId(id))
+                .build();
     }
 }

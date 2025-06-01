@@ -22,6 +22,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -34,6 +35,7 @@ public class BloodDonateFormService {
     BloodDonateFormMapper bloodDonateFormMapper;
     UserMapper userMapper;
 
+    //create blood donate form (USER)
     public BloodDonateFormResponse createBloodDonateForm(BloodDonateFormCreationRequest request){
         //convert request to entity
         BloodDonateForm bloodDonateForm = bloodDonateFormMapper.toBloodDonateForm(request);
@@ -59,10 +61,23 @@ public class BloodDonateFormService {
 
 
 
+    //get all donate form of all user and form details (ADMIN)
+    public List<BloodDonateFormResponse> getAllUserBloodDonateForm() {
+        List<BloodDonateFormResponse> list = new ArrayList<>();
+        list = bloodDonateFormRepository.findAll().stream()
+                .map(bloodDonateForm -> {
+                    BloodDonateFormResponse response = bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateForm);
 
-    public void getAllUserBloodDonateForm() {}
+                    User user = bloodDonateForm.getUser();
+                    UserResponse userResponse = userMapper.toUserResponse(user);
+                    response.setUser(userResponse);
+                    return response;
+                })
+                .toList();
+        return list;
+    }
 
-    //view donate form of user and form details (USER)
+    //get all donate form of 1 user and form details (USER)
     public List<BloodDonateFormResponse> getUserBloodDonateForm(){
         var context = SecurityContextHolder.getContext();
         String username = context.getAuthentication().getName();
@@ -80,14 +95,28 @@ public class BloodDonateFormService {
         }).toList();
     }
 
+    //get blood donate form by id (ADMIN, USER)
+    public BloodDonateFormResponse getBloodDonateFormByDonateId(String donate_id){
+        int id = Integer.parseInt(donate_id);
+        BloodDonateForm bloodDonateForm = bloodDonateFormRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Blood donate form with id " + id + " does not exist."));
+        BloodDonateFormResponse response = bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateForm);
+
+        User user = bloodDonateForm.getUser();
+        UserResponse userResponse = userMapper.toUserResponse(user);
+        response.setUser(userResponse);
+        return response;
+    }
+
     //delete blood donate form (ADMIN, USER)
     public void deleteBloodDonateForm(String donate_id){
         int id = Integer.parseInt(donate_id);
         if(!bloodDonateFormRepository.existsById(id)){
             throw new IllegalArgumentException("Blood donate form with id " + donate_id + " does not exist.");
-
         }
         bloodDonateFormRepository.deleteById(id);
     }
+
+
 
 }
