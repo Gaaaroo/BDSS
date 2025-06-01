@@ -12,7 +12,6 @@ public interface BloodDonateFormMapper {
 
     BloodDonateForm toBloodDonateForm(BloodDonateFormCreationRequest request);
 
-    //cái này hay vãi
-    @Mapping(target = "full_name", ignore = true)
+    @Mapping(target = "user", ignore = true)
     BloodDonateFormResponse toBloodDonateFormResponse(BloodDonateForm bloodDonateForm);
 }

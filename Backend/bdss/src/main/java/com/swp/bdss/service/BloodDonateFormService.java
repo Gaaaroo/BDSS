@@ -5,10 +5,12 @@ import com.swp.bdss.dto.response.BloodDonateFormResponse;
 import com.swp.bdss.dto.response.BloodReceiveFormResponse;
 import com.swp.bdss.dto.response.UserResponse;
 import com.swp.bdss.entities.BloodDonateForm;
+import com.swp.bdss.entities.BloodReceiveForm;
 import com.swp.bdss.entities.User;
 import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
 import com.swp.bdss.mapper.BloodDonateFormMapper;
+import com.swp.bdss.mapper.UserMapper;
 import com.swp.bdss.repository.BloodDonateFormRepository;
 import com.swp.bdss.repository.UserRepository;
 import lombok.AccessLevel;
@@ -20,6 +22,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -29,6 +32,7 @@ public class BloodDonateFormService {
     UserRepository userRepository;
     BloodDonateFormRepository bloodDonateFormRepository;
     BloodDonateFormMapper bloodDonateFormMapper;
+    UserMapper userMapper;
 
     public BloodDonateFormResponse createBloodDonateForm(BloodDonateFormCreationRequest request){
         //convert request to entity
@@ -40,10 +44,7 @@ public class BloodDonateFormService {
         int userId = authentication instanceof Jwt ? Integer.parseInt(((Jwt) authentication).getClaimAsString("userId")) : -1;
 
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-
-        //phải chủ động bắt lỗi nha
-        noMatchUserInformation(user, request);
-
+        UserResponse userResponse = userMapper.toUserResponse(user);
         bloodDonateForm.setUser(user);
         bloodDonateForm.setRequest_date(LocalDate.now());
         bloodDonateForm.setStatus("pending");
@@ -51,33 +52,42 @@ public class BloodDonateFormService {
         BloodDonateFormResponse bloodDonateFormResponse = bloodDonateFormMapper
                 .toBloodDonateFormResponse(bloodDonateFormRepository.save(bloodDonateForm));
 
-        bloodDonateFormResponse.setFull_name(user.getFull_name());
+//        //set user cho response tại vì user nằm ở user và mapstruct ko lấy trường này -> null hoặc sai
+         bloodDonateFormResponse.setUser(userResponse);
         return bloodDonateFormResponse;
     }
 
-    private void noMatchUserInformation(User user, BloodDonateFormCreationRequest request) {
-        if (!user.getDob().equals(request.getDob())) {
-            throw new RuntimeException("User information does not match with request information1");
-        }
-        if (!user.getBlood_type().equals(request.getBlood_type())) {
-            throw new RuntimeException("User information does not match with request information2");
-        }
-        if (!user.getGender().equals(request.getGender())) {
-            throw new RuntimeException("User information does not match with request information3");
-        }
-        if (!user.getEmail().equals(request.getEmail())) {
-            throw new RuntimeException("User information does not match with request information4");
-        }
-        if (!user.getPhone().equals(request.getPhone())) {
-            throw new RuntimeException("User information does not match with request information5");
-        }
-        if (!user.getAddress().equals(request.getAddress())) {
-            throw new RuntimeException("User information does not match with request information6");
-        }
-        if (!user.getFull_name().equals(request.getFull_name())) {
-            throw new RuntimeException("User information does not match with request information7");
-        }
+
+
+
+    public void getAllUserBloodDonateForm() {}
+
+    //view donate form of user and form details (USER)
+    public List<BloodDonateFormResponse> getUserBloodDonateForm(){
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
+
+        List<BloodDonateForm> list = bloodDonateFormRepository.findAllBloodDonateFormByUserUsername(username);
+
+        return list.stream().map(bloodDonateForm -> {
+            BloodDonateFormResponse response = bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateForm);
+
+            User user = bloodDonateForm.getUser();
+            UserResponse userResponse = userMapper.toUserResponse(user);
+
+            response.setUser(userResponse);
+            return response;
+        }).toList();
     }
 
+    //delete blood donate form (ADMIN, USER)
+    public void deleteBloodDonateForm(String donate_id){
+        int id = Integer.parseInt(donate_id);
+        if(!bloodDonateFormRepository.existsById(id)){
+            throw new IllegalArgumentException("Blood donate form with id " + donate_id + " does not exist.");
+
+        }
+        bloodDonateFormRepository.deleteById(id);
+    }
 
 }
