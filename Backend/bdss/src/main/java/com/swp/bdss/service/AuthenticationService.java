@@ -92,7 +92,7 @@ public class AuthenticationService {
     //verify OTP and activate user
     public UserResponse verifyOtpAndActivateUser(VerifyOtpRequest request){
         //find user by email
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.USER_EXISTED));
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         //check status
         if(!user.getStatus().equals("pending")){
@@ -113,6 +113,19 @@ public class AuthenticationService {
 
 
         return userMapper.toUserResponse(updatedUser);
+    }
+
+    //resend OTP to user
+    public UserResponse resendOtp(VerifyOtpRequest request){
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if(!user.getStatus().equals("pending")){
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
+        // Generate code - Send email to the user
+        String otp = otpCodeService.saveResendOtpCode(user);
+        emailService.sendOtpEmail(user.getEmail(), otp);
+        return userMapper.toUserResponse(user);
     }
 
     public void logout(LogoutRequest request) throws ParseException, JOSEException{
