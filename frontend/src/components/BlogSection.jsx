@@ -31,7 +31,6 @@ const BlogSection = () => (
           className="border border-gray-200 rounded-lg p-4 w-100 h-120 bg-gray-50 shadow-md flex flex-col items-center"
         >
           <img
-            img
             src={blog.picture}
             alt={blog.title}
             className="mb-4 w-full h-85 object-cover rounded-md"
