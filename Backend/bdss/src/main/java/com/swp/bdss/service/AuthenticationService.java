@@ -6,10 +6,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-import com.swp.bdss.dto.request.AuthenticationRequest;
-import com.swp.bdss.dto.request.IntrospectRequest;
-import com.swp.bdss.dto.request.LogoutRequest;
-import com.swp.bdss.dto.request.UserCreationRequest;
+import com.swp.bdss.dto.request.*;
 import com.swp.bdss.dto.response.AuthenticationResponse;
 import com.swp.bdss.dto.response.IntrospectResponse;
 import com.swp.bdss.dto.response.UserResponse;
@@ -90,6 +87,32 @@ public class AuthenticationService {
         String otp = otpCodeService.saveOtpCode(savedUser);
         emailService.sendOtpEmail(savedUser.getEmail(), otp);
         return userMapper.toUserResponse(savedUser);
+    }
+
+    //verify OTP and activate user
+    public UserResponse verifyOtpAndActivateUser(VerifyOtpRequest request){
+        //find user by email
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.USER_EXISTED));
+
+        //check status
+        if(!user.getStatus().equals("pending")){
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
+
+        //validate OTP
+        boolean isValid = otpCodeService.isOtpCodeValid(user, request.getOtp());
+        if(!isValid){
+            throw new RuntimeException("Invalid OTP");
+        }
+
+        //update user status
+        user.setStatus("active");
+        User updatedUser = userRepository.save(user);
+
+        //send welcome email
+
+
+        return userMapper.toUserResponse(updatedUser);
     }
 
     public void logout(LogoutRequest request) throws ParseException, JOSEException{

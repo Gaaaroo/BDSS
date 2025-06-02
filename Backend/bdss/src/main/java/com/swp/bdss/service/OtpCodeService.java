@@ -3,6 +3,7 @@ package com.swp.bdss.service;
 
 import com.swp.bdss.entities.OtpCode;
 import com.swp.bdss.entities.User;
+import com.swp.bdss.exception.AppException;
 import com.swp.bdss.repository.OtpCodeRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,25 @@ public class OtpCodeService {
         return otpCode.getOtpCode();
     }
 
+    //check if the otp code is valid
+    public boolean isOtpCodeValid(User user, String otpCode){
+//        OtpCode existingOtpCode = otpCodeRepository.findByUserAndOtpCode(user, otpCode)
+//                .orElseThrow(() -> new RuntimeException("There is no OTP code for this user"));
+        OtpCode existingOtpCode = otpCodeRepository.findByUserAndOtpCode(user, otpCode).orElse(null);
+        if (existingOtpCode == null) {
+            return false;
+        }
+        //Xóa nếu OTP quá hạn
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isAfter(existingOtpCode.getExpiresAt())) {
+//            otpCodeRepository.delete(existingOtpCode);
+            return false;
+        }
+
+        // Check if the OTP code is used within 5 minutes
+        // Xóa nếu OTP đã được sử dụng trong vòng 5 phút
+        return true;
+    }
 
     public String generateVerificationCode(){
         Random random = new Random();
