@@ -1,5 +1,7 @@
 package com.swp.bdss.service;
 
+import com.swp.bdss.exception.AppException;
+import com.swp.bdss.exception.ErrorCode;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,7 +26,13 @@ public class EmailService {
         message.setTo(to);
         message.setSubject("Your Registration OTP");
         message.setText("Your OTP code is: " + otp + "\nThis code is valid for 5 minutes.");
-        javaMailSender.send(message);
+        try {
+            javaMailSender.send(message);
+        }catch (Exception e) {
+            log.error("Failed to send email to {}: {}", to, e.getMessage());
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
+
     }
 
     public void sendEmail(String to, String subject, String body) {

@@ -45,6 +45,15 @@ public class AuthenticationController {
                 .build();
     }
 
+    @PostMapping("/resend-otp")
+    ApiResponse<UserResponse> resendOtp(@RequestBody VerifyOtpRequest request){
+        return ApiResponse.<UserResponse>builder()
+                .code(6868)
+                .data(authenticationService.resendOtp(request))
+                .message("OTP resent successfully")
+                .build();
+    }
+
     @PostMapping("/login")
     ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         var isAuthenticated = authenticationService.isAuthenticated(request);
