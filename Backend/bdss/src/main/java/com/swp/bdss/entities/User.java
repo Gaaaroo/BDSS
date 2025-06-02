@@ -24,6 +24,7 @@ public class User {
     String gender;
     LocalDate dob;
     String email;
+    @Column(nullable = false)
     String phone;
     String address;
     String blood_type;
