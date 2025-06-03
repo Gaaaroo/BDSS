@@ -1,6 +1,5 @@
 package com.swp.bdss.dto.request;
 
-import com.swp.bdss.entities.User;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

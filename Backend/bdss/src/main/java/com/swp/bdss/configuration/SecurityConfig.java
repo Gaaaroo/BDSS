@@ -1,9 +1,9 @@
 package com.swp.bdss.configuration;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,6 +15,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import javax.crypto.spec.SecretKeySpec;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -22,23 +23,23 @@ public class SecurityConfig {
     @Value("${jwt.signerKey}")
     private String signerKey;
 
-    private final String[] PUBLIC_URLS = {"/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh", "/users", "/auth/register", "/auth/verify", "/auth/resend-otp"};
+    private final String[] PUBLIC_URLS = {"/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh", "/users", "/auth/register", "/auth/verify", "/auth/resend-otp", "/auth/introspectTokenGoogle"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
+        log.info("Security Config Enabled");
         httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers("/")
+                request.requestMatchers(PUBLIC_URLS)
                         .permitAll()
                         .anyRequest()
-                        .authenticated())
-                .oauth2Login(Customizer.withDefaults())
-                .formLogin(Customizer.withDefaults());
+                        .authenticated());
 
 
-        httpSecurity.oauth2ResourceServer(oath2 ->
-                oath2.jwt(jwt -> jwt.decoder(jwtDecoder()))
-                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
+
+//        httpSecurity.oauth2ResourceServer(oath2 ->
+//                oath2.jwt(jwt -> jwt.decoder(jwtDecoder()))
+//                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
 
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);

@@ -4,7 +4,6 @@ import com.swp.bdss.dto.request.BloodDonateFormCreationRequest;
 import com.swp.bdss.dto.request.BloodDonateFormUpdateStatusRequest;
 import com.swp.bdss.dto.response.ApiResponse;
 import com.swp.bdss.dto.response.BloodDonateFormResponse;
-import com.swp.bdss.dto.response.BloodReceiveFormResponse;
 import com.swp.bdss.service.BloodDonateFormService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

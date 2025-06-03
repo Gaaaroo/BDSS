@@ -1,5 +1,8 @@
 package com.swp.bdss.controller;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseToken;
 import com.nimbusds.jose.JOSEException;
 import com.swp.bdss.dto.request.*;
 import com.swp.bdss.dto.response.ApiResponse;
@@ -10,21 +13,44 @@ import com.swp.bdss.service.AuthenticationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 
+@Slf4j
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationController {
 
+    private static final String CLIENT_ID = "940154910752-54ieu25hesbf19tahn90fib6qkk5jia0.apps.googleusercontent.com";
+
     AuthenticationService authenticationService;
 
+    @PostMapping("/introspectTokenGoogle")
+    public ResponseEntity<String> verifyToken(@RequestHeader("Authorization") String authorization) {
+        try {
+            log.info("Authorization: {}", authorization);
+            String idToken = authorization.replace("Bearer ", "");
+            log.info("ID Token: {}", idToken);
+
+
+            FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
+            log.info("Decoded Token: {}", decodedToken);
+            String uid = decodedToken.getUid();
+            String email = decodedToken.getEmail();
+            log.info("UID: {}", uid);
+            log.info("Email: {}", email);
+
+            return ResponseEntity.ok("Token is valid. User email: " + email);
+        } catch (FirebaseAuthException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid ID token");
+        }
+    }
 
     @PostMapping("/register")
     ApiResponse<UserResponse> register(@RequestBody UserCreationRequest request){

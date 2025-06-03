@@ -2,10 +2,8 @@ package com.swp.bdss.controller;
 
 import com.swp.bdss.dto.request.BloodReceiveFormCreationRequest;
 import com.swp.bdss.dto.request.BloodReceiveFormUpdateStatusRequest;
-import com.swp.bdss.dto.request.UserCreationRequest;
 import com.swp.bdss.dto.response.ApiResponse;
 import com.swp.bdss.dto.response.BloodReceiveFormResponse;
-import com.swp.bdss.dto.response.UserResponse;
 import com.swp.bdss.service.BloodReceiveFormService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
