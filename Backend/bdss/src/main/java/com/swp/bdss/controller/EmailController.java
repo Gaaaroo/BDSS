@@ -1,6 +1,5 @@
 package com.swp.bdss.controller;
 
-import com.swp.bdss.dto.response.ApiResponse;
 import com.swp.bdss.service.EmailService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

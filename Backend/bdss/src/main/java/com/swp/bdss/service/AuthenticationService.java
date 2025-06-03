@@ -112,7 +112,7 @@ public class AuthenticationService {
         }
     }
 
-    private String generateToken(User user) {
+    public String generateToken(User user) {
         //header
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
