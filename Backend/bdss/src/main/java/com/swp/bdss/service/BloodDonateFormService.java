@@ -1,6 +1,7 @@
 package com.swp.bdss.service;
 
 import com.swp.bdss.dto.request.BloodDonateFormCreationRequest;
+import com.swp.bdss.dto.request.BloodDonateFormUpdateStatusRequest;
 import com.swp.bdss.dto.response.BloodDonateFormResponse;
 import com.swp.bdss.dto.response.BloodReceiveFormResponse;
 import com.swp.bdss.dto.response.UserResponse;
@@ -117,6 +118,14 @@ public class BloodDonateFormService {
         bloodDonateFormRepository.deleteById(id);
     }
 
+    //update form status (ADMIN)
+    public BloodDonateFormResponse updateBloodDonateFormStatus(int donate_id, BloodDonateFormUpdateStatusRequest request){
+        BloodDonateForm bloodDonateForm = bloodDonateFormRepository.findById(donate_id)
+                .orElseThrow(() -> new AppException(ErrorCode.BLODD_DONATE_FORM_NOT_EXISTED));
 
+        //check status
+        bloodDonateForm.setStatus(request.getStatus());
+        return bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateFormRepository.save(bloodDonateForm));
+    }
 
 }
