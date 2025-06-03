@@ -71,7 +71,7 @@ public class AuthenticationService {
     //register user and send OTP
     public UserResponse registerUserAndSendOtp(UserCreationRequest request) {
         if(userRepository.findByEmail(request.getEmail()).isPresent()){
-            throw new AppException(ErrorCode.USER_EXISTED);
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
 
         User user = userMapper.toUser(request);
@@ -96,13 +96,13 @@ public class AuthenticationService {
 
         //check status
         if(!user.getStatus().equals("pending")){
-            throw new AppException(ErrorCode.USER_EXISTED);
+            throw new AppException(ErrorCode.USER_IS_ACTIVE);
         }
 
         //validate OTP
         boolean isValid = otpCodeService.isOtpCodeValid(user, request.getOtp());
         if(!isValid){
-            throw new RuntimeException("Invalid OTP");
+            throw new AppException(ErrorCode.OTP_CODE_INVALID);
         }
 
         //update user status
@@ -120,7 +120,7 @@ public class AuthenticationService {
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
 
         if(!user.getStatus().equals("pending")){
-            throw new AppException(ErrorCode.USER_EXISTED);
+            throw new AppException(ErrorCode.USER_IS_ACTIVE);
         }
         // Generate code - Send email to the user
         String otp = otpCodeService.saveResendOtpCode(user);

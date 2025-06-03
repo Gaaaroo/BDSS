@@ -4,6 +4,7 @@ package com.swp.bdss.service;
 import com.swp.bdss.entities.OtpCode;
 import com.swp.bdss.entities.User;
 import com.swp.bdss.exception.AppException;
+import com.swp.bdss.exception.ErrorCode;
 import com.swp.bdss.repository.OtpCodeRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class OtpCodeService {
     public String saveResendOtpCode(User user) {
         String otp = generateVerificationCode();
         OtpCode otpCode = otpCodeRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("There is no OTP code for this user"));
+                .orElseThrow(() -> new AppException(ErrorCode.OTP_NOT_EXISTED));
         otpCode.setUser(user);
         otpCode.setOtpCode(otp);
         otpCode.setCreateAt(LocalDateTime.now());
@@ -49,15 +50,12 @@ public class OtpCodeService {
     public boolean isOtpCodeValid(User user, String otpCode){
 //        OtpCode existingOtpCode = otpCodeRepository.findByUserAndOtpCode(user, otpCode)
 //                .orElseThrow(() -> new RuntimeException("There is no OTP code for this user"));
-        OtpCode existingOtpCode = otpCodeRepository.findByUserAndOtpCode(user, otpCode).orElse(null);
-        if (existingOtpCode == null) {
-            return false;
-        }
+        OtpCode existingOtpCode = otpCodeRepository.findByUserAndOtpCode(user, otpCode).orElseThrow(() -> new AppException(ErrorCode.OTP_NOT_EXISTED));
         //Xóa nếu OTP quá hạn
         LocalDateTime now = LocalDateTime.now();
         if (now.isAfter(existingOtpCode.getExpiresAt())) {
 //            otpCodeRepository.delete(existingOtpCode);
-            return false;
+            throw new AppException(ErrorCode.OTP_CODE_EXPIRED);
         }
 
         // Check if the OTP code is used within 5 minutes
