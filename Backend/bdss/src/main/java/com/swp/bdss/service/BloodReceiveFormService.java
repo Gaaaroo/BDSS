@@ -1,6 +1,7 @@
 package com.swp.bdss.service;
 
 import com.swp.bdss.dto.request.BloodReceiveFormCreationRequest;
+import com.swp.bdss.dto.request.BloodReceiveFormUpdateStatusRequest;
 import com.swp.bdss.dto.response.BloodReceiveFormResponse;
 import com.swp.bdss.entities.BloodReceiveForm;
 import com.swp.bdss.entities.User;
@@ -18,6 +19,8 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Slf4j
@@ -43,12 +46,45 @@ public class BloodReceiveFormService {
         bloodReceiveForm.setRequest_date(LocalDate.now());
         bloodReceiveForm.setStatus("pending");
 
-        BloodReceiveFormResponse bloodReceiveFormResponse = bloodReceiveFormMapper
+        return bloodReceiveFormMapper
                 .toBloodReceiveFormResponse(bloodReceiveFormRepository.save(bloodReceiveForm));
-        bloodReceiveFormResponse.setUser_name(user.getUsername());
+        //set fullname cho response tại vì fullname nằm ở user và mapstruct ko lấy trường này -> null hoặc sai
+        //bloodReceiveFormResponse.setUser_name(user.getUsername());
+    }
 
+    public List<BloodReceiveFormResponse> getAllBloodReceiveForm(){
+        List<BloodReceiveFormResponse> formReceiveList = new ArrayList<>();
+        formReceiveList = bloodReceiveFormRepository.findAll().stream()
+                .map(bloodReceiveFormMapper::toBloodReceiveFormResponse)
+                .toList();
+        return formReceiveList;
+    }
+
+    public BloodReceiveFormResponse getBloodReceiveFormById(int id) {
+        BloodReceiveForm bloodReceiveForm = bloodReceiveFormRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_EXISTED));
+        BloodReceiveFormResponse bloodReceiveFormResponse = bloodReceiveFormMapper
+                .toBloodReceiveFormResponse(bloodReceiveForm);
+        bloodReceiveFormResponse.setReceive_id(bloodReceiveForm.getReceive_id());
         return bloodReceiveFormResponse;
     }
 
+    public List<BloodReceiveFormResponse> getMyBloodReceiveForm() {
+        var context = SecurityContextHolder.getContext();
+        String username = context.getAuthentication().getName();
 
+        List<BloodReceiveForm> list = bloodReceiveFormRepository.findAllByUserUsername(username);
+        return list.stream().map(bloodReceiveFormMapper::toBloodReceiveFormResponse).toList();
+    }
+
+    public BloodReceiveFormResponse updateBloodReceiveFormStatus(int receiveId, BloodReceiveFormUpdateStatusRequest request) {
+        BloodReceiveForm bloodReceiveForm = bloodReceiveFormRepository.findById(receiveId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        bloodReceiveForm.setStatus(request.getStatus());
+        return bloodReceiveFormMapper.toBloodReceiveFormResponse(bloodReceiveFormRepository.save(bloodReceiveForm));
+    }
+
+    public void deleteBloodReceiveForm(String id) {
+        bloodReceiveFormRepository.deleteById(Integer.parseInt(id));
+    }
 }

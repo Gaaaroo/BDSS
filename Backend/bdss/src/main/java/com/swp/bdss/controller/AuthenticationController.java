@@ -1,12 +1,11 @@
 package com.swp.bdss.controller;
 
 import com.nimbusds.jose.JOSEException;
-import com.swp.bdss.dto.request.AuthenticationRequest;
-import com.swp.bdss.dto.request.IntrospectRequest;
-import com.swp.bdss.dto.request.LogoutRequest;
+import com.swp.bdss.dto.request.*;
 import com.swp.bdss.dto.response.ApiResponse;
 import com.swp.bdss.dto.response.AuthenticationResponse;
 import com.swp.bdss.dto.response.IntrospectResponse;
+import com.swp.bdss.dto.response.UserResponse;
 import com.swp.bdss.service.AuthenticationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +24,35 @@ import java.text.ParseException;
 public class AuthenticationController {
 
     AuthenticationService authenticationService;
+
+
+    @PostMapping("/register")
+    ApiResponse<UserResponse> register(@RequestBody UserCreationRequest request){
+        return ApiResponse.<UserResponse>builder()
+                .code(1111)
+                .message("OTP sent to your email")
+                .data(authenticationService.registerUserAndSendOtp(request))
+                .build();
+    }
+
+    @PostMapping("/verify")
+    ApiResponse<UserResponse> verifyOtp(@RequestBody VerifyOtpRequest request){
+        var user = authenticationService.verifyOtpAndActivateUser(request);
+        return ApiResponse.<UserResponse>builder()
+                .code(1000)
+                .message("User verified successfully")
+                .data(user)
+                .build();
+    }
+
+    @PostMapping("/resend-otp")
+    ApiResponse<UserResponse> resendOtp(@RequestBody VerifyOtpRequest request){
+        return ApiResponse.<UserResponse>builder()
+                .code(6868)
+                .data(authenticationService.resendOtp(request))
+                .message("OTP resent successfully")
+                .build();
+    }
 
     @PostMapping("/login")
     ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {

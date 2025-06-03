@@ -13,6 +13,26 @@ spring:
       ddl-auto: update
     show-sql: true
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ollamabakery@gmail.com #tạo biến môi trường để bảo mật
+    password: frii snaa sgsa uasx
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+  security:
+    oauth2:
+      client:
+        registration:
+          google: # Example configuration for Google
+            client-id: 940154910752-54ieu25hesbf19tahn90fib6qkk5jia0.apps.googleusercontent.com
+            client-secret: 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
+
+
 jwt:
   signerKey: "SWP391/HuynhChauDucVoa/gwhOpxfAHeMMGae/o3R1n44DPt8Qfzd2/HEm+fvRF"
   valid-duration: 24

@@ -1,9 +1,6 @@
 package com.swp.bdss.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -18,6 +15,8 @@ import java.time.LocalDate;
 @Table(name = "Users")
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     int user_id;
     String username;
     String password;
@@ -25,13 +24,13 @@ public class User {
     String gender;
     LocalDate dob;
     String email;
+    @Column(nullable = false)
     String phone;
     String address;
     String blood_type;
+    String role;
     @Column(nullable = false)
-    String role = "MEMBER";
-    @Column(nullable = false)
-    String status = "pending";
-    String verify_code;
-    LocalDate code_expiration;
+    String status;
+
+    boolean is_active = false;
 }

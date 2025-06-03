@@ -13,6 +13,6 @@ public interface BloodReceiveFormMapper {
     @Mapping(target = "status", ignore = true)
     BloodReceiveForm toBloodReceiveForm(BloodReceiveFormCreationRequest request);
 
-    @Mapping(target = "user_name", ignore = true)
+    @Mapping(source = "receive_id", target = "receive_id")
     BloodReceiveFormResponse toBloodReceiveFormResponse(BloodReceiveForm bloodReceiveForm);
 }

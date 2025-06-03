@@ -12,19 +12,17 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "receive_request")
-public class BloodReceiveForm {
+@Table(name = "donation_request")
+public class BloodDonateForm {
     @Id
-    int receive_id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    int donate_id;
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     User user;
-    String blood_type;
-    String component_type;
-    int quantity;
-    int volume;
-    String hospital_address;
-    String priority;
+    String health_notes;
+    String staff_notes;
     String status;
     LocalDate request_date;
+
 }
