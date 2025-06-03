@@ -61,6 +61,25 @@ public class AuthenticationController {
                 .build();
     }
 
+    @PostMapping("/verify")
+    ApiResponse<UserResponse> verifyOtp(@RequestBody VerifyOtpRequest request){
+        var user = authenticationService.verifyOtpAndActivateUser(request);
+        return ApiResponse.<UserResponse>builder()
+                .code(1000)
+                .message("User verified successfully")
+                .data(user)
+                .build();
+    }
+
+    @PostMapping("/resend-otp")
+    ApiResponse<UserResponse> resendOtp(@RequestBody VerifyOtpRequest request){
+        return ApiResponse.<UserResponse>builder()
+                .code(6868)
+                .data(authenticationService.resendOtp(request))
+                .message("OTP resent successfully")
+                .build();
+    }
+
     @PostMapping("/login")
     ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
         var isAuthenticated = authenticationService.isAuthenticated(request);

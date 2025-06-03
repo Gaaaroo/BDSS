@@ -1,6 +1,7 @@
 package com.swp.bdss.controller;
 
 import com.swp.bdss.dto.request.BloodDonateFormCreationRequest;
+import com.swp.bdss.dto.request.BloodDonateFormUpdateStatusRequest;
 import com.swp.bdss.dto.response.ApiResponse;
 import com.swp.bdss.dto.response.BloodDonateFormResponse;
 import com.swp.bdss.service.BloodDonateFormService;
@@ -25,7 +26,7 @@ public class BloodDonateFormController {
     @PostMapping
     ApiResponse<BloodDonateFormResponse> createBloodDonateForm(@RequestBody BloodDonateFormCreationRequest request) {
         return ApiResponse.<BloodDonateFormResponse>builder()
-                .code(1111)
+                .code(1000)
                 .data(bloodDonateFormService.createBloodDonateForm(request))
                 .build();
     }
@@ -33,7 +34,7 @@ public class BloodDonateFormController {
     @GetMapping("/myDonateForm")
     ApiResponse<List<BloodDonateFormResponse>> getMyBloodDonateForm(){
         return ApiResponse.<List<BloodDonateFormResponse>>builder()
-                .code(0001)
+                .code(1000)
                 .data(bloodDonateFormService.getUserBloodDonateForm())
                 .build();
     }
@@ -56,8 +57,17 @@ public class BloodDonateFormController {
     @GetMapping
     ApiResponse<BloodDonateFormResponse> getBloodDonateFormById(@RequestParam String id){
         return ApiResponse.<BloodDonateFormResponse>builder()
-                .code(0002)
+                .code(1000)
                 .data(bloodDonateFormService.getBloodDonateFormByDonateId(id))
+                .build();
+    }
+
+    @PutMapping("/updateStatus/{id}")
+    ApiResponse<BloodDonateFormResponse> updateBloodDonateFormStatus(@PathVariable("id") int id, @RequestBody BloodDonateFormUpdateStatusRequest request) {
+        return ApiResponse.<BloodDonateFormResponse>builder()
+                .code(1000)
+                .message( "Update status successfully")
+                .data(bloodDonateFormService.updateBloodDonateFormStatus(id, request))
                 .build();
     }
 }
