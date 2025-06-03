@@ -3,7 +3,7 @@ import React from "react";
 
 export default function StaffNote() {
   return (
-    <div className="w-full mx-auto bg-white border border-red-500 rounded-2xl overflow-hidden">
+    <div className="w-full mx-auto bg-white border-2 border-red-500 rounded-2xl overflow-hidden">
       <div className="flex items-center justify-between px-8 py-4 bg-gradient-to-r from-red-100 via-red-50 to-white rounded-t-2xl border-b border-red-100">
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-2 bg-red-600 text-white px-4 py-1 rounded-full shadow">
