@@ -8,6 +8,8 @@ import Register from "../pages/Register";
 import BloodCompatibility from "../pages/BloodCompatibility";
 import Donor from "../pages/Donor";
 import Seeker from "../pages/Seeker";
+import MyActivity from "../pages/MyActivity";
+import Profile from "../pages/Profile";
 
 export default function AppRoutes() {
   return (
@@ -18,6 +20,8 @@ export default function AppRoutes() {
       <Route path="/blood-compatibility" element={<BloodCompatibility />} />
       <Route path="/become-a-donor" element={<Donor />} />
       <Route path="/become-a-seeker" element={<Seeker />} />
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/my-activity" element={<MyActivity />} />
       <Route path="/posts" element={<Posts />} />
       <Route path="*" element={<NotFound />} />
     </Routes>

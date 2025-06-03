@@ -18,9 +18,7 @@ export default function Donor() {
             moment, inspire entire communities, and spark a ripple of
             generosity.
             <br />
-            Join us in making a real difference. <b>
-              Become a blood donor
-            </b>{" "}
+            Join us in making a real difference. <b>Become a blood donor </b>
             today and help build a healthier, more caring world for all.
           </>
         }
