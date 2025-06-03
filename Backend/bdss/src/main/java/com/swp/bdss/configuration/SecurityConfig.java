@@ -23,7 +23,9 @@ public class SecurityConfig {
     @Value("${jwt.signerKey}")
     private String signerKey;
 
-    private final String[] PUBLIC_URLS = {"/auth/login", "/auth/introspect", "/auth/logout", "/auth/refresh", "/users", "/auth/register", "/auth/verify", "/auth/resend-otp", "/auth/introspectTokenGoogle"};
+    private final String[] PUBLIC_URLS = {"/auth/login", "/auth/introspect", "/auth/logout",
+            "/auth/refresh", "/users", "/auth/register", "/auth/verify", "/auth/resend-otp",
+            "/auth/introspectTokenGoogle"};
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
