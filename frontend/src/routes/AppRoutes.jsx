@@ -6,16 +6,19 @@ import Posts from "../components/posts";
 import Login from "../pages/Login";
 import Register from "../pages/Register";
 import BloodCompatibility from "../pages/BloodCompatibility";
-
+import WidgetChat from "../components/WidgetChat";
+import ReplyWidgetChat from "../components/ReplyWidgetChat";
 
 export default function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register/>} />
+      <Route path="/register" element={<Register />} />
       <Route path="/blood-compatibility" element={<BloodCompatibility />} />
       <Route path="/posts" element={<Posts />} />
+      <Route path="/chat" element={<WidgetChat />} />
+      <Route path="/rep" element={<ReplyWidgetChat />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
