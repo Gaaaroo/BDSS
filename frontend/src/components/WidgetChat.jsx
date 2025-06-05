@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { db } from "../services/api/firebase";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
-import { onValue, push, ref, set } from "firebase/database";
+import { onValue, push, ref, set, remove } from "firebase/database";
 
 export default function WidgetChat() {
   const [open, setOpen] = useState(false);
@@ -10,7 +10,7 @@ export default function WidgetChat() {
   const messagesEndRef = useRef(null);
   // Handle sending a message
 
-  const [message, setMessage] = useState([]);
+  const [message, setMessage] = useState("");
   const [name, setName] = useState("");
   const [selectedRoom, setSelectedRoom] = useState({});
   const [messages, setMessages] = useState([]);
@@ -93,45 +93,7 @@ export default function WidgetChat() {
     return () => {
       unsubscribe();
     };
-  }, [selectedRoom]);
-
-  const handleSend = () => {
-    try {
-      if (!selectedRoom.id || !message.trim()) return;
-
-      const newMessage = {
-        name: name,
-        content: message,
-        date: Date.now(),
-      };
-
-      push(ref(db, `conversations/${roomId}/messages`), newMessage);
-    } catch (error) {
-      console.error("Error sending message:", error);
-    }
-    setMessage("");
-  };
-
-  // Handle Enter key to send message
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") handleSend();
-  };
-
-  const scrollToBottom = () => {
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
-  };
-
-  // Open the chat widget
-  const handleOpenChat = () => {
-    if (!selectedRoom.id) {
-      // If no conversations exist, create a new one
-      handleCreateConversation();
-    }
-    setOpen(true);
-    scrollToBottom();
-  };
+  }, [roomId]);
 
   // Create a new conversation
   const handleCreateConversation = () => {
@@ -151,13 +113,99 @@ export default function WidgetChat() {
     }
   };
 
+  const handleSend = () => {
+    try {
+      // 1. Nếu chưa có phòng chat hoặc ô nhập trống thì không gửi
+      if (!selectedRoom.id || !message.trim()) return;
+
+      // 2. Tạo object tin nhắn mới với tên, nội dung và thời gian gửi
+      const newMessage = {
+        name: name,
+        content: message,
+        date: Date.now(),
+      };
+
+      // 3. Đẩy tin nhắn mới lên Firebase vào nhánh messages của room hiện tại
+      push(ref(db, `conversations/${roomId}/messages`), newMessage);
+      // Cập nhật unread status
+      set(ref(db, `conversations/${roomId}/unread`), true);
+      set(ref(db, `conversations/${roomId}/lastMessage`), message);
+      set(ref(db, `conversations/${roomId}/date`), Date.now());
+      // 4. Cập nhật state messages để hiển thị tin nhắn mới
+      console.log("Message sent:", newMessage);
+    } catch (error) {
+      console.error("Error sending message:", error);
+    }
+    // 5. Sau khi gửi xong thì xóa nội dung ô nhập (reset input)
+    setMessage("");
+    scrollToBottom();
+  };
+
+  // Open the chat widget
+  const handleOpenChat = () => {
+    if (!selectedRoom.id) {
+      handleCreateConversation();
+    }
+    setOpen(true);
+    scrollToBottom();
+
+    // Send an automatic message if no messages exist
+    setTimeout(() => {
+      if (messages.length === 0) {
+        const autoMessage = {
+          name: "Admin",
+          content: "Hello! How can we help you?",
+          date: Date.now(),
+        };
+        // Push autoMessage lên Firebase
+        push(ref(db, `conversations/${roomId}/messages`), autoMessage);
+      }
+    }, 500);
+  };
+
+  // Close the chat widget
+  const handleCloseChat = () => {
+    if (messages.length > 0) {
+      messages.forEach((msg) => {
+        if (
+          msg.name === "Admin" &&
+          msg.content === "Hello! How can we help you?"
+        ) {
+          // Xóa message này khỏi Firebase
+          remove(ref(db, `conversations/${roomId}/messages/${msg.id}`));
+        }
+      });
+    }
+
+    // Lọc tin nhắn vs name (Auto-msg)
+    const realMessages = messages.filter((msg) => msg.name !== "Auto-msg");
+
+    // Nếu chưa có tin nhắn nào thì xóa room
+    if (selectedRoom.id && realMessages.length === 0) {
+      remove(ref(db, `conversations/${roomId}`));
+      setSelectedRoom({});
+    }
+    setOpen(false);
+  };
+
+  // Handle Enter key to send message
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSend();
+  };
+
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  };
+
   return (
     <div className="fixed bottom-5 right-5 flex flex-col z-50">
       {/* Chat bubble */}
       {!open && (
         <div
           className="w-14 h-14 bg-cyan-300 rounded-full flex items-center justify-center cursor-pointer text-3xl"
-          onClick={handleOpenChat}
+          onClick={handleOpenChat} // Open chat widget
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -191,7 +239,7 @@ export default function WidgetChat() {
             <h3 className="m-0 text-lg">Chat with out staff</h3>
             <button
               className="bg-transparent border-none text-white cursor-pointer"
-              onClick={() => setOpen(false)}
+              onClick={handleCloseChat} // Close chat widget
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -215,27 +263,48 @@ export default function WidgetChat() {
             {messages.map((msg, idx) => (
               <div
                 key={idx}
-                className={`flex mb-3 ${
+                className={`flex mb-2 ${
                   msg.name === name ? "justify-end" : ""
                 }`}
               >
                 <div
-                  className={`rounded-[10px] py-2 px-4 max-w-[70%] break-words ${
+                  className={`rounded-[10px] py-[6px] px-4 max-w-[70%] break-words  ${
                     msg.name === name
                       ? "bg-[#ffa3a3] text-white "
                       : "bg-orange-100 text-black"
                   } flex flex-col`}
                 >
-                  <span>{msg.content}</span>
-                  <span className="text-xs text-gray-500 mt-1 self-end">
-                    {dayjs(msg.date).format("DD/MM/YYYY HH:mm")}
+                  <span
+                    className={`text-[9px] text-gray-500 mt-1 ${
+                      msg.name === name ? "self-end" : "self-start"
+                    }`}
+                  >
+                    {dayjs(msg.date).format("HH:mm - DD/MM/YYYY")}
                   </span>
+                  <span>{msg.content}</span>
                 </div>
               </div>
             ))}
             <div ref={messagesEndRef} />
+            <div className="w-full flex justify-end">
+              {messages.length > 0 &&
+                messages[messages.length - 1].name === name && (
+                  <span
+                    className={`flex flex-end text-[8px] mr-1
+          ${
+            selectedRoom.unread
+              ? "text-gray-500 font-normal"
+              : "text-black font-semibold"
+          }
+        `}
+                  >
+                    {selectedRoom.unread ? "Đã gửi" : "Đã xem"}
+                  </span>
+                )}
+            </div>
           </div>
-          {/* Input */}
+
+
           <div className="p-4 border-t border-[#ff7b7b]">
             <div className="flex space-x-4 items-center">
               <input
