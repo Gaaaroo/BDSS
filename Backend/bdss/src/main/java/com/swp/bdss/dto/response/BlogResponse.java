@@ -1,26 +1,20 @@
-package com.swp.bdss.entities;
+package com.swp.bdss.dto.response;
 
-import jakarta.persistence.*;
+import com.swp.bdss.entities.User;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Entity
-@Table(name = "blog")
-public class Blog {
-    @Id
+public class BlogResponse {
     int blog_id;
     String title;
     String content;
-    @ManyToOne
-    @JoinColumn(name = "created_by", referencedColumnName = "user_id")
     User user;
     LocalDate created_date;
     String image_link;
