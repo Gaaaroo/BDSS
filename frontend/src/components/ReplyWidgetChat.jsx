@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import { db } from "../services/firebase";
+import { db } from "../services/api/firebase";
 import { onValue, push, ref, set } from "firebase/database";
 
 function WidgetChatAdmin() {
@@ -110,7 +110,9 @@ function WidgetChatAdmin() {
                     {msg.name}
                   </h5>
 
-                  <p className="whitespace-pre-line font-mono">{splitByLength(msg.content, 30)}</p>
+                  <p className="whitespace-pre-line font-mono">
+                    {splitByLength(msg.content, 30)}
+                  </p>
 
                   <span className="text-xs text-gray-400">
                     {dayjs(msg.date).format("DD/MM/YYYY HH:mm")}
