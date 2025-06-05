@@ -1,8 +1,9 @@
 import React from "react";
 import logo from "../assets/images/logo.jpg";
 import { CircleUser, HeartHandshake, House } from "lucide-react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { Link as ScrollLink } from "react-scroll";
+import { useState } from "react";
 
 // LogoNavbar
 function LogoNavbar() {
@@ -49,7 +50,25 @@ function Menu() {
 
 // UserIcon
 function UserIcon() {
+  const navigate = useNavigate();
+  const handleNavigation = (item) => {
+    switch (item) {
+      case "Profile":
+        navigate("/profile");
+        break;
+      case "My activity":
+        navigate("/my-activity");
+        break;
+      case "Logout":
+        // setShowModal(true);
+        navigate("/");
+        break;
+      default:
+        break;
+    }
+  };
   const [open, setOpen] = React.useState(false);
+  // const [showModal, setShowModal] = useState(false);
 
   React.useEffect(() => {
     if (!open) return;
@@ -72,10 +91,11 @@ function UserIcon() {
       {open && (
         <div className="absolute right-0 w-48 bg-white border border-red-200 rounded-lg shadow-lg z-10">
           <ul className="py-2">
-            {["Profile", "Settings", "Logout"].map((item) => (
+            {["Profile", "My activity", "Logout"].map((item) => (
               <li
                 key={item}
                 className="px-4 py-2 hover:bg-red-100 cursor-pointer"
+                onClick={() => handleNavigation(item)}
               >
                 {item}
               </li>
@@ -83,6 +103,30 @@ function UserIcon() {
           </ul>
         </div>
       )}
+      {/* {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
+            <h2 className="text-xl font-bold text-red-700 mb-4">Logout</h2>
+            <p className="text-gray-700 mb-6">
+              Are you sure you want to log out?
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+                onClick={handleCancelLogout}
+              >
+                Cancle
+              </button>
+              <button
+                className="px-4 py-2 bg-red-700 text-white rounded-lg hover:bg-red-600"
+                onClick={handleConfirmLogout}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )} */}
     </div>
   );
 }

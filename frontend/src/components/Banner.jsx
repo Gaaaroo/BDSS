@@ -4,7 +4,13 @@ import { useNavigate } from "react-router-dom";
 export default function Banner() {
   const navigate = useNavigate();
   const handleBloodButtonClick = () => {
-    navigate("/blood-compatibility"); 
+    navigate("/blood-compatibility");
+  };
+  const handleDonorRegister = () => {
+    navigate("/become-a-donor");
+  };
+  const handleSeekerRegister = () => {
+    navigate("/become-a-seeker");
   };
   return (
     <div className="relative w-full h-[450px] overflow-hidden">
@@ -15,15 +21,23 @@ export default function Banner() {
           "The joy of saving lives is in your veins. Donate blood."
         </h1>
         <div className="flex space-x-60 mb-8">
-          <button className="bg-gray-100 text-black text-[20px] px-4 py-2 rounded-3xl shadow font-bold w-52 transform transition-transform duration-200 hover:scale-110">
+          <button
+            className="bg-gray-100 text-black text-[20px] px-4 py-2 rounded-3xl shadow font-bold w-52 transform transition-transform duration-200 hover:scale-110"
+            onClick={handleDonorRegister}
+          >
             Become a Donor
           </button>
-          <button className="bg-gray-100 text-black text-[20px] px-4 py-2 rounded-3xl shadow font-bold w-52 transform transition-transform duration-200 hover:scale-110">
+          <button
+            className="bg-gray-100 text-black text-[20px] px-4 py-2 rounded-3xl shadow font-bold w-52 transform transition-transform duration-200 hover:scale-110"
+            onClick={handleSeekerRegister}
+          >
             Become a Seeker
           </button>
         </div>
-        <button className="bg-gray-100 text-black text-[20px] px-4 py-2 rounded-3xl shadow font-bold w-52 transform transition-transform duration-200 hover:scale-110 mt-4"
-        onClick={handleBloodButtonClick}>
+        <button
+          className="bg-gray-100 text-black text-[20px] px-4 py-2 rounded-3xl shadow font-bold w-52 transform transition-transform duration-200 hover:scale-110 mt-4"
+          onClick={handleBloodButtonClick}
+        >
           Blood type
         </button>
       </div>
