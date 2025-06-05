@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { db } from "../services/firebase";
+import { db } from "../services/api/firebase";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
 import { onValue, push, ref, set } from "firebase/database";
