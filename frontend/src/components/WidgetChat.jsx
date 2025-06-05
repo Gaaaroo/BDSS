@@ -93,7 +93,25 @@ export default function WidgetChat() {
     return () => {
       unsubscribe();
     };
-  }, [selectedRoom]);
+  }, [roomId]);
+
+  // Create a new conversation
+  const handleCreateConversation = () => {
+    try {
+      const newConversation = {
+        id: roomId,
+        name: `User ${roomId}`,
+        lastMessage: "",
+        date: Date.now(),
+        unread: false,
+      };
+      set(ref(db, "conversations/" + roomId), newConversation);
+      setSelectedRoom(newConversation);
+      console.log("Conversation created:", newConversation);
+    } catch (error) {
+      console.error("Error creating conversation:", error);
+    }
+  };
 
   const handleSend = () => {
     try {
@@ -114,7 +132,6 @@ export default function WidgetChat() {
       set(ref(db, `conversations/${roomId}/lastMessage`), message);
       set(ref(db, `conversations/${roomId}/date`), Date.now());
       // 4. Cập nhật state messages để hiển thị tin nhắn mới
-      setMessages((prev) => [...prev, newMessage]);
       console.log("Message sent:", newMessage);
     } catch (error) {
       console.error("Error sending message:", error);
@@ -124,17 +141,6 @@ export default function WidgetChat() {
     scrollToBottom();
   };
 
-  // Handle Enter key to send message
-  const handleKeyDown = (e) => {
-    if (e.key === "Enter") handleSend();
-  };
-
-  const scrollToBottom = () => {
-    setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
-  };
-
   // Open the chat widget
   const handleOpenChat = () => {
     if (!selectedRoom.id) {
@@ -142,24 +148,35 @@ export default function WidgetChat() {
     }
     setOpen(true);
     scrollToBottom();
-    // Send automatic message
-    if (messages.length === 0) {
-      setTimeout(() => {
+
+    // Send an automatic message if no messages exist
+    setTimeout(() => {
+      if (messages.length === 0) {
         const autoMessage = {
-          name: "Auto-msg",
+          name: "Admin",
           content: "Hello! How can we help you?",
           date: Date.now(),
         };
-        setMessages((prev) => [...prev, autoMessage]);
-        setTimeout(() => {
-          scrollToBottom();
-        }, 10);
-      }, 1000);
-    }
+        // Push autoMessage lên Firebase
+        push(ref(db, `conversations/${roomId}/messages`), autoMessage);
+      }
+    }, 500);
   };
 
   // Close the chat widget
   const handleCloseChat = () => {
+    if (messages.length > 0) {
+      messages.forEach((msg) => {
+        if (
+          msg.name === "Admin" &&
+          msg.content === "Hello! How can we help you?"
+        ) {
+          // Xóa message này khỏi Firebase
+          remove(ref(db, `conversations/${roomId}/messages/${msg.id}`));
+        }
+      });
+    }
+
     // Lọc tin nhắn vs name (Auto-msg)
     const realMessages = messages.filter((msg) => msg.name !== "Auto-msg");
 
@@ -171,22 +188,15 @@ export default function WidgetChat() {
     setOpen(false);
   };
 
-  // Create a new conversation
-  const handleCreateConversation = () => {
-    try {
-      const newConversation = {
-        id: roomId,
-        name: `User ${roomId}`,
-        lastMessage: "",
-        date: Date.now(),
-        unread: false,
-      };
-      set(ref(db, "conversations/" + roomId), newConversation);
-      setSelectedRoom(newConversation);
-      console.log("Conversation created:", newConversation);
-    } catch (error) {
-      console.error("Error creating conversation:", error);
-    }
+  // Handle Enter key to send message
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") handleSend();
+  };
+
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
   };
 
   return (
@@ -253,27 +263,48 @@ export default function WidgetChat() {
             {messages.map((msg, idx) => (
               <div
                 key={idx}
-                className={`flex mb-3 ${
+                className={`flex mb-2 ${
                   msg.name === name ? "justify-end" : ""
                 }`}
               >
                 <div
-                  className={`rounded-[10px] py-2 px-4 max-w-[70%] break-words ${
+                  className={`rounded-[10px] py-[6px] px-4 max-w-[70%] break-words  ${
                     msg.name === name
                       ? "bg-[#ffa3a3] text-white "
                       : "bg-orange-100 text-black"
                   } flex flex-col`}
                 >
-                  <span>{msg.content}</span>
-                  <span className="text-xs text-gray-500 mt-1 self-end">
-                    {dayjs(msg.date).format("DD/MM/YYYY HH:mm")}
+                  <span
+                    className={`text-[9px] text-gray-500 mt-1 ${
+                      msg.name === name ? "self-end" : "self-start"
+                    }`}
+                  >
+                    {dayjs(msg.date).format("HH:mm - DD/MM/YYYY")}
                   </span>
+                  <span>{msg.content}</span>
                 </div>
               </div>
             ))}
             <div ref={messagesEndRef} />
+            <div className="w-full flex justify-end">
+              {messages.length > 0 &&
+                messages[messages.length - 1].name === name && (
+                  <span
+                    className={`flex flex-end text-[8px] mr-1
+          ${
+            selectedRoom.unread
+              ? "text-gray-500 font-normal"
+              : "text-black font-semibold"
+          }
+        `}
+                  >
+                    {selectedRoom.unread ? "Đã gửi" : "Đã xem"}
+                  </span>
+                )}
+            </div>
           </div>
-          {/* Input */}
+
+
           <div className="p-4 border-t border-[#ff7b7b]">
             <div className="flex space-x-4 items-center">
               <input

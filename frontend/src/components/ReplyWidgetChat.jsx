@@ -1,15 +1,18 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import dayjs from "dayjs";
 import { db } from "../services/api/firebase";
-import { onValue, push, ref, set } from "firebase/database";
+import { onValue, push, ref, set, remove } from "firebase/database";
+import { Scroll } from "lucide-react";
 
 function WidgetChatAdmin() {
   const [conversations, setConversations] = useState([]);
+
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [adminName, setAdminName] = useState("Admin");
-
+  const messagesEndRef = useRef(null);
+  const [menuOpenId, setMenuOpenId] = useState(null);
   // Lấy danh sách các room
   useEffect(() => {
     const conversationsRef = ref(db, "conversations");
@@ -20,7 +23,12 @@ function WidgetChatAdmin() {
           id: key,
           ...data[key],
         }));
-        conversationList.sort((a, b) => b.date - a.date); // Sắp xếp theo ngày mới nhất
+        conversationList.sort((a, b) => {
+          if ((b.pinned ? 1 : 0) !== (a.pinned ? 1 : 0)) {
+            return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0);
+          }
+          return b.date - a.date;
+        });
         setConversations(conversationList);
       } else {
         setConversations([]);
@@ -44,6 +52,7 @@ function WidgetChatAdmin() {
           ...data[key],
         }));
         setMessages(messageList);
+        scrollToBottom();
       } else {
         setMessages([]);
       }
@@ -61,21 +70,44 @@ function WidgetChatAdmin() {
     };
     push(ref(db, `conversations/${selectedRoom.id}/messages`), newMessage);
     setMessage("");
+    scrollToBottom();
   };
 
   function splitByLength(str, n) {
     if (!str) return "";
     return str.match(new RegExp(".{1," + n + "}", "g")).join("\n");
   }
+
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, 100);
+  };
+
+  // Hàm ghim (ví dụ: set một trường "pinned" = true)
+  const handlePin = (conversationId) => {
+    const conversation = conversations.find((c) => c.id === conversationId);
+    const newPinned = !conversation?.pinned;
+    set(ref(db, `conversations/${conversationId}/pinned`), newPinned);
+    setMenuOpenId(null);
+  };
+
+  // Hàm xóa đoạn chat
+  const handleDelete = (conversationId) => {
+    remove(ref(db, `conversations/${conversationId}`));
+    setMenuOpenId(null);
+    if (selectedRoom?.id === conversationId) setSelectedRoom(null);
+  };
+
   return (
-    <div className="flex">
+    <div className="flex w-full h-[100vh] max-h-[100vh] border-r overflow-y-auto">
       {/* Sidebar: Danh sách các room */}
       <div className="w-[300px] p-3 border-r">
         <h2 className="font-bold mb-2">Inbox</h2>
         {conversations.map((conversation) => (
           <div
             key={conversation.id}
-            className={`shadow-md rounded-md p-2 mb-2 cursor-pointer ${
+            className={`shadow-md rounded-md p-2 mb-2 cursor-pointer flex items-center justify-between ${
               selectedRoom?.id === conversation.id ? "bg-cyan-300" : ""
             }`}
             onClick={() => {
@@ -83,20 +115,88 @@ function WidgetChatAdmin() {
               set(ref(db, `conversations/${conversation.id}/unread`), false);
             }}
           >
-            <h5>
-            {conversation.name}
-            {conversation.unread && <span className="ml-2 text-red-500 font-bold">•</span>}
-            </h5>
-            <p className="text-sm text-gray-600">{conversation.lastMessage}</p>
-            <span className="text-xs text-gray-400">
-              {dayjs(conversation.date).format("DD/MM/YYYY HH:mm")}
-            </span>
+            {/* Thông tin bên trái */}
+            <div className="flex-1 min-w-0">
+              <h5 className="truncate">
+                {conversation.name}
+                {conversation.unread && (
+                  <span className="ml-2 text-red-500 font-bold">•</span>
+                )}
+              </h5>
+              <p
+                className={`pt-2 pb-1 text-sm truncate
+    ${
+      conversation.unread
+        ? "font-semibold text-gray-800"
+        : "font-normal text-gray-400"
+    }`}
+              >
+                {conversation.lastMessage}
+              </p>{" "}
+              <span className="text-xs text-gray-400">
+                {dayjs(conversation.date).format("HH:mm DD/MM/YYYY")}
+              </span>
+            </div>
+            {/* Icon 3 chấm bên phải */}
+            <div className="relative">
+              <button
+                className="p-1 rounded hover:bg-gray-200 ml-2 flex-shrink-0"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setMenuOpenId(conversation.id);
+                }}
+              >
+                <svg
+                  width="20"
+                  height="20"
+                  fill="currentColor"
+                  className="text-gray-500"
+                  viewBox="0 0 20 20"
+                >
+                  <circle cx="10" cy="4" r="1.5" />
+                  <circle cx="10" cy="10" r="1.5" />
+                  <circle cx="10" cy="16" r="1.5" />
+                </svg>
+              </button>
+              {menuOpenId === conversation.id && (
+                <>
+                  {/* Overlay để bắt sự kiện click ra ngoài */}
+                  <div
+                    className="fixed inset-0 z-0"
+                    onClick={() => setMenuOpenId(null)}
+                    tabIndex={-1}
+                  />
+                  <div className="absolute right top mt-1 z-10 bg-white border rounded shadow-md min-w-[140px]">
+                    <button
+                      className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePin(conversation.id);
+                      }}
+                    >
+                      {conversation.pinned
+                        ? "Bỏ ghim tin nhắn"
+                        : "Ghim đoạn chat"}
+                    </button>
+                    <button
+                      className="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(conversation.id);
+                      }}
+                    >
+                      Xóa đoạn chat
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         ))}
       </div>
 
       {/* Content: Chat của room đang chọn */}
-      <div className="p-3 flex-1 flex flex-col justify-between">
+      <div className="p-3 flex-1 flex flex-col justify-between max-h-[100vh] h-[100vh]">
         <div className="flex-1 overflow-y-auto">
           {selectedRoom ? (
             messages.map((msg, idx) => (
@@ -122,9 +222,10 @@ function WidgetChatAdmin() {
                   </p>
 
                   <span className="text-xs text-gray-400">
-                    {dayjs(msg.date).format("DD/MM/YYYY HH:mm")}
+                    {dayjs(msg.date).format("HH:mm DD/MM/YYYY")}
                   </span>
                 </div>
+                <div ref={messagesEndRef} />
               </div>
             ))
           ) : (
