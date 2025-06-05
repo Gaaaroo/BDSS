@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "Users")
+@Table(name = "users")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,13 +24,11 @@ public class User {
     String gender;
     LocalDate dob;
     String email;
-    @Column(nullable = false)
     String phone;
     String address;
     String blood_type;
     String role;
     @Column(nullable = false)
     String status;
-
     boolean is_active = false;
 }

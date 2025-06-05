@@ -28,6 +28,18 @@ public class UserService {
     UserMapper userMapper;
     UserRepository userRepository;
 
+    public UserResponse createUserForLoginGoogle(String email, String username) {
+
+        User user = new User();
+        user.setEmail(email);
+        user.setUsername(username);
+        user.setRole("MEMBER");
+        user.setStatus("pending");
+
+        User savedUser = userRepository.save(user);
+        return userMapper.toUserResponse(savedUser);
+    }
+
     public UserResponse createUser(UserCreationRequest request) {
         User user = userMapper.toUser(request);
 
