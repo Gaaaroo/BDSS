@@ -12,4 +12,5 @@ import java.util.Optional;
     public interface OtpCodeRepository extends JpaRepository<OtpCode, Long> {
         Optional<OtpCode> findByUserAndOtpCode(User user, String otpCode);
 
+        Optional<OtpCode> findByUser(User user);
     }

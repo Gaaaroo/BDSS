@@ -161,7 +161,7 @@ export default function BloodCompatibilityChecker() {
               )}
             </ul>
           </div>
-          <div className="absolute top-[380px] transform items-center">
+          <div className="absolute top-[380px] transform items-center ">
             <BloodDocs />
           </div>
         </div>
