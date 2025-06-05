@@ -298,7 +298,7 @@ export default function WidgetChat() {
           }
         `}
                   >
-                    {selectedRoom.unread ? "Đã gửi" : "Đã xem"}
+                    {selectedRoom.unread ? "sent" : "seen"}
                   </span>
                 )}
             </div>
