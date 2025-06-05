@@ -19,6 +19,7 @@ public enum ErrorCode {
     OTP_CODE_EXPIRED(1009, "OTP code has expired", HttpStatus.BAD_REQUEST),
     OTP_CODE_INVALID(1010, "OTP code is invalid", HttpStatus.BAD_REQUEST),
     BLODD_DONATE_FORM_NOT_EXISTED(1011, "Blood donate form not existed", HttpStatus.BAD_REQUEST),
+    BLOG_NOT_EXISTED(1012, "Blog not existed", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;

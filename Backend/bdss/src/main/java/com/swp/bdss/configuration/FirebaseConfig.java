@@ -15,8 +15,6 @@ import java.io.IOException;
 public class FirebaseConfig {
     @PostConstruct
     public void initFirebase() throws IOException {
-        log.info("Initializing Firebase======================");
-        //InputStream serviceAccount = getClass().getClassLoader().getResourceAsStream("serviceAccountKey.json");
         FileInputStream serviceAccount = new FileInputStream("src/main/resources/serviceAccountKey.json");
 
         FirebaseOptions options = new FirebaseOptions.Builder()

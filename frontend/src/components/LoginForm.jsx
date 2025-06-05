@@ -64,7 +64,7 @@ const LoginForm = () => {
 
       // Gửi token lên backend
       const res = await fetch(
-        "http://localhost:8080/bdss/auth/introspectTokenGoogle",
+        "http://localhost:8080/bdss/auth/loginWithTokenGoogle",
         {
           method: "POST",
           headers: {
