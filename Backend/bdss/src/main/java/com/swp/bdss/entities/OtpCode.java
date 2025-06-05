@@ -26,7 +26,8 @@ public class OtpCode {
     User user;
 
 
-
+    @Column(name = "created_at")
+    LocalDateTime createAt;
     @Column(nullable = false)
     LocalDateTime expiresAt;
 }

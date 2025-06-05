@@ -14,6 +14,7 @@ import {
   animateScroll as scroll,
   scrollSpy,
 } from "react-scroll";
+import WidgetChat from "../components/WidgetChat";
 
 export default function Home() {
   useEffect(() => {
@@ -53,6 +54,7 @@ export default function Home() {
         </Element>
         <Footer />
       </div>
+      <WidgetChat />
     </>
   );
 }

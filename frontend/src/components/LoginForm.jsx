@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import BackHome from "./BackHome";
-import { register } from "swiper/element";
+import { signInWithPopup } from "firebase/auth";
+import { auth, provider } from "../services/api/firebase";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -48,6 +49,42 @@ const LoginForm = () => {
 
   const handleRegisterClick = () => {
     navigate("/register");
+  };
+
+  // Hàm xử lý đăng nhập với Google
+
+  const handleLoginWithGG = async () => {
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+
+      // LẤY FIREBASE ID TOKEN
+      const idToken = await user.getIdToken();
+      console.log("Firebase ID Token:", idToken);
+
+      // Gửi token lên backend
+      const res = await fetch(
+        "http://localhost:8080/bdss/auth/introspectTokenGoogle",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Login failed at backend.");
+      }
+
+      //const data = await res.text();
+      localStorage.setItem("accessToken", idToken);
+      navigate("/");
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Đăng nhập thất bại.");
+    }
   };
 
   return (
@@ -110,6 +147,9 @@ const LoginForm = () => {
               className="text-red-600 hover:underline text-sm"
             >
               Forgot Password?
+            </button>
+            <button className="text-black" onClick={handleLoginWithGG}>
+              Login with Google
             </button>
           </div>
         </form>

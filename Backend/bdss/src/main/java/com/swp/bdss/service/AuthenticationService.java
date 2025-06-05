@@ -71,7 +71,7 @@ public class AuthenticationService {
     //register user and send OTP
     public UserResponse registerUserAndSendOtp(UserCreationRequest request) {
         if(userRepository.findByEmail(request.getEmail()).isPresent()){
-            throw new AppException(ErrorCode.USER_EXISTED);
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
 
         User user = userMapper.toUser(request);
@@ -92,17 +92,17 @@ public class AuthenticationService {
     //verify OTP and activate user
     public UserResponse verifyOtpAndActivateUser(VerifyOtpRequest request){
         //find user by email
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.USER_EXISTED));
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         //check status
         if(!user.getStatus().equals("pending")){
-            throw new AppException(ErrorCode.USER_EXISTED);
+            throw new AppException(ErrorCode.USER_IS_ACTIVE);
         }
 
         //validate OTP
         boolean isValid = otpCodeService.isOtpCodeValid(user, request.getOtp());
         if(!isValid){
-            throw new RuntimeException("Invalid OTP");
+            throw new AppException(ErrorCode.OTP_CODE_INVALID);
         }
 
         //update user status
@@ -113,6 +113,19 @@ public class AuthenticationService {
 
 
         return userMapper.toUserResponse(updatedUser);
+    }
+
+    //resend OTP to user
+    public UserResponse resendOtp(VerifyOtpRequest request){
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if(!user.getStatus().equals("pending")){
+            throw new AppException(ErrorCode.USER_IS_ACTIVE);
+        }
+        // Generate code - Send email to the user
+        String otp = otpCodeService.saveResendOtpCode(user);
+        emailService.sendOtpEmail(user.getEmail(), otp);
+        return userMapper.toUserResponse(user);
     }
 
     public void logout(LogoutRequest request) throws ParseException, JOSEException{
@@ -135,7 +148,7 @@ public class AuthenticationService {
         }
     }
 
-    private String generateToken(User user) {
+    public String generateToken(User user) {
         //header
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 

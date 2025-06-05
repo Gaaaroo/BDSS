@@ -1,5 +1,6 @@
 package com.swp.bdss.dto.request;
 
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -8,11 +9,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BloodReceiveFormCreationRequest {
-    String blood_type;
-    String component_type;
-    int quantity;
-    int volume;
-    String hospital_address;
-    String priority;
+public class BloodDonateFormUpdateStatusRequest {
+
+    String status;
 }
