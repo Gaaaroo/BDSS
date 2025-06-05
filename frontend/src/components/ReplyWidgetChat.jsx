@@ -175,8 +175,8 @@ function WidgetChatAdmin() {
                       }}
                     >
                       {conversation.pinned
-                        ? "Bỏ ghim tin nhắn"
-                        : "Ghim đoạn chat"}
+                        ? "Unpin conversation"
+                        : "Pin conversation"}
                     </button>
                     <button
                       className="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100"
@@ -185,7 +185,7 @@ function WidgetChatAdmin() {
                         handleDelete(conversation.id);
                       }}
                     >
-                      Xóa đoạn chat
+                      Delete conversation
                     </button>
                   </div>
                 </>
@@ -230,7 +230,7 @@ function WidgetChatAdmin() {
             ))
           ) : (
             <div className="text-center text-gray-400 mt-10">
-              Chọn một inbox để xem và trả lời tin nhắn
+              Select an inbox to view and reply to messages
             </div>
           )}
         </div>
