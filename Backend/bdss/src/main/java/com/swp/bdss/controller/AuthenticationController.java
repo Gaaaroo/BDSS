@@ -43,8 +43,12 @@ public class AuthenticationController {
             log.info("Decoded Token: {}", decodedToken);
             String uid = decodedToken.getUid();
             String email = decodedToken.getEmail();
+            String name = decodedToken.getName();
+            String picture = decodedToken.getPicture();
+
             log.info("UID: {}", uid);
             log.info("Email: {}", email);
+            log.info("Name: {}", name);
 
             return ResponseEntity.ok("Token is valid. User email: " + email);
         } catch (FirebaseAuthException e) {
