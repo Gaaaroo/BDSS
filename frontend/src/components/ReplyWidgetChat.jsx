@@ -20,6 +20,7 @@ function WidgetChatAdmin() {
           id: key,
           ...data[key],
         }));
+        conversationList.sort((a, b) => b.date - a.date); // Sắp xếp theo ngày mới nhất
         setConversations(conversationList);
       } else {
         setConversations([]);
@@ -77,9 +78,15 @@ function WidgetChatAdmin() {
             className={`shadow-md rounded-md p-2 mb-2 cursor-pointer ${
               selectedRoom?.id === conversation.id ? "bg-cyan-300" : ""
             }`}
-            onClick={() => setSelectedRoom(conversation)}
+            onClick={() => {
+              setSelectedRoom(conversation);
+              set(ref(db, `conversations/${conversation.id}/unread`), false);
+            }}
           >
-            <h5>{conversation.name}</h5>
+            <h5>
+            {conversation.name}
+            {conversation.unread && <span className="ml-2 text-red-500 font-bold">•</span>}
+            </h5>
             <p className="text-sm text-gray-600">{conversation.lastMessage}</p>
             <span className="text-xs text-gray-400">
               {dayjs(conversation.date).format("DD/MM/YYYY HH:mm")}

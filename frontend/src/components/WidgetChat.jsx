@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { db } from "../services/api/firebase";
 import dayjs from "dayjs";
 import { nanoid } from "nanoid";
-import { onValue, push, ref, set } from "firebase/database";
+import { onValue, push, ref, set, remove } from "firebase/database";
 
 export default function WidgetChat() {
   const [open, setOpen] = useState(false);
@@ -10,7 +10,7 @@ export default function WidgetChat() {
   const messagesEndRef = useRef(null);
   // Handle sending a message
 
-  const [message, setMessage] = useState([]);
+  const [message, setMessage] = useState("");
   const [name, setName] = useState("");
   const [selectedRoom, setSelectedRoom] = useState({});
   const [messages, setMessages] = useState([]);
@@ -97,19 +97,31 @@ export default function WidgetChat() {
 
   const handleSend = () => {
     try {
+      // 1. Nếu chưa có phòng chat hoặc ô nhập trống thì không gửi
       if (!selectedRoom.id || !message.trim()) return;
 
+      // 2. Tạo object tin nhắn mới với tên, nội dung và thời gian gửi
       const newMessage = {
         name: name,
         content: message,
         date: Date.now(),
       };
 
+      // 3. Đẩy tin nhắn mới lên Firebase vào nhánh messages của room hiện tại
       push(ref(db, `conversations/${roomId}/messages`), newMessage);
+      // Cập nhật unread status
+      set(ref(db, `conversations/${roomId}/unread`), true);
+      set(ref(db, `conversations/${roomId}/lastMessage`), message);
+      set(ref(db, `conversations/${roomId}/date`), Date.now());
+      // 4. Cập nhật state messages để hiển thị tin nhắn mới
+      setMessages((prev) => [...prev, newMessage]);
+      console.log("Message sent:", newMessage);
     } catch (error) {
       console.error("Error sending message:", error);
     }
+    // 5. Sau khi gửi xong thì xóa nội dung ô nhập (reset input)
     setMessage("");
+    scrollToBottom();
   };
 
   // Handle Enter key to send message
@@ -126,11 +138,37 @@ export default function WidgetChat() {
   // Open the chat widget
   const handleOpenChat = () => {
     if (!selectedRoom.id) {
-      // If no conversations exist, create a new one
       handleCreateConversation();
     }
     setOpen(true);
     scrollToBottom();
+    // Send automatic message
+    if (messages.length === 0) {
+      setTimeout(() => {
+        const autoMessage = {
+          name: "Auto-msg",
+          content: "Hello! How can we help you?",
+          date: Date.now(),
+        };
+        setMessages((prev) => [...prev, autoMessage]);
+        setTimeout(() => {
+          scrollToBottom();
+        }, 10);
+      }, 1000);
+    }
+  };
+
+  // Close the chat widget
+  const handleCloseChat = () => {
+    // Lọc tin nhắn vs name (Auto-msg)
+    const realMessages = messages.filter((msg) => msg.name !== "Auto-msg");
+
+    // Nếu chưa có tin nhắn nào thì xóa room
+    if (selectedRoom.id && realMessages.length === 0) {
+      remove(ref(db, `conversations/${roomId}`));
+      setSelectedRoom({});
+    }
+    setOpen(false);
   };
 
   // Create a new conversation
@@ -157,7 +195,7 @@ export default function WidgetChat() {
       {!open && (
         <div
           className="w-14 h-14 bg-cyan-300 rounded-full flex items-center justify-center cursor-pointer text-3xl"
-          onClick={handleOpenChat}
+          onClick={handleOpenChat} // Open chat widget
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -191,7 +229,7 @@ export default function WidgetChat() {
             <h3 className="m-0 text-lg">Chat with out staff</h3>
             <button
               className="bg-transparent border-none text-white cursor-pointer"
-              onClick={() => setOpen(false)}
+              onClick={handleCloseChat} // Close chat widget
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
