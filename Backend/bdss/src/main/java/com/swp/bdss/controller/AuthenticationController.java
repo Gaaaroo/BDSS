@@ -9,6 +9,7 @@ import com.swp.bdss.dto.response.ApiResponse;
 import com.swp.bdss.dto.response.AuthenticationResponse;
 import com.swp.bdss.dto.response.IntrospectResponse;
 import com.swp.bdss.dto.response.UserResponse;
+import com.swp.bdss.entities.User;
 import com.swp.bdss.service.AuthenticationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -31,28 +32,30 @@ public class AuthenticationController {
 
     AuthenticationService authenticationService;
 
-    @PostMapping("/introspectTokenGoogle")
-    public ResponseEntity<String> verifyToken(@RequestHeader("Authorization") String authorization) {
+    @PostMapping("/loginWithTokenGoogle")
+    public ApiResponse<AuthenticationResponse> loginWithGoogle(@RequestHeader("Authorization") String authorization) {
         try {
-            log.info("Authorization: {}", authorization);
             String idToken = authorization.replace("Bearer ", "");
-            log.info("ID Token: {}", idToken);
-
 
             FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
-            log.info("Decoded Token: {}", decodedToken);
-            String uid = decodedToken.getUid();
             String email = decodedToken.getEmail();
-            String name = decodedToken.getName();
-            String picture = decodedToken.getPicture();
+            String userName = decodedToken.getName();
 
-            log.info("UID: {}", uid);
-            log.info("Email: {}", email);
-            log.info("Name: {}", name);
+            User user = new User();
+            user.setUsername(userName);
+            user.setEmail(email);
 
-            return ResponseEntity.ok("Token is valid. User email: " + email);
+            return ApiResponse.<AuthenticationResponse>builder()
+                    .code(1000)
+                    .message("Login successful")
+                    .data(authenticationService.isAuthenticatedForGoogle(user))
+                    .build();
+
         } catch (FirebaseAuthException e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid ID token");
+            return ApiResponse.<AuthenticationResponse>builder()
+                    .code(9999)
+                    .message("Google login failed")
+                    .build();
         }
     }
 
@@ -112,6 +115,17 @@ public class AuthenticationController {
         return ApiResponse.<Void>builder()
                 .code(6666)
                 .message("Logout successful")
+                .build();
+    }
+
+    @PostMapping("/refresh")
+    ApiResponse<AuthenticationResponse> refreshToken(@RequestBody IntrospectRequest request)
+            throws ParseException, JOSEException {
+        var result = authenticationService.refreshToken(request);
+        return ApiResponse.<AuthenticationResponse>builder()
+                .code(1000)
+                .message("Token refreshed successfully")
+                .data(result)
                 .build();
     }
 

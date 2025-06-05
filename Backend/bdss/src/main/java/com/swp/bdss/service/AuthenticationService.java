@@ -1,6 +1,7 @@
 package com.swp.bdss.service;
 
 
+import com.google.api.client.auth.oauth2.RefreshTokenRequest;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -41,6 +42,7 @@ public class AuthenticationService {
     UserMapper userMapper;
     EmailService emailService;
     OtpCodeService otpCodeService;
+    UserService userService;
 
     @NonFinal
     @Value("${jwt.signerKey}") // spring injects giá trị lúc runtime nên ko dc là FINAL
@@ -53,6 +55,26 @@ public class AuthenticationService {
     @NonFinal
     @Value("${jwt.refreshable-duration}")
     protected long REFRESHABLE_DURATION;
+
+    public AuthenticationResponse isAuthenticatedForGoogle(User request) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+            var user = userRepository.findByEmail(request.getEmail()).get();
+            var token = generateToken(user);
+            return AuthenticationResponse.builder()
+                    .token(token)
+                    .authenticated(true)
+                    .build();
+        } else {
+            var newUser = userService.createUserForLoginGoogle(request.getEmail(), request.getUsername());
+
+            var token = generateToken(userRepository.findByUsername(newUser.getUsername()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+
+            return AuthenticationResponse.builder()
+                    .token(token)
+                    .authenticated(true)
+                    .build();
+        }
+    }
 
     public AuthenticationResponse isAuthenticated(AuthenticationRequest request) {
         var user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED ));
@@ -130,7 +152,7 @@ public class AuthenticationService {
 
     public void logout(LogoutRequest request) throws ParseException, JOSEException{
         try {
-            var signToken = verifyToken(request.getToken());
+            var signToken = verifyToken(request.getToken(), true);
 
             String jit = signToken.getJWTClaimsSet().getJWTID();
             Date expirationTime = signToken.getJWTClaimsSet().getExpirationTime();
@@ -179,13 +201,37 @@ public class AuthenticationService {
         }
     }
 
+    public AuthenticationResponse refreshToken(IntrospectRequest request) throws ParseException, JOSEException{
+        var signJwt = verifyToken(request.getToken(), true);
+
+        var jit = signJwt.getJWTClaimsSet().getJWTID();
+        var expiryTime = signJwt.getJWTClaimsSet().getExpirationTime();
+        var userId = signJwt.getJWTClaimsSet().getIntegerClaim("userId");
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                .token_id(jit)
+                .expiryTime(expiryTime)
+                .user_id(userId)
+                .build();
+
+        invalidatedTokenRepository.save(invalidatedToken);
+
+        var username = signJwt.getJWTClaimsSet().getSubject();
+        var user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        var token = generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(token)
+                .authenticated(true)
+                .build();
+    }
+
 
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException {
         var token = request.getToken();
 
         boolean isValid = true;
         try{
-            verifyToken(token);
+            verifyToken(token, false);
         }catch (AppException | ParseException e){
             isValid = false;
         }
@@ -193,14 +239,17 @@ public class AuthenticationService {
         return IntrospectResponse.builder().valid(isValid).build();
     }
 
-    private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
+    private SignedJWT verifyToken(String token, boolean isRefresh) throws JOSEException, ParseException {
 
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
         SignedJWT signedJWT = SignedJWT.parse(token);
 
         //ktra het han
-        Date expirationTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        Date expirationTime = (isRefresh)
+                ? new Date(signedJWT.getJWTClaimsSet().getIssueTime().toInstant().plus(REFRESHABLE_DURATION, ChronoUnit.HOURS).toEpochMilli())
+                : signedJWT.getJWTClaimsSet().getExpirationTime();
+
         var verified = signedJWT.verify(verifier); //true - false
 
         if(!(verified && expirationTime.after(new Date())))
