@@ -19,7 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RestController
-@CrossOrigin("*")
 public class UserController {
     UserService userService;
 

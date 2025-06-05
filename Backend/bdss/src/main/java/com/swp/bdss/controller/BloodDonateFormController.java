@@ -18,7 +18,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RestController
 @RequestMapping("/donateForm")
-@CrossOrigin("*")
 public class BloodDonateFormController {
     BloodDonateFormService bloodDonateFormService;
 
