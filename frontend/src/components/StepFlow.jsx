@@ -15,10 +15,10 @@ const getStepStatus = (idx, completedStepIndex) => {
   return "upcoming";
 };
 
-const DonationStepFlow = ({ completedStepIndex = 1 }) => {
+const DonationStepFlow = ({ completedStepIndex = 0 }) => {
   return (
-    <div className="flex flex-col items-center w-full max-w-3xl mx-auto py-14 px-6 bg-white rounded-3xl shadow-2xs border border-red-100">
-      <h2 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-pink-500 to-red-400 mb-16 text-center tracking-tight drop-shadow-lg">
+    <div className="flex flex-col items-center w-full max-w-3xl mx-auto bg-white">
+      <h2 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-rose-500 to-red-400 mb-10 text-center tracking-tight">
         Blood Donation Journey
       </h2>
       <ol className="w-full space-y-0">
