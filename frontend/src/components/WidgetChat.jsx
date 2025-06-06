@@ -6,7 +6,6 @@ import { onValue, push, ref, set, remove } from "firebase/database";
 
 export default function WidgetChat() {
   const [open, setOpen] = useState(false);
-  const [input, setInput] = useState("");
   const messagesEndRef = useRef(null);
   // Handle sending a message
 
@@ -25,21 +24,7 @@ export default function WidgetChat() {
     },
   ]);
 
-  //   const handleSend = () => {
-  //     if (!input.trim()) return;
-  //     const newMessages = [...messages, { from: "user", text: input.trim() }];
-  //     setMessages(newMessages);
-  //     setInput("");
-  //     setTimeout(() => {
-  //       setMessages((prev) => [
-  //         ...prev,
-  //         { from: "bot", text: "Hello! This is a sample reply." },
-  //       ]);
-  //       scrollToBottom();
-  //     }, 1000);
-  //     scrollToBottom();
-  //   };
-
+  // Get the user's name from localStorage or prompt
   const [roomId, setRoomId] = useState(() => {
     let id = localStorage.getItem("roomId");
     if (!id) {
