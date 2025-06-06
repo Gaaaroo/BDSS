@@ -7,13 +7,7 @@ import ImageCarousel from "../components/Slider";
 import HowItWorkSection from "../components/HowItWorkSection";
 import BlogSection from "../components/BlogSection";
 
-import {
-  Link,
-  Element,
-  Events,
-  animateScroll as scroll,
-  scrollSpy,
-} from "react-scroll";
+import { Link, Element, Events, scrollSpy } from "react-scroll";
 import WidgetChat from "../components/WidgetChat";
 
 export default function Home() {
