@@ -9,12 +9,12 @@ const RequestInfoCard = ({ requestId, date, name, status }) => {
   ];
 
   return (
-    <div className="w-full border-2 border-red-500 rounded-xl bg-white p-4">
+    <div className="w-full bg-red-100 p-4">
       <div className="flex flex-wrap justify-between gap-10 px-80">
         {infoItems.map((item) => (
           <div
             key={item.label}
-            className="flex-1 min-w-[120px] bg-gradient-to-br from-red-400 to-rose-500 rounded-4xl p-2 text-center"
+            className="flex-1 min-w-[120px] bg-gradient-to-br from-red-400 to-rose-500 rounded-md p-2 text-center"
           >
             <div className="text-xl font-semibold text-white mb-1">
               {item.label}

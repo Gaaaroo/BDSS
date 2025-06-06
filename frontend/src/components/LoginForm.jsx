@@ -148,8 +148,19 @@ const LoginForm = () => {
             >
               Forgot Password?
             </button>
-            <button className="text-black" onClick={handleLoginWithGG}>
-              Login with Google
+            <button
+              type="button"
+              onClick={handleLoginWithGG}
+              className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 bg-white hover:bg-gray-50 transition"
+            >
+              <span className="flex gap-2 text-gray-700 text-sm font-medium">
+                <img
+                  src="https://cdn.pixabay.com/photo/2021/05/24/09/15/google-logo-6278331_960_720.png"
+                  alt=""
+                  className="w-6 h-6"
+                />
+                Login with Google
+              </span>
             </button>
           </div>
         </form>
