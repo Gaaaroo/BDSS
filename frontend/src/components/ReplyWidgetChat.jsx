@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import dayjs from "dayjs";
 import { db } from "../services/api/firebase";
 import { onValue, push, ref, set, remove } from "firebase/database";
+import { Send } from "lucide-react";
 import { Scroll } from "lucide-react";
 
 function WidgetChatAdmin() {
@@ -100,15 +101,16 @@ function WidgetChatAdmin() {
   };
 
   return (
-    <div className="flex w-full h-[100vh] max-h-[100vh] border-r overflow-y-auto">
+    <div className="flex w-full h-[100vh] max-h-[100vh] border-r overflow-y-auto bg-[#2e2e2e] ">
       {/* Sidebar: Danh sách các room */}
-      <div className="w-[300px] p-3 border-r">
-        <h2 className="font-bold mb-2">Inbox</h2>
+      <div className="w-[320px] h-[94vh] p-3 bg-[#1f1f1f] mt-[20px] ml-[30px] mr-[20px]
+      rounded-[10px]">
+        <h2 className="font-bold mb-2 text-3xl pl-3">Inbox</h2>
         {conversations.map((conversation) => (
           <div
             key={conversation.id}
-            className={`shadow-md rounded-md p-2 mb-2 cursor-pointer flex items-center justify-between ${
-              selectedRoom?.id === conversation.id ? "bg-cyan-300" : ""
+            className={`shadow-md rounded-md p-2 mb-2 cursor-pointer flex items-center justify-between hover:bg-[#3a3a3a] transition-colors duration-150 ${
+              selectedRoom?.id === conversation.id ? "bg-[#3a3a3a]" : ""
             }`}
             onClick={() => {
               setSelectedRoom(conversation);
@@ -116,31 +118,34 @@ function WidgetChatAdmin() {
             }}
           >
             {/* Thông tin bên trái */}
-            <div className="flex-1 min-w-0">
-              <h5 className="truncate">
+            <div className="flex-1 min-w-0 ">
+              <h5 className="truncate text-[18px] font-semibold text-gray-200">
                 {conversation.name}
-                {conversation.unread && (
-                  <span className="ml-2 text-red-500 font-bold">•</span>
-                )}
+                
               </h5>
               <p
-                className={`pt-2 pb-1 text-sm truncate
+                className={`text-sm truncate
     ${
       conversation.unread
-        ? "font-semibold text-gray-800"
+        ? "font-semibold text-[#e84a7a]"
         : "font-normal text-gray-400"
     }`}
               >
                 {conversation.lastMessage}
               </p>{" "}
-              <span className="text-xs text-gray-400">
+              <span className="text-[10px] text-gray-400">
                 {dayjs(conversation.date).format("HH:mm DD/MM/YYYY")}
               </span>
+            </div>
+            <div className="relative">
+              {conversation.unread && (
+                  <span className="ml-2 text-[#e84a7a] text-4xl font-bold leading-none pb-2 flex items-center">•</span>
+                )}
             </div>
             {/* Icon 3 chấm bên phải */}
             <div className="relative">
               <button
-                className="p-1 rounded hover:bg-gray-200 ml-2 flex-shrink-0"
+                className="p-1 rounded-[50px] hover:bg-gray-200 ml-2 flex-shrink-0"
                 onClick={(e) => {
                   e.stopPropagation();
                   setMenuOpenId(conversation.id);
@@ -162,13 +167,13 @@ function WidgetChatAdmin() {
                 <>
                   {/* Overlay để bắt sự kiện click ra ngoài */}
                   <div
-                    className="fixed inset-0 z-0"
+                    className="fixed inset-0 z-0 "
                     onClick={() => setMenuOpenId(null)}
                     tabIndex={-1}
                   />
-                  <div className="absolute right top mt-1 z-10 bg-white border rounded shadow-md min-w-[140px]">
+                  <div className="absolute right top mt-1 z-10 bg-white border rounded shadow-md min-w-[175px]">
                     <button
-                      className="block w-full px-4 py-2 text-left hover:bg-gray-100"
+                      className="block w-full px-4 py-2 text-left text-black hover:bg-gray-100"
                       onClick={(e) => {
                         e.stopPropagation();
                         handlePin(conversation.id);
@@ -195,22 +200,23 @@ function WidgetChatAdmin() {
         ))}
       </div>
 
-      {/* Content: Chat của room đang chọn */}
-      <div className="p-3 flex-1 flex flex-col justify-between max-h-[100vh] h-[100vh]">
-        <div className="flex-1 overflow-y-auto">
+      {/* Content: Chat của room đang chọn  #1f1f1f */}
+      <div className="p-3 flex-1 flex flex-col justify-between max-h-[95vh] h-[94vh] 
+      mt-[20px] rounded-[10px] mr-[30px] bg-[#5c003f]">
+        <div className="flex-1 overflow-y-auto ">
           {selectedRoom ? (
             messages.map((msg, idx) => (
               <div
                 key={msg.id || idx}
-                className={`flex ${
-                  msg.name === adminName ? "justify-end" : "justify-start"
+                className={`flex ${idx === 0 ? "mt-3" : ""} ${
+                  msg.name === adminName ? "justify-end pr-4" : "justify-start pl-4"
                 } mb-2`}
               >
                 <div
-                  className={`rounded-[10px] py-2 px-4 max-w-[70%] break-words ${
+                  className={`rounded-[10px] py-2 px-4 max-w-[70%] break-word ${
                     msg.name === adminName
-                      ? "bg-blue-100 text-right"
-                      : "bg-gray-100 text-left"
+                      ? "bg-gray-800 text-right text-white "
+                      : "bg-gray-100 text-left text-black"
                   } rounded-md`}
                 >
                   <h5 className="font-semibold text-[10px] text-left text-red-500">
@@ -239,17 +245,17 @@ function WidgetChatAdmin() {
           <div className="flex items-center mt-3">
             <input
               type="text"
-              className="border-2 p-2 rounded-md w-full"
+              className="bg-[#3a3b3c] p-2 pl-4 pr-4 rounded-[50px] w-full"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Nhập tin nhắn..."
               onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
             />
             <button
-              className="bg-cyan-300 text-black p-2 rounded-md ml-2"
+              className=" text-white p-2 rounded-md ml-2"
               onClick={handleSendMessage}
             >
-              Send
+              <Send size={25} className="mr-1" />
             </button>
           </div>
         )}
