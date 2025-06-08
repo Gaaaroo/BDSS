@@ -213,7 +213,7 @@ function WidgetChatAdmin() {
                 } mb-2`}
               >
                 <div
-                  className={`rounded-[10px] py-2 px-4 max-w-[70%] break-word ${
+                  className={`rounded-[10px] py-2 px-4 max-w-[70%] break-words ${
                     msg.name === adminName
                       ? "bg-gray-800 text-right text-white "
                       : "bg-gray-100 text-left text-black"
