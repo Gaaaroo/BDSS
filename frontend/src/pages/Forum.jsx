@@ -81,7 +81,7 @@ function Forum() {
         {open && (
           <>
             {/* Overlay mờ nền */}
-            <div className="fixed inset-0 bg-black bg-opacity-30 backdrop-blur-sm z-40"></div>
+            <div className="fixed inset-0 bg-black/10 backdrop-blur-xs z-40"></div>
             {/* Khung modal */}
             <div className="fixed inset-0 flex items-center justify-center z-50">
               <div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
