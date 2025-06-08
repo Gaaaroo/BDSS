@@ -15,5 +15,4 @@ public class CommentResponse {
     String content;
     String username;
     LocalDateTime created_at;
-    Long post_id;
 }

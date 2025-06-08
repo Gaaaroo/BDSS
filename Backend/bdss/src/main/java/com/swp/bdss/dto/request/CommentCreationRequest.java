@@ -11,5 +11,4 @@ import lombok.experimental.FieldDefaults;
 public class CommentCreationRequest {
     String content;
     Long post_id;
-    Long user_id;
 }
