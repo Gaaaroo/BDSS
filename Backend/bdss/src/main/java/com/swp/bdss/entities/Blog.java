@@ -19,7 +19,6 @@ public class Blog {
     int blog_id;
     String title;
     String content;
-    
     @ManyToOne
     @JoinColumn(name = "created_by", referencedColumnName = "user_id")
     User user;
