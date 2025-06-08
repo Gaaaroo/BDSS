@@ -200,7 +200,7 @@ function WidgetChatAdmin() {
         ))}
       </div>
 
-      {/* Content: Chat của room đang chọn  #1f1f1f */}
+      {/* Content: Chat của room đang chọn */}
       <div className="p-3 flex-1 flex flex-col justify-between max-h-[95vh] h-[94vh] 
       mt-[20px] rounded-[10px] mr-[30px] bg-[#5c003f]">
         <div className="flex-1 overflow-y-auto ">
