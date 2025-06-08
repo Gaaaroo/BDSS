@@ -20,6 +20,8 @@ public enum ErrorCode {
     OTP_CODE_INVALID(1010, "OTP code is invalid", HttpStatus.BAD_REQUEST),
     BLODD_DONATE_FORM_NOT_EXISTED(1011, "Blood donate form not existed", HttpStatus.BAD_REQUEST),
     BLOG_NOT_EXISTED(1012, "Blog not existed", HttpStatus.BAD_REQUEST),
+    FORUM_POST_NOT_EXISTED(1013, "Forum post not existed", HttpStatus.BAD_REQUEST),
+    FORUM_POST_CANNOT_DELETE(1014, "You cannot delete this post", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;

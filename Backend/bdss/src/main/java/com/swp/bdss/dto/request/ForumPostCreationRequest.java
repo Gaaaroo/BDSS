@@ -11,5 +11,4 @@ import lombok.experimental.FieldDefaults;
 public class ForumPostCreationRequest {
     String title;
     String content;
-    Long user_id;
 }
