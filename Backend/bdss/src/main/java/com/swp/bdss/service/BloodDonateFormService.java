@@ -112,9 +112,8 @@ public class BloodDonateFormService {
     //delete blood donate form (ADMIN, USER)
     public void deleteBloodDonateForm(String donate_id){
         int id = Integer.parseInt(donate_id);
-        if(!bloodDonateFormRepository.existsById(id)){
-            throw new IllegalArgumentException("Blood donate form with id " + donate_id + " does not exist.");
-        }
+        BloodDonateForm bloodDonateForm = bloodDonateFormRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.BLODD_DONATE_FORM_NOT_EXISTED));
         bloodDonateFormRepository.deleteById(id);
     }
 

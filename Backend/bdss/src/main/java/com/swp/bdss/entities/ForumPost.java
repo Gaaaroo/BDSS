@@ -21,13 +21,15 @@ public class ForumPost {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long post_id;
 
-    @Column(nullable = false)
+    @Column(nullable = true, length = 100)
     String title;
 
-    @Column(nullable = false)
+    @Column(nullable = true, length = 100)
     String content;
 
     LocalDateTime created_at;
+
+    LocalDateTime updated_at;
 
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
