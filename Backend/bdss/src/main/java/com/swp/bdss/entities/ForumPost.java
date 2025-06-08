@@ -29,6 +29,8 @@ public class ForumPost {
 
     LocalDateTime created_at;
 
+    LocalDateTime updated_at;
+
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
     User user;

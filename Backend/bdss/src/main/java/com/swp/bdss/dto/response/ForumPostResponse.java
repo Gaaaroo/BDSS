@@ -18,5 +18,6 @@ public class ForumPostResponse {
     String content;
     String username;
     LocalDateTime created_at;
+    LocalDateTime updated_at;
     List<CommentResponse> comments;
 }

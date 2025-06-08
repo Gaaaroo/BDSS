@@ -22,6 +22,7 @@ public enum ErrorCode {
     BLOG_NOT_EXISTED(1012, "Blog not existed", HttpStatus.BAD_REQUEST),
     FORUM_POST_NOT_EXISTED(1013, "Forum post not existed", HttpStatus.BAD_REQUEST),
     FORUM_POST_CANNOT_DELETE(1014, "You cannot delete this post", HttpStatus.BAD_REQUEST),
+    NO_FORUM_POST(1015, "No forum post found", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;

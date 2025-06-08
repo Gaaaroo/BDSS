@@ -12,6 +12,7 @@ public interface BloodDonateFormMapper {
 
     BloodDonateForm toBloodDonateForm(BloodDonateFormCreationRequest request);
 
+    //@Mapping(source = "user", target = "userResponse")
     @Mapping(target = "user", ignore = true)
     BloodDonateFormResponse toBloodDonateFormResponse(BloodDonateForm bloodDonateForm);
 }
