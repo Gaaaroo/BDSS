@@ -12,6 +12,7 @@ import Donor from "../pages/Donor";
 import Seeker from "../pages/Seeker";
 import MyActivity from "../pages/MyActivity";
 import Profile from "../pages/Profile";
+import OTP from "../pages/OTP";
 
 export default function AppRoutes() {
   return (
@@ -27,6 +28,7 @@ export default function AppRoutes() {
       <Route path="/posts" element={<Posts />} />
       <Route path="/chat" element={<WidgetChat />} />
       <Route path="/rep" element={<ReplyWidgetChat />} />
+      <Route path="/verify-otp" element={<OTP />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

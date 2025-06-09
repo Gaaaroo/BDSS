@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BackHome from "./BackHome";
+import { registerUser } from "../services/api/authService";
 
 export default function RegisterForm() {
   const navigate = useNavigate();
@@ -20,35 +21,27 @@ export default function RegisterForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.email || !form.password) {
-      setError("Please enter both email and password.");
+    if (!form.email || !form.password || !form.username || !form.phone) {
+      setError("Please fill in all fields.");
+      return;
+    }
+    if (form.password !== form.confirmPassword) {
+      setError("Passwords do not match.");
       return;
     }
 
-    // Authentication logic here
-    console.log(form);
-    const { confirmPassword, ...dataToSend } = form; // Exclude confirmPassword if present
+    const { confirmPassword, ...dataToSend } = form;
+    console.log("Data being sent:", dataToSend);
 
-    const result = await register(dataToSend);
-    if (result.error) {
-      setError(result.error);
-      return;
+    try {
+      const result = await registerUser(dataToSend);
+      navigate("/verify-otp");
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Registration failed. Please try again."
+      );
+      console.error("Error details:", err.response?.data);
     }
-
-    // try {
-    //   const response = await fetch("http://localhost:8080/bdss/users", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json", //json format
-    //     },
-    //     body: JSON.stringify(form),
-    //   });
-    //   const data = await response.json();
-    //   console.log("Login successful:", data);
-    // } catch (err) {
-    //   console.error("Error during login:", err);
-    //   setError("Login failed. Please try again.");
-    // }
   };
 
   return (
