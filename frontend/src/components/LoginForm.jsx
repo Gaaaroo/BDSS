@@ -68,7 +68,7 @@ const LoginForm = () => {
       }
 
       //const data = await res.text();
-      localStorage.setItem("accessToken", idToken);
+      localStorage.setItem("authToken", idToken);
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);
