@@ -11,6 +11,7 @@ function Forum() {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
 
+  ////
   // Lấy danh sách bài viết từ API khi load trang
   //   useEffect(() => {
   //     axios.get("/api/posts").then(res => setPosts(res.data));
