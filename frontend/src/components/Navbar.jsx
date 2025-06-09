@@ -3,7 +3,7 @@ import logo from "../assets/images/logo.jpg";
 import { CircleUser, HeartHandshake, House } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Link as ScrollLink } from "react-scroll";
-import { useState } from "react";
+//import { useState } from "react";
 
 // LogoNavbar
 function LogoNavbar() {

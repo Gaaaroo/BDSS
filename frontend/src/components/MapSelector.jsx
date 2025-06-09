@@ -96,17 +96,14 @@ function MapSelector({ onLocationSelect }) {
       googleMapsApiKey={apiKey} // 👉 Thay bằng API Key thực tế
       libraries={libraries}
     >
-      {/* Ô input hiển thị địa chỉ đã chọn (click để mở bản đồ) */}
-      <div className="w-full">
-        <input
-          type="text"
-          value={addressText}
-          onClick={() => setShowModal(true)}
-          readOnly
-          placeholder="Nhấp để chọn địa chỉ..."
-          className="w-full h-10 px-4 text-white placeholder-gray-300 bg-gray-800 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-        />
-      </div>
+      <input
+        type="text"
+        value={addressText}
+        onClick={() => setShowModal(true)}
+        readOnly
+        placeholder="Nhấp để chọn địa chỉ..."
+        className="w-full h-10 px-4 text-black placeholder-gray-500 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
+      />
 
       {/* Modal chứa bản đồ và tìm kiếm địa chỉ */}
       {showModal && (
