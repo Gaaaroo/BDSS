@@ -1,6 +1,6 @@
 import img from "../assets/images/cover-photo.jpg";
 import SearchForumPost from "./SearchForumPost";
-export default function ForumImage() {
+export default function ForumImage({ searchKey, setSearchKey, handleSearch }) {
   return (
     <>
       <div className="relative w-full h-40 overflow-hidden bg-white">
@@ -8,7 +8,7 @@ export default function ForumImage() {
         <img src={img} alt="banner" className="w-full h-40 object-cover " />
       </div>
 
-      <SearchForumPost />
+      <SearchForumPost searchKey={searchKey} setSearchKey={setSearchKey} handleSearch={handleSearch}/>
     </>
   );
 }
