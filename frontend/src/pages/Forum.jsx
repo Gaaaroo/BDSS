@@ -2,7 +2,11 @@ import { set } from "firebase/database";
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import ForumImage from "../components/ForumImage";
-import { createPost, getForumPosts } from "../services/api/forumService";
+import {
+  createPost,
+  getForumPosts,
+  searchForumPosts,
+} from "../services/api/forumService";
 
 function Forum() {
   const [posts, setPosts] = useState([]);
@@ -11,6 +15,11 @@ function Forum() {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
 
+  const [keyword, setKeyword] = useState("");
+  const [searchKey, setSearchKey] = useState("");
+
+  const a =
+    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTQ3MjAyNSwiaWF0IjoxNzQ5NDY4NDI1LCJ1c2VySWQiOjM1LCJqdGkiOiI2ZjlhYWQ3NS1jYjIzLTRiOTAtOWRlOC0yZjBmMjI0ZWY2MjgifQ.utUSVa9K1AA5dDbpTq8JcEhk5ra_mdJnnFtRnQ52V70xBTgFWwljffBiScYU7GJaSpKBsBgkneZAS6Mohg3PWA";
   ////
   // Lấy danh sách bài viết từ API khi load trang
   //   useEffect(() => {
@@ -18,14 +27,33 @@ function Forum() {
   //   }, []);
 
   // Gọi API lấy dữ liệu user khi component mount
+
+  const handleSearch = () => {
+    if (searchKey.trim() === "") {
+      alert("Vui lòng nhập từ khóa tìm kiếm.");
+      return;
+    }
+    setKeyword(searchKey)    
+  }
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const token =
-          "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTQ2MzI1NCwiaWF0IjoxNzQ5NDU5NjU0LCJ1c2VySWQiOjM1LCJqdGkiOiI0MGMzMmVlYy0yMDkzLTRkOTgtYmRlOC0zY2Q0NjI5MWQyYzQifQ.aogWF_8EqtCq2YQ7SGEESBdyopyR4w724u2F7FDR4vU2ong983tX9WK5RiKoNWYzyF2LE5V78nqs0MsGOzu0ng";
-
-        const data = await getForumPosts(token);
-        setPosts(data);
+        const token = a;
+        console.log("Search keyword:", keyword);
+        let data;
+        if (keyword.trim() === "") {
+          data = await getForumPosts(token);
+        } else {
+          data = await searchForumPosts(token, keyword);
+        }
+        // setPosts(data);
+        setPosts(
+          data.map((post) => ({
+            ...post,
+            comments: post.comments || [],
+          }))
+        );
         console.log("Posts fetched successfully", data);
       } catch (error) {
         console.error("Error fetching posts", error);
@@ -33,7 +61,7 @@ function Forum() {
     };
 
     fetchPosts();
-  }, []);
+  }, [keyword]);
 
   //Handle create post
   const handleCreatePost = async () => {
@@ -44,18 +72,25 @@ function Forum() {
     }
 
     try {
-      const token =
-        "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTQ2NTYxNiwiaWF0IjoxNzQ5NDYyMDE2LCJ1c2VySWQiOjM1LCJqdGkiOiI5ZWU4NzgwNS1iM2FjLTQ3ZjAtOTZkYi04YTMzZjIxNTFkMzcifQ.hovngef8Kvk-5_D7cu1k3USIwrvyLNoL5FfLqYFnY2uziq4SaEAy1Z3VoFfK1knAvv7SBjNUyvo5fXJ7XtaRxg";
+      const token = a;
       await createPost(token, newPost);
+      setNewPost({ title: "", content: "" });
+      setOpen(false);
+      let data;
+      if (keyword.trim() === "") {
+        data = await getForumPosts(token);
+      } else {
+        data = await searchForumPosts(token, keyword);
+      }
       setPosts(
         data.map((post) => ({
-          ...post, 
+          ...post,
           comments: post.comments || [],
         }))
       );
       setError("");
     } catch (error) {
-      setError("Login failed. Please try again.");
+      setError("Post failed. Please try again.");
     }
   };
 
@@ -87,7 +122,7 @@ function Forum() {
   return (
     <>
       <Navbar mode="login" />
-      <ForumImage />
+      <ForumImage searchKey={searchKey} setSearchKey={setSearchKey} handleSearch={handleSearch} />
       <div className="fixed bottom-5 right-5 flex flex-col z-50">
         {!open && (
           <div

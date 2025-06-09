@@ -23,3 +23,15 @@ export const getForumPosts = async (token) => {
   
   return response.data.data;
 };
+
+export const searchForumPosts = async (token, keyword) => {
+  const response = await axios.get(`${API_BASE_URL}/forum/search`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: { keyword },
+    withCredentials: true,
+  });
+
+  return response.data.data;
+}
