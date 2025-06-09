@@ -18,6 +18,9 @@ function Forum() {
   const [keyword, setKeyword] = useState("");
   const [searchKey, setSearchKey] = useState("");
 
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState({content: "", post_id: ""});
+
   const a =
     "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTQ3MjAyNSwiaWF0IjoxNzQ5NDY4NDI1LCJ1c2VySWQiOjM1LCJqdGkiOiI2ZjlhYWQ3NS1jYjIzLTRiOTAtOWRlOC0yZjBmMjI0ZWY2MjgifQ.utUSVa9K1AA5dDbpTq8JcEhk5ra_mdJnnFtRnQ52V70xBTgFWwljffBiScYU7GJaSpKBsBgkneZAS6Mohg3PWA";
   ////

@@ -35,3 +35,4 @@ export const searchForumPosts = async (token, keyword) => {
 
   return response.data.data;
 }
+
