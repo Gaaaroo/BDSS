@@ -14,6 +14,8 @@ import MyActivity from "../pages/MyActivity";
 import Profile from "../pages/Profile";
 import Forum from "../pages/Forum";
 
+import OTP from "../pages/OTP";
+
 export default function AppRoutes() {
   return (
     <Routes>
@@ -30,6 +32,7 @@ export default function AppRoutes() {
       <Route path="/rep" element={<ReplyWidgetChat />} />
       <Route path="/forum" element={<Forum />} />
       <Route path="*" element={<NotFound />} />
+      <Route path="/verify-otp" element={<OTP />} />
     </Routes>
   );
 }

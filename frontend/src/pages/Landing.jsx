@@ -11,7 +11,21 @@ import { Link, Element, Events, scrollSpy } from "react-scroll";
 import WidgetChat from "../components/WidgetChat";
 
 export default function Home() {
+  const [isLogin, setIsLogin] = React.useState(false);
+  const [mode, setMode] = React.useState("guest");
+
   useEffect(() => {
+    const savedToken = localStorage.getItem("authToken");
+    if (savedToken != "" && savedToken != null) {
+      setIsLogin(true);
+      setMode("member");
+    } else {
+      setIsLogin(false);
+      setMode("guest");
+    }
+
+    console.log(savedToken); // Logs the token
+
     Events.scrollEvent.register("begin", (to, element) => {
       console.log("begin", to, element);
     });
@@ -28,7 +42,7 @@ export default function Home() {
   return (
     <>
       <div className="fixed top-0 left-0 w-full z-50">
-        <Navbar mode="guest" />
+        <Navbar mode={mode} />
       </div>
       <div className="pt-16">
         <Element name="top">

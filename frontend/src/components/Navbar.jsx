@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import logo from "../assets/images/logo.jpg";
 import { CircleUser, HeartHandshake, House } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -53,6 +53,13 @@ function Menu() {
 
 // UserIcon
 function UserIcon() {
+  const [open, setOpen] = React.useState(false);
+  // const [showModal, setShowModal] = useState(false);
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    navigate("/");
+  };
   const navigate = useNavigate();
   const handleNavigation = (item) => {
     switch (item) {
@@ -64,14 +71,12 @@ function UserIcon() {
         break;
       case "Logout":
         // setShowModal(true);
-        navigate("/");
+        handleLogout();
         break;
       default:
         break;
     }
   };
-  const [open, setOpen] = React.useState(false);
-  // const [showModal, setShowModal] = useState(false);
 
   React.useEffect(() => {
     if (!open) return;

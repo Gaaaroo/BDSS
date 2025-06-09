@@ -1,48 +1,37 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import BackHome from "./BackHome";
 import { signInWithPopup } from "firebase/auth";
 import { auth, provider } from "../services/api/firebase";
+import { login } from "../services/api/authService";
 
 const LoginForm = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState({
-    email: "",
-    password: "",
     username: "",
-    phone: "",
-    confirmPassword: "",
+    password: "",
   });
+
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setError("");
   };
-
+  //Handle login form
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!form.email || !form.password) {
+    console.log(form);
+    if (!form.username || !form.password) {
       setError("Please enter both email and password.");
       return;
     }
 
-    // Authentication logic here
-    console.log(form);
-
     try {
-      const response = await fetch("http://localhost:8080/bdss/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json", //json format
-        },
-        body: JSON.stringify(form),
-      });
-      const data = await response.json();
-      console.log("Login successful:", data);
-    } catch (err) {
-      console.error("Error during login:", err);
+      await login(form);
+      setError("");
+      navigate("/");
+    } catch (error) {
       setError("Login failed. Please try again.");
     }
   };
