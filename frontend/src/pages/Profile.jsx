@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import MapSelector from "../components/MapSelector";
 import Navbar from "../components/Navbar";
-import axios from "axios";
+import { getUserProfile } from "../services/api/userService";
 
 export default function Profile() {
   const [userData, setUserData] = useState(null);
@@ -9,27 +9,19 @@ export default function Profile() {
 
   // Gọi API lấy dữ liệu user khi component mount
   useEffect(() => {
-    const fetchUserProfile = async () => {
+    const fetchUser = async () => {
       try {
         const token =
-          "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzYXN1a2UiLCJzY29wZSI6Ik1FTUJFUiIsImlzcyI6ImJkc3MuY29tIiwiZXhwIjoxNzQ5NDQxMjEwLCJpYXQiOjE3NDk0Mzc2MTAsInVzZXJJZCI6MywianRpIjoiNTU5ZGE5NDctMjRiZC00OGE5LWFjYzgtYjQ5OWZiNmY4N2FhIn0.VB2TTfbQa1gBbWtlqSI4uRaWtZF0_N28zteYpmq2GKuXBr4YE_VFE5P5XQUEJuOEK61GTEmfFAOpdw0uJllGyQ";
+          "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzYXN1a2UiLCJzY29wZSI6Ik1FTUJFUiIsImlzcyI6ImJkc3MuY29tIiwiZXhwIjoxNzQ5NDUxMTU3LCJpYXQiOjE3NDk0NDc1NTcsInVzZXJJZCI6MywianRpIjoiY2Y1MzVkOTktNGVhZS00ZWMxLTk1OGItNzkyNTk3ZTM5OGFiIn0.dCapqJDkhDMbUIPH-KZAM_jmFj64tGxGw1Fv1vQZKr1nkFRhgp-HfTOs1gRHHwQLSdzdjqmz-RriLf2GPg-C-w";
 
-        const response = await axios.get(
-          "http://localhost:8080/bdss/users/myProfile",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        setUserData(response.data.data); // lấy thông tin user từ "data" trong response
+        const data = await getUserProfile(token);
+        setUserData(data);
       } catch (error) {
         console.error("Error fetching user profile:", error);
       }
     };
 
-    fetchUserProfile();
+    fetchUser();
   }, []);
 
   const handleLocationSelect = (loc) => {
