@@ -29,9 +29,8 @@ export default function AppRoutes() {
       <Route path="/posts" element={<Posts />} />
       <Route path="/chat" element={<WidgetChat />} />
       <Route path="/rep" element={<ReplyWidgetChat />} />
-
-      <Route path="/verify-otp" element={<OTP />} />
       <Route path="*" element={<NotFound />} />
+      <Route path="/verify-otp" element={<OTP />} />
     </Routes>
   );
 }
