@@ -5,7 +5,7 @@ import Navbar from "../components/Navbar";
 export default function BloodCompatibility() {
   return (
     <div>
-      <Navbar mode="blood" />
+      <Navbar />
       <BannerImage />
     </div>
   );

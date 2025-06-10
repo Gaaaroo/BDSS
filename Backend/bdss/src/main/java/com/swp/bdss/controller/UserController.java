@@ -1,5 +1,6 @@
 package com.swp.bdss.controller;
 
+import com.google.protobuf.Api;
 import com.swp.bdss.dto.request.UserCreationRequest;
 import com.swp.bdss.dto.request.UserUpdateRequest;
 import com.swp.bdss.dto.response.ApiResponse;
@@ -77,6 +78,14 @@ public class UserController {
     }
 
 
+    @GetMapping("/nearby")
+    public ApiResponse<List<UserResponse>> getNearbyUser(@RequestParam double lat, @RequestParam double lng,
+                                                         @RequestParam(defaultValue = "5") double radius){
+        return ApiResponse.<List<UserResponse>>builder()
+                .code(1000)
+                .data(userService.findUserNearby(lat, lng, radius))
+                .build();
+    }
 
 
 
