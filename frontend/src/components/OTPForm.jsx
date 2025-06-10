@@ -1,9 +1,12 @@
 import React, { useRef, useState } from "react";
+import { resendOTP, verifyOTP } from "../services/api/authService";
+import { useNavigate } from "react-router";
 
 export default function OTPForm({ onSubmit }) {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
   const inputsRef = Array.from({ length: 6 }, () => useRef());
-
   const handleChange = (idx, e) => {
     const value = e.target.value.replace(/[^0-9]/g, "").slice(0, 1);
     const newOtp = [...otp];
@@ -59,6 +62,63 @@ export default function OTPForm({ onSubmit }) {
       </React.Fragment>
     ));
 
+  const handleVerify = async () => {
+    const email = localStorage.getItem("otpEmail");
+    const otpString = otp.join("");
+    console.log("lấy được email rồi nè: ", email);
+    console.log("Mã otp nè: ", otpString);
+    if (!email) {
+      setError("Email Not Found!!");
+      return;
+    }
+    try {
+      const res = await verifyOTP({ email, otp: otpString });
+      console.log(res);
+      if (res.data) {
+        console.log("Verify successful");
+        setError("");
+        navigate("/login");
+      } else {
+        setError("Wrong OTP Code!!");
+      }
+    } catch (err) {
+      console.log("lỗi nè", err);
+      if (err.code) {
+        setError(err.message);
+      } else {
+        setError("An error occurred. Please try again.");
+      }
+      console.error("Details error:", err.response?.data || err.message);
+    }
+  };
+
+  const handleResentOTP = async () => {
+    const email = localStorage.getItem("otpEmail");
+    const otpString = otp.join("");
+    if (!email) {
+      setError("Email Not Found!!");
+      return;
+    }
+    try {
+      const res = await resendOTP({ email, otp: otpString });
+      console.log(res);
+      if (res.data) {
+        console.log("Resend OTP successful");
+        setError("");
+        setOtp(["", "", "", "", "", ""]);
+      } else {
+        setError("Failed to resend OTP: ", res.message);
+      }
+    } catch (err) {
+      console.log("lỗi nè", err);
+      if (err.code) {
+        setError(err.message);
+      } else {
+        setError("An error occurred. Please try again.");
+      }
+      console.error("Details error:", err.response?.data || err.message);
+    }
+  };
   return (
     <div className="flex items-center justify-center min-h-screen">
       <form
@@ -84,10 +144,16 @@ export default function OTPForm({ onSubmit }) {
         >
           {renderInputs()}
         </div>
+        {error && (
+          <div className="mb-4 text-red-600 text-sm text-center bg-red-100 rounded py-2 px-4">
+            {error}
+          </div>
+        )}
         <button
           type="submit"
           className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white py-3 rounded-md font-semibold text-lg hover:from-red-400 hover:to-red-700 transition disabled:opacity-50"
           disabled={otp.some((v) => v === "")}
+          onClick={handleVerify}
         >
           Confirm OTP
         </button>
@@ -96,11 +162,7 @@ export default function OTPForm({ onSubmit }) {
           <button
             type="button"
             className="ml-2 text-red-500 font-semibold hover:underline"
-            onClick={() => {
-              if (typeof onSubmit === "function" && onSubmit.resend) {
-                onSubmit.resend();
-              }
-            }}
+            onClick={handleResentOTP}
           >
             Resend Code
           </button>

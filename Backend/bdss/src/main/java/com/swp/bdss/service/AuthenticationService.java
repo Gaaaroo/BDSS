@@ -1,7 +1,5 @@
 package com.swp.bdss.service;
 
-
-import com.google.api.client.auth.oauth2.RefreshTokenRequest;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -65,7 +63,7 @@ public class AuthenticationService {
                     .authenticated(true)
                     .build();
         } else {
-            var newUser = userService.createUserForLoginGoogle(request.getEmail(), request.getUsername());
+            var newUser = userService.createUserForLoginGoogle(request.getEmail(), request.getUsername(), request.getImage_link());
 
             var token = generateToken(userRepository.findByUsername(newUser.getUsername()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
 

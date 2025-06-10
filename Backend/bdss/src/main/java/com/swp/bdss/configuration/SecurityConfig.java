@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.config.Customizer;
@@ -48,7 +49,8 @@ public class SecurityConfig {
 
         httpSecurity.oauth2ResourceServer(oath2 -> oath2
                 .authenticationManagerResolver(authenticationManagerResolver())
-                .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
+                .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+        );
 
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
@@ -73,8 +75,10 @@ public class SecurityConfig {
     public AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver() {
         return request -> {
             String authHeader = request.getHeader("Authorization");
+            log.info("Authorization header: {}", authHeader);
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 String token = authHeader.substring(7);
+                log.info("Incoming token: {}", token);
                 try {
                     String[] parts = token.split("\\.");
                     if (parts.length == 3) {

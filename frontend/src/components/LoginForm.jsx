@@ -50,7 +50,7 @@ const LoginForm = () => {
       // LẤY FIREBASE ID TOKEN
       const idToken = await user.getIdToken();
       console.log("Firebase ID Token:", idToken);
-
+      console.log("hello");
       // Gửi token lên backend
       const res = await fetch(
         "http://localhost:8080/bdss/auth/loginWithTokenGoogle",
@@ -68,7 +68,7 @@ const LoginForm = () => {
       }
 
       //const data = await res.text();
-      localStorage.setItem("accessToken", idToken);
+      localStorage.setItem("authToken", idToken);
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);

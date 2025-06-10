@@ -36,14 +36,17 @@ public class AuthenticationController {
     public ApiResponse<AuthenticationResponse> loginWithGoogle(@RequestHeader("Authorization") String authorization) {
         try {
             String idToken = authorization.replace("Bearer ", "");
+            log.info("google token : " + idToken);
 
             FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
             String email = decodedToken.getEmail();
             String userName = decodedToken.getName();
+            String image = decodedToken.getPicture();
 
             User user = new User();
             user.setUsername(userName);
             user.setEmail(email);
+            user.setImage_link(image);
 
             return ApiResponse.<AuthenticationResponse>builder()
                     .code(1000)

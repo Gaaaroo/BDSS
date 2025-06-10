@@ -35,6 +35,8 @@ export default function RegisterForm() {
 
     try {
       const result = await registerUser(dataToSend);
+      console.log("Email being stored:", dataToSend.email);
+      localStorage.setItem("otpEmail", dataToSend.email);
       navigate("/verify-otp");
     } catch (err) {
       setError(
