@@ -76,10 +76,8 @@ public class SecurityConfig {
     public AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver() {
         return request -> {
             String authHeader = request.getHeader("Authorization");
-            log.info("Authorization header: {}", authHeader);
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 String token = authHeader.substring(7);
-                log.info("Incoming token: {}", token);
                 try {
                     String[] parts = token.split("\\.");
                     if (parts.length == 3) {

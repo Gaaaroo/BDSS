@@ -10,8 +10,10 @@ import { Link as ScrollLink } from "react-scroll";
 function LogoNavbar() {
   const navigate = useNavigate();
   return (
-    <div className="flex items-center justify-center space-x-2 text-2xl"
-    onClick={() => navigate("/")}>
+    <div
+      className="flex items-center justify-center space-x-2 text-2xl"
+      onClick={() => navigate("/")}
+    >
       <img src={logo} alt="Logo" className="h-16 w-auto" />
       <h1 className="text-red-700 font-bold">BDSS</h1>
     </div>
