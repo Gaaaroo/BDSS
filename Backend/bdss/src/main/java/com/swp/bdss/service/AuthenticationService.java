@@ -139,7 +139,7 @@ public class AuthenticationService {
 
     //resend OTP to user
     public UserResponse resendOtp(VerifyOtpRequest request){
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         if(!user.getStatus().equals("pending")){
             throw new AppException(ErrorCode.USER_IS_ACTIVE);
