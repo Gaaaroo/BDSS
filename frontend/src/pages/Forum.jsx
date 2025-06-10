@@ -7,22 +7,24 @@ import {
   getForumPosts,
   searchForumPosts,
 } from "../services/api/forumService";
+import { createComment } from "../services/api/commentService";
 
 function Forum() {
-  const [posts, setPosts] = useState([]);
-  const [newPost, setNewPost] = useState({ title: "", content: "" });
   const [showPostModal, setShowPostModal] = useState(false);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
 
+  //search
   const [keyword, setKeyword] = useState("");
   const [searchKey, setSearchKey] = useState("");
 
-  const [comments, setComments] = useState([]);
-  const [newComment, setNewComment] = useState({content: "", post_id: ""});
+  //post
+  const [posts, setPosts] = useState([]);
+  const [newPost, setNewPost] = useState({ title: "", content: "" });
+
 
   const a =
-    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTQ3MjAyNSwiaWF0IjoxNzQ5NDY4NDI1LCJ1c2VySWQiOjM1LCJqdGkiOiI2ZjlhYWQ3NS1jYjIzLTRiOTAtOWRlOC0yZjBmMjI0ZWY2MjgifQ.utUSVa9K1AA5dDbpTq8JcEhk5ra_mdJnnFtRnQ52V70xBTgFWwljffBiScYU7GJaSpKBsBgkneZAS6Mohg3PWA";
+    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTU3NDI3MiwiaWF0IjoxNzQ5NTcwNjcyLCJ1c2VySWQiOjM1LCJqdGkiOiI2NTc5OTk4MC1jYjkwLTQzMzMtYTg1MC01OWQwZTQ3MjU5N2EifQ.USNQ3BOMXLMKCoLnVDf54-ry5iO-jOSKzqpm8l9tAXG4AGGteE_bG7I6mcWmre1VSJ-n685ocr2YQZNUafblPA";
   ////
   // Lấy danh sách bài viết từ API khi load trang
   //   useEffect(() => {
@@ -31,14 +33,16 @@ function Forum() {
 
   // Gọi API lấy dữ liệu user khi component mount
 
+  // setKeyword to search
   const handleSearch = () => {
     if (searchKey.trim() === "") {
       alert("Vui lòng nhập từ khóa tìm kiếm.");
       return;
     }
-    setKeyword(searchKey)    
-  }
+    setKeyword(searchKey);
+  };
 
+  // view all posts and search posts by keyword
   useEffect(() => {
     const fetchPosts = async () => {
       try {
@@ -66,7 +70,7 @@ function Forum() {
     fetchPosts();
   }, [keyword]);
 
-  //Handle create post
+  // handle create post
   const handleCreatePost = async () => {
     //e.preventDefault();
     if (!newPost.title || !newPost.content) {
@@ -97,20 +101,35 @@ function Forum() {
     }
   };
 
-  // // Thêm comment cho bài viết
-  // const handleAddComment = async (postId, comment) => {
-  //   const res = await axios.post(`/api/posts/${postId}/comments`, {
-  //     author: "User",
-  //     content: comment,
-  //   });
-  //   setPosts(
-  //     posts.map((post) =>
-  //       post.id === postId
-  //         ? { ...post, comments: [...post.comments, res.data] }
-  //         : post
-  //     )
-  //   );
-  // };
+  // create comment for a post
+  const handleAddComment = async (postId, content) => {
+    if (!content) {
+      setError("Please enter content.");
+      return;
+    }
+
+    try {
+      const token = a;
+      await createComment(token, { content, post_id: postId });
+
+      let data;
+      if (keyword.trim() === "") {
+        data = await getForumPosts(token);
+      } else {
+        data = await searchForumPosts(token, keyword);
+      }
+
+      setPosts(
+        data.map((post) => ({
+          ...post,
+          comments: post.comments || [],
+        }))
+      );
+      setError("");
+    } catch (error) {
+      setError("Comment failed. Please try again.");
+    }
+  };
 
   // Open the chat widget
   const handleOpenPost = () => {
@@ -125,7 +144,11 @@ function Forum() {
   return (
     <>
       <Navbar mode="login" />
-      <ForumImage searchKey={searchKey} setSearchKey={setSearchKey} handleSearch={handleSearch} />
+      <ForumImage
+        searchKey={searchKey}
+        setSearchKey={setSearchKey}
+        handleSearch={handleSearch}
+      />
       <div className="fixed bottom-5 right-5 flex flex-col z-50">
         {!open && (
           <div
@@ -196,9 +219,9 @@ function Forum() {
       </div>
 
       {/* Danh sách bài viết */}
-      {posts.map((post) => (
+      {posts.map((post, index) => (
         <div
-          key={post.id}
+          key={post.id || index}
           className="mb-8 p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg border border-[#FFA1A1] max-w-2xl mx-auto"
         >
           <div className="flex items-center mb-3">
@@ -217,7 +240,7 @@ function Forum() {
           <div className="border-t border-[#FFA1A1] pt-3 mt-3">
             <CommentSection
               comments={post.comments}
-              // onAdd={(comment) => handleAddComment(post.id, comment)}
+              onAddComment={(comment) => handleAddComment(post.id, comment)}
             />
           </div>
         </div>
@@ -227,7 +250,7 @@ function Forum() {
 }
 
 // Component comment cho từng bài viết
-function CommentSection({ comments, onAdd }) {
+function CommentSection({ comments, onAddComment }) {
   const [comment, setComment] = useState("");
   return (
     <div className="mt-2">
@@ -242,7 +265,7 @@ function CommentSection({ comments, onAdd }) {
           className="ml-2 px-3 py-2 bg-cyan-600 text-white rounded"
           onClick={() => {
             if (comment.trim()) {
-              onAdd(comment);
+              onAddComment(comment);
               setComment("");
             }
           }}
@@ -251,8 +274,8 @@ function CommentSection({ comments, onAdd }) {
         </button>
       </div>
       <div>
-        {comments.map((c) => (
-          <div key={c.id} className="mb-1 text-sm text-gray-200">
+        {comments.map((c, index) => (
+          <div key={c.id || index} className="mb-1 text-sm text-gray-200">
             <span className="font-semibold text-cyan-300">{c.author}:</span>{" "}
             {c.content}
             <span className="ml-2 text-xs text-gray-500">{c.date}</span>
