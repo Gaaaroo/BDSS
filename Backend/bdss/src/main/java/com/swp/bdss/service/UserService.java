@@ -28,13 +28,14 @@ public class UserService {
     UserMapper userMapper;
     UserRepository userRepository;
 
-    public UserResponse createUserForLoginGoogle(String email, String username) {
+    public UserResponse createUserForLoginGoogle(String email, String username, String image_link) {
 
         User user = new User();
         user.setEmail(email);
         user.setUsername(username);
         user.setRole("MEMBER");
         user.setStatus("pending");
+        user.setImage_link(image_link);
 
         User savedUser = userRepository.save(user);
         return userMapper.toUserResponse(savedUser);
@@ -45,6 +46,8 @@ public class UserService {
 
         user.setRole("MEMBER");
         user.setStatus("pending");
+        user.setLat(null);
+        user.setLng(null);
 
         User savedUser = userRepository.save(user);
         return userMapper.toUserResponse(savedUser);

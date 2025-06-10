@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   GoogleMap,
   LoadScript,
@@ -23,7 +23,7 @@ const defaultCenter = {
 // Thư viện cần load thêm từ Google (autocomplete)
 const libraries = ["places"];
 
-function MapSelector({ onLocationSelect }) {
+function MapSelector({ onLocationSelect, initialLocation }) {
   // Trạng thái lưu vị trí marker
   const [marker, setMarker] = useState(null);
   const [mapCenter, setMapCenter] = useState(defaultCenter);
@@ -35,6 +35,18 @@ function MapSelector({ onLocationSelect }) {
   const mapRef = useRef(null);
   const autocompleteRef = useRef(null);
   const geocoderRef = useRef(null);
+
+  useEffect(() => {
+    if (initialLocation?.lat && initialLocation?.lng) {
+      const { lat, lng, address } = initialLocation;
+      const location = { lat, lng };
+
+      setMarker(location);
+      setMapCenter(location);
+      setSelectedLocation({ lat, lng, address });
+      setAddressText(address || "");
+    }
+  }, [initialLocation]);
 
   const handlePlaceChanged = () => {
     const place = autocompleteRef.current.getPlace();
