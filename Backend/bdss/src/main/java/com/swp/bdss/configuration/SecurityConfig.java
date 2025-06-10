@@ -42,7 +42,8 @@ public class SecurityConfig {
         httpSecurity
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request ->
-                request.requestMatchers(PUBLIC_URLS)
+                request.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(PUBLIC_URLS)
                         .permitAll()
                         .anyRequest()
                         .authenticated());
