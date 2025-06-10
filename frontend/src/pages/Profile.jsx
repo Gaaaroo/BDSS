@@ -1,132 +1,51 @@
 import React, { useState, useEffect } from "react";
-import MapSelector from "../components/MapSelector";
 import Navbar from "../components/Navbar";
+import ProfileView from "../components/ProfileView";
+import ProfileUpdate from "../components/ProfileUpdate";
 import { getUserProfile } from "../services/api/userService";
 
-export default function Profile() {
+export default function ProfilePage() {
   const [userData, setUserData] = useState(null);
-  const [location, setLocation] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
 
-  // Gọi API lấy dữ liệu user khi component mount
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const token =
-          "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJzYXN1a2UiLCJzY29wZSI6Ik1FTUJFUiIsImlzcyI6ImJkc3MuY29tIiwiZXhwIjoxNzQ5NDUxMTU3LCJpYXQiOjE3NDk0NDc1NTcsInVzZXJJZCI6MywianRpIjoiY2Y1MzVkOTktNGVhZS00ZWMxLTk1OGItNzkyNTk3ZTM5OGFiIn0.dCapqJDkhDMbUIPH-KZAM_jmFj64tGxGw1Fv1vQZKr1nkFRhgp-HfTOs1gRHHwQLSdzdjqmz-RriLf2GPg-C-w";
+  const token =
+    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJHYWFyb29vIiwic2NvcGUiOiJBRE1JTiIsImlzcyI6ImJkc3MuY29tIiwiZXhwIjoxNzQ5NTM4MTU3LCJpYXQiOjE3NDk1MzQ1NTcsInVzZXJJZCI6MSwianRpIjoiMTVkOGQwNGUtZDkxZC00MDZjLTk5ZjAtNTA2MWYwYWFjMWQ1In0.9Is6EcnIBj_evfDq7U5KypDmng9zq9g1d8kxFvRDvG2AUz35tDlKV2peu1T-akv_k8Pd_I2bPezVQWY2aHCSsw";
 
-        const data = await getUserProfile(token);
-        setUserData(data);
-      } catch (error) {
-        console.error("Error fetching user profile:", error);
-      }
-    };
-
-    fetchUser();
-  }, []);
-
-  const handleLocationSelect = (loc) => {
-    setLocation(loc);
+  const fetchUserData = async () => {
+    try {
+      const data = await getUserProfile(token);
+      setUserData(data);
+    } catch (err) {
+      console.error("Error fetching user profile:", err);
+    }
   };
 
-  if (!userData) {
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  if (!userData)
     return <div className="text-center mt-10">Đang tải thông tin...</div>;
-  }
 
   return (
     <div>
       <Navbar />
-      <div className="max-w-7xl mx-auto mt-10 p-8 bg-white rounded-2xl shadow-2xl font-sans">
-        <div className="grid grid-cols-[37%_60%] gap-10 items-start">
-          {/* Left column */}
-          <div className="flex flex-col items-center text-center w-full">
-            {/* Avatar + Name */}
-            <div className="flex flex-col items-center mb-6">
-              <img
-                src="https://randomuser.me/api/portraits/men/32.jpg"
-                alt="Profile"
-                className="w-44 h-44 rounded-full object-cover mb-4 border-4 border-blue-700"
-              />
-              <h2 className="text-4xl font-bold text-blue-700">
-                {userData.full_name}
-              </h2>
-            </div>
-
-            {/* Personal Info */}
-            <div className="w-full bg-gray-50 rounded-2xl border p-6 shadow-md text-lg text-left">
-              <h3 className="text-xl font-semibold text-gray-700 mb-6">
-                Thông tin cá nhân
-              </h3>
-
-              <div className="space-y-4">
-                <div className="flex">
-                  <div className="min-w-[140px] font-semibold text-gray-600">
-                    Gender:
-                  </div>
-                  <div>{userData.gender}</div>
-                </div>
-                <div className="flex">
-                  <div className="min-w-[140px] font-semibold text-gray-600">
-                    Date of Birth:
-                  </div>
-                  <div>{userData.dob}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Right column */}
-          <div className="w-full bg-gray-50 rounded-2xl border p-6 shadow-md text-lg h-full">
-            <h3 className="text-xl font-semibold text-gray-700 mb-6">
-              Liên hệ
-            </h3>
-
-            <div className="space-y-4">
-              <div className="flex">
-                <div className="min-w-[140px] font-semibold text-gray-600">
-                  Email:
-                </div>
-                <div>{userData.email}</div>
-              </div>
-
-              <div className="flex">
-                <div className="min-w-[140px] font-semibold text-gray-600">
-                  Phone:
-                </div>
-                <div>{userData.phone}</div>
-              </div>
-
-              <div className="flex">
-                <div className="min-w-[140px] font-semibold text-gray-600">
-                  Blood Type:
-                </div>
-                <div>{userData.blood_type}</div>
-              </div>
-
-              <div className="flex items-start">
-                <div className="min-w-[140px] font-semibold text-gray-600 mt-2">
-                  Address:
-                </div>
-                <div className="flex-1">
-                  <div className="mb-2">{userData.address}</div>
-                  <div className="w-full">
-                    <MapSelector onLocationSelect={handleLocationSelect} />
-                  </div>
-                  <input
-                    type="hidden"
-                    name="latitude"
-                    value={location?.lat || ""}
-                  />
-                  <input
-                    type="hidden"
-                    name="longitude"
-                    value={location?.lng || ""}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      {!isEditing ? (
+        <ProfileView
+          userData={userData}
+          onEditClick={() => setIsEditing(true)}
+        />
+      ) : (
+        <ProfileUpdate
+          initialData={userData}
+          token={token}
+          onCancel={() => setIsEditing(false)}
+          onSaveSuccess={() => {
+            setIsEditing(false);
+            fetchUserData();
+          }}
+        />
+      )}
     </div>
   );
 }

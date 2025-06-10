@@ -13,3 +13,20 @@ export const getUserProfile = async (token) => {
 
   return response.data.data;
 };
+
+// Cập nhật thông tin người dùng
+export const updateUserProfile = async (updatedData, token) => {
+  const response = await axios.put(
+    `${API_BASE_URL}/users/myProfile/update`,
+    updatedData,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    }
+  );
+
+  return response.data;
+};

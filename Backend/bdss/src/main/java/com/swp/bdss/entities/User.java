@@ -18,6 +18,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     int user_id;
+    String image_link;
     String username;
     String password;
     String full_name;
@@ -26,6 +27,8 @@ public class User {
     String email;
     String phone;
     String address;
+    Double lat;
+    Double lng;
     String blood_type;
     String role;
     @Column(nullable = false)
