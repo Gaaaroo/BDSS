@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import CommentSection from "../components/CommentSection";
 import dayjs from "dayjs";
-import { getMyPosts } from "../services/api/forumService";
+import { getMyPosts, deletePost } from "../services/api/forumService";
 import { Link } from "react-router-dom";
+import { BiTrash, BiEdit } from "react-icons/bi";
 
 function MyPosts() {
   const [posts, setPosts] = useState([]);
@@ -18,6 +19,7 @@ function MyPosts() {
   const token = a;
   const username = user;
 
+  // Get posts of current user
   useEffect(() => {
     const fetchMyPosts = async () => {
       setLoading(true);
@@ -37,6 +39,19 @@ function MyPosts() {
     };
     fetchMyPosts();
   }, [token, username]);
+
+  
+  // Handle delete post
+  const handleDeletePost = async (postId) => {
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      try {
+        await deletePost(token, postId);
+        setPosts(posts.filter((post) => post.id !== postId));
+      } catch (err) {
+        console.error("Failed to delete post:", err);
+      }
+    }
+  };
 
   return (
     <>
@@ -64,8 +79,23 @@ function MyPosts() {
             posts.map((post) => (
               <div
                 key={post.id}
-                className="mb-8 p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg border border-[#FFA1A1]"
+                className="mb-8 p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg border border-[#FFA1A1] relative"
               >
+                {/* Nút thùng rác Boxicon */}
+                <button
+                  className="absolute top-3 right-12 text-gray-400 hover:text-cyan-500 text-2xl"
+                  title="Cập nhật bài viết"
+                  onClick={() => handleEditPost(post.id)}
+                >
+                  <BiEdit />
+                </button>
+                <button
+                  className="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-2xl"
+                  title="Xóa bài viết"
+                  onClick={() => handleDeletePost(post.id)}
+                >
+                  <BiTrash />
+                </button>
                 <div className="flex items-center mb-3">
                   <div className="w-10 h-10 rounded-full bg-cyan-400 flex items-center justify-center text-white font-bold text-lg mr-3 shadow">
                     {post.username?.charAt(0) || "U"}
