@@ -1,7 +1,7 @@
-import { set } from "firebase/database";
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import ForumImage from "../components/ForumImage";
+import CommentSection from "../components/CommentSection";
 import {
   createPost,
   getForumPosts,
@@ -22,9 +22,8 @@ function Forum() {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ title: "", content: "" });
 
-
   const a =
-    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTU3NDI3MiwiaWF0IjoxNzQ5NTcwNjcyLCJ1c2VySWQiOjM1LCJqdGkiOiI2NTc5OTk4MC1jYjkwLTQzMzMtYTg1MC01OWQwZTQ3MjU5N2EifQ.USNQ3BOMXLMKCoLnVDf54-ry5iO-jOSKzqpm8l9tAXG4AGGteE_bG7I6mcWmre1VSJ-n685ocr2YQZNUafblPA";
+    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTU3ODU5OCwiaWF0IjoxNzQ5NTc0OTk4LCJ1c2VySWQiOjM1LCJqdGkiOiJkZTUwYzkzYy00ZTU4LTRjYTktODZiNi1kNjg5NzAyYTcyZmEifQ._S7Cft2r4AwURZYxkl9UmFNd-sft25giP9acJ8pWCwsKVLr0odUSDGZF5nPsALqkFZQ4VaWVvLUddsnatve-VA";
   ////
   // Lấy danh sách bài viết từ API khi load trang
   //   useEffect(() => {
@@ -35,10 +34,6 @@ function Forum() {
 
   // setKeyword to search
   const handleSearch = () => {
-    if (searchKey.trim() === "") {
-      alert("Vui lòng nhập từ khóa tìm kiếm.");
-      return;
-    }
     setKeyword(searchKey);
   };
 
@@ -58,6 +53,7 @@ function Forum() {
         setPosts(
           data.map((post) => ({
             ...post,
+            id: post.post_id,
             comments: post.comments || [],
           }))
         );
@@ -92,6 +88,7 @@ function Forum() {
       setPosts(
         data.map((post) => ({
           ...post,
+          id: post.post_id,
           comments: post.comments || [],
         }))
       );
@@ -107,21 +104,24 @@ function Forum() {
       setError("Please enter content.");
       return;
     }
+    console.log("Adding comment to post:", postId, content);
 
     try {
       const token = a;
       await createComment(token, { content, post_id: postId });
-
+      console.log(postId, content);
       let data;
       if (keyword.trim() === "") {
         data = await getForumPosts(token);
       } else {
         data = await searchForumPosts(token, keyword);
       }
+      console.log("Comments fetched successfully", data);
 
       setPosts(
         data.map((post) => ({
           ...post,
+          id: post.post_id,
           comments: post.comments || [],
         }))
       );
@@ -219,70 +219,52 @@ function Forum() {
       </div>
 
       {/* Danh sách bài viết */}
-      {posts.map((post, index) => (
-        <div
-          key={post.id || index}
-          className="mb-8 p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg border border-[#FFA1A1] max-w-2xl mx-auto"
-        >
-          <div className="flex items-center mb-3">
-            <div className="w-10 h-10 rounded-full bg-cyan-400 flex items-center justify-center text-white font-bold text-lg mr-3 shadow">
-              {post.author?.charAt(0) || "U"}
+      {posts.map(
+        (post, index) => (
+          console.log("Rendering post:", post),
+          (
+            <div
+              key={post.id || index}
+              className="mb-8 p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg border border-[#FFA1A1] max-w-2xl mx-auto"
+            >
+              <div className="flex items-center mb-3">
+                <div className="w-10 h-10 rounded-full bg-cyan-400 flex items-center justify-center text-white font-bold text-lg mr-3 shadow">
+                  {post.username?.charAt(0) || "U"}
+                </div>
+                <div>
+                  <span className="font-semibold text-cyan-300">
+                    {post.username}
+                  </span>
+                  <span className="ml-3 text-xs text-gray-400">
+                    {post.created_at
+                      ? new Date(post.created_at).toLocaleString("vi-VN", {
+                          year: "numeric",
+                          month: "2-digit",
+                          day: "2-digit",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })
+                      : "Unknown date"}
+                  </span>
+                </div>
+              </div>
+              <h3 className="text-xl font-bold text-[#FFA1A1] mb-2">
+                {post.title}
+              </h3>
+              <p className="text-white mb-4">{post.content}</p>
+              <div className="border-t border-[#FFA1A1] pt-3 mt-3">
+                <CommentSection
+                  comments={post.comments}
+                  handleAddComment={(comment) =>
+                    handleAddComment(post.id, comment)
+                  }
+                />
+              </div>
             </div>
-            <div>
-              <span className="font-semibold text-cyan-300">{post.author}</span>
-              <span className="ml-3 text-xs text-gray-400">{post.date}</span>
-            </div>
-          </div>
-          <h3 className="text-xl font-bold text-[#FFA1A1] mb-2">
-            {post.title}
-          </h3>
-          <p className="text-white mb-4">{post.content}</p>
-          <div className="border-t border-[#FFA1A1] pt-3 mt-3">
-            <CommentSection
-              comments={post.comments}
-              onAddComment={(comment) => handleAddComment(post.id, comment)}
-            />
-          </div>
-        </div>
-      ))}
+          )
+        )
+      )}
     </>
-  );
-}
-
-// Component comment cho từng bài viết
-function CommentSection({ comments, onAddComment }) {
-  const [comment, setComment] = useState("");
-  return (
-    <div className="mt-2">
-      <div className="flex mb-2">
-        <input
-          className="flex-1 p-2 rounded bg-gray-800 text-white"
-          placeholder="Viết bình luận..."
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-        <button
-          className="ml-2 px-3 py-2 bg-cyan-600 text-white rounded"
-          onClick={() => {
-            if (comment.trim()) {
-              onAddComment(comment);
-              setComment("");
-            }
-          }}
-        >
-          Gửi
-        </button>
-      </div>
-      <div>
-        {comments.map((c, index) => (
-          <div key={c.id || index} className="mb-1 text-sm text-gray-200">
-            <span className="font-semibold text-cyan-300">{c.author}:</span>{" "}
-            {c.content}
-            <span className="ml-2 text-xs text-gray-500">{c.date}</span>
-          </div>
-        ))}
-      </div>
-    </div>
   );
 }
 
