@@ -90,8 +90,8 @@ public class ForumPostController {
     }
 
     //update forum post
-    @PutMapping("/{post_id}")
-    ApiResponse<ForumPostResponse> updateForumPost(@PathVariable Long post_id, @RequestBody ForumPostCreationRequest request) {
+    @PutMapping("/my-posts/update")
+    ApiResponse<ForumPostResponse> updateForumPost(@RequestParam Long post_id, @RequestBody ForumPostCreationRequest request) {
         return ApiResponse.<ForumPostResponse>builder()
                 .code(1111)
                 .data(forumPostService.updateForumPost(post_id, request))

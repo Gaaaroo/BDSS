@@ -59,3 +59,15 @@ export const deletePost = async (token, postId) => {
 
   return response.data;
 }
+
+export const updatePost = async (token, postId, postData) => {
+  const response = await axios.put(`${API_BASE_URL}/forum/my-posts/update`, postData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+    },
+    params: { post_id: postId },
+    withCredentials: true,  
+  });
+  return response.data;
+}

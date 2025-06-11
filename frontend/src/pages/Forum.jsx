@@ -28,7 +28,7 @@ function Forum() {
 
   // const token = localStorage.getItem("authToken");
   const a =
-    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTY0MDMwNiwiaWF0IjoxNzQ5NjM2NzA2LCJ1c2VySWQiOjM1LCJqdGkiOiI2NTNkYTMwOS0xN2RmLTQ3MjEtODNlYi0zNTBiZDNhZWIxYTUifQ.wVjva2UqEUCNYCQIEdnUfTgVD8tkpQyl_yUJj1gjJagcXk1UWF_Z96nI53UUdpOpQ4PwGGPSr2pTx22rc2l5UQ";
+    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTY1MTczMywiaWF0IjoxNzQ5NjQ4MTMzLCJ1c2VySWQiOjM1LCJqdGkiOiJiODU5NWZjZS1iYzhiLTQ1MmQtYmVhOC1jMTRkYzJlNzhhODEifQ.fYqEoQVB2Ikvk3ussaZMe-WzIXcEZHsAxFHog1olwUAXQI50DoGCDdz1w1I7xRikj40LUfpxT5zw32Jm_UT-rg";
   ////
   // Lấy danh sách bài viết từ API khi load trang
   //   useEffect(() => {
@@ -81,12 +81,12 @@ function Forum() {
       return;
     }
 
-    if(newPost.title.length > 100) {
+    if (newPost.title.length > 100) {
       alert("Title must be less than 100 characters.");
       return;
     }
 
-    if(newPost.content.length > 100) {
+    if (newPost.content.length > 100) {
       alert("Content must be less than 100 characters.");
       return;
     }
@@ -267,8 +267,15 @@ function Forum() {
                 <span className="font-semibold text-cyan-300">
                   {post.username}
                 </span>
-                <span className="ml-3 text-xs text-gray-400">
-                  {dayjs(post.created_at).format("HH:mm - DD/MM/YYYY")}
+                <span className="ml-2 text-xs text-gray-500">
+                  {post.updated_at && post.updated_at !== post.created_at ? (
+                    <>
+                      Update at:{" "}
+                      {dayjs(post.updated_at).format("HH:mm - DD/MM/YYYY")}
+                    </>
+                  ) : (
+                    dayjs(post.created_at).format("HH:mm - DD/MM/YYYY")
+                  )}
                 </span>
               </div>
             </div>
