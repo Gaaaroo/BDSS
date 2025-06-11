@@ -12,6 +12,7 @@ import org.mapstruct.Mapping;
 public interface ForumPostMapper {
     ForumPost toForumPost(ForumPostCreationRequest request);
 
+    @Mapping(source = "post_id", target = "post_id")
     @Mapping(source = "user.username", target = "username")
     ForumPostResponse toForumPostResponse(ForumPost forumPost);
 }
