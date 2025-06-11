@@ -8,11 +8,12 @@ import com.swp.bdss.entities.ForumPost;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {CommentMapper.class})
 public interface ForumPostMapper {
     ForumPost toForumPost(ForumPostCreationRequest request);
 
     @Mapping(source = "post_id", target = "post_id")
     @Mapping(source = "user.username", target = "username")
+    @Mapping(source = "comments", target = "comments")
     ForumPostResponse toForumPostResponse(ForumPost forumPost);
 }

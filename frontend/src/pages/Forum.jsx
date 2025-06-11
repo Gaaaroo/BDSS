@@ -2,15 +2,16 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import ForumImage from "../components/ForumImage";
 import CommentSection from "../components/CommentSection";
+import dayjs from "dayjs";
 import {
   createPost,
   getForumPosts,
   searchForumPosts,
 } from "../services/api/forumService";
 import { createComment } from "../services/api/commentService";
+import { set } from "firebase/database";
 
 function Forum() {
-  const [showPostModal, setShowPostModal] = useState(false);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
 
@@ -22,8 +23,9 @@ function Forum() {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ title: "", content: "" });
 
+  // const token = localStorage.getItem("authToken");
   const a =
-    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTU3ODU5OCwiaWF0IjoxNzQ5NTc0OTk4LCJ1c2VySWQiOjM1LCJqdGkiOiJkZTUwYzkzYy00ZTU4LTRjYTktODZiNi1kNjg5NzAyYTcyZmEifQ._S7Cft2r4AwURZYxkl9UmFNd-sft25giP9acJ8pWCwsKVLr0odUSDGZF5nPsALqkFZQ4VaWVvLUddsnatve-VA";
+    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTYyNjE1MCwiaWF0IjoxNzQ5NjIyNTUwLCJ1c2VySWQiOjM1LCJqdGkiOiI5MTQzZTFkMy03ZDFhLTQ3ZDgtYjA2NS0xNzNlMGFkZjJlNmMifQ.rgv10B97KHJVZMARj2H7bUpLmBwPzzAR1x7iA5CJGlTaFOXAYKcPTi3KSGevCQ5adS3qlkDk8c0vY3nO8cr4Tw";
   ////
   // Lấy danh sách bài viết từ API khi load trang
   //   useEffect(() => {
@@ -58,8 +60,10 @@ function Forum() {
           }))
         );
         console.log("Posts fetched successfully", data);
+        setError("");
       } catch (error) {
-        console.error("Error fetching posts", error);
+        if (error.response.data.code === 1015) setError("Not found posts");
+        else setError("Error fetching posts. Please try again.");
       }
     };
 
@@ -70,7 +74,7 @@ function Forum() {
   const handleCreatePost = async () => {
     //e.preventDefault();
     if (!newPost.title || !newPost.content) {
-      setError("Please enter both title and content.");
+      alert("Please enter both title and content.");
       return;
     }
 
@@ -218,51 +222,45 @@ function Forum() {
         )}
       </div>
 
-      {/* Danh sách bài viết */}
-      {posts.map(
-        (post, index) => (
-          console.log("Rendering post:", post),
-          (
-            <div
-              key={post.id || index}
-              className="mb-8 p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg border border-[#FFA1A1] max-w-2xl mx-auto"
-            >
-              <div className="flex items-center mb-3">
-                <div className="w-10 h-10 rounded-full bg-cyan-400 flex items-center justify-center text-white font-bold text-lg mr-3 shadow">
-                  {post.username?.charAt(0) || "U"}
-                </div>
-                <div>
-                  <span className="font-semibold text-cyan-300">
-                    {post.username}
-                  </span>
-                  <span className="ml-3 text-xs text-gray-400">
-                    {post.created_at
-                      ? new Date(post.created_at).toLocaleString("vi-VN", {
-                          year: "numeric",
-                          month: "2-digit",
-                          day: "2-digit",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : "Unknown date"}
-                  </span>
-                </div>
+      {error ? (
+        <div className="flex justify-center min-h-[100vh]">
+          <div className="text-center text-red-500 font-semibold my-4 text-lg mt-8">
+            {error}
+          </div>
+        </div>
+      ) : (
+        posts.map((post, index) => (
+          <div
+            key={post.id || index}
+            className=" mt-5 mb-8 p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg border border-[#FFA1A1] max-w-2xl mx-auto"
+          >
+            <div className="flex items-center mb-3">
+              <div className="w-10 h-10 rounded-full bg-cyan-400 flex items-center justify-center text-white font-bold text-lg mr-3 shadow">
+                {post.username?.charAt(0) || "U"}
               </div>
-              <h3 className="text-xl font-bold text-[#FFA1A1] mb-2">
-                {post.title}
-              </h3>
-              <p className="text-white mb-4">{post.content}</p>
-              <div className="border-t border-[#FFA1A1] pt-3 mt-3">
-                <CommentSection
-                  comments={post.comments}
-                  handleAddComment={(comment) =>
-                    handleAddComment(post.id, comment)
-                  }
-                />
+              <div>
+                <span className="font-semibold text-cyan-300">
+                  {post.username}
+                </span>
+                <span className="ml-3 text-xs text-gray-400">
+                  {dayjs(post.created_at).format("HH:mm - DD/MM/YYYY")}
+                </span>
               </div>
             </div>
-          )
-        )
+            <h3 className="text-xl font-bold text-[#FFA1A1] mb-2">
+              {post.title}
+            </h3>
+            <p className="text-white mb-4">{post.content}</p>
+            <div className="border-t border-[#FFA1A1] pt-3 mt-3">
+              <CommentSection
+                comments={post.comments}
+                handleAddComment={(comment) =>
+                  handleAddComment(post.id, comment)
+                }
+              />
+            </div>
+          </div>
+        ))
       )}
     </>
   );
