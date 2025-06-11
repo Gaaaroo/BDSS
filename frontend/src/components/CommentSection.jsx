@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import dayjs from "dayjs";
+import { BiTrash, BiEdit } from "react-icons/bi";
 
-export default function CommentSection({ comments, handleAddComment }) {
+export default function CommentSection({ comments, handleAddComment, handleDeleteComment }) {
   const [comment, setComment] = useState("");
 
   const handleSendComment = () => {
@@ -25,12 +26,14 @@ export default function CommentSection({ comments, handleAddComment }) {
     return str.replace(new RegExp(`(.{1,${n}})`, "g"), "$1\n");
   }
 
+
+
   return (
     <div className="mt-4">
       <div className="flex mb-2">
         <input
           className="flex-1 p-2 rounded bg-gray-800 text-white"
-          placeholder="Viết bình luận..."
+          placeholder="Give your comment..."
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -39,19 +42,47 @@ export default function CommentSection({ comments, handleAddComment }) {
           className="ml-2 px-3 py-2 bg-cyan-600 text-white rounded"
           onClick={handleSendComment}
         >
-          Gửi
+          Comment
         </button>
       </div>
       <div>
-        {comments.map((c, index) => (
-          <div key={c.id || index} className="mb-1 text-sm text-gray-200">
-            <span className="font-semibold text-cyan-300 ">{c.username}:</span>{" "}
-            <span className="">{wrapText(c.content, 82)}</span>
-            <div className="ml-2 text-xs text-gray-500">
-              {dayjs(c.created_at).format("HH:mm - DD/MM/YYYY")}
-            </div>
-          </div>
-        ))}
+        {comments.map(
+          (c, index) => (
+            console.log(c),
+            (
+              <div
+                key={c.comment_id || index}
+                className="mb-1 text-sm text-gray-200 flex justify-between items-center"
+              >
+                <span>
+                  <span className="font-semibold text-cyan-300">
+                    {c.username}:
+                  </span>{" "}
+                  <span>{wrapText(c.content, 82)}</span>
+                </span>
+                <div className="flex items-center">
+                  <span className="text-xs text-gray-500">
+                    {dayjs(c.created_at).format("HH:mm - DD/MM/YYYY")}
+                  </span>
+                  <button
+                    className="ml-2 text-gray-400 hover:text-cyan-500"
+                    title="Chỉnh sửa bình luận"
+                    //onClick={() => handleEditComment && handleEditComment(c.id)}
+                  >
+                    <BiEdit />
+                  </button>
+                  <button
+                    className="ml-2 text-gray-400 hover:text-red-500"
+                    title="Xóa bình luận"
+                    onClick={() => handleDeleteComment(c.comment_id)}
+                  >
+                    <BiTrash />
+                  </button>
+                </div>
+              </div>
+            )
+          )
+        )}
       </div>
     </div>
   );

@@ -10,7 +10,7 @@ import {
 } from "../services/api/forumService";
 import { createComment } from "../services/api/commentService";
 import { useLocation } from "react-router-dom";
-import { set } from "firebase/database";
+import { deleteComment } from "../services/api/commentService";
 
 function Forum() {
   const [open, setOpen] = useState(false);
@@ -28,7 +28,7 @@ function Forum() {
 
   // const token = localStorage.getItem("authToken");
   const a =
-    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTY1MTczMywiaWF0IjoxNzQ5NjQ4MTMzLCJ1c2VySWQiOjM1LCJqdGkiOiJiODU5NWZjZS1iYzhiLTQ1MmQtYmVhOC1jMTRkYzJlNzhhODEifQ.fYqEoQVB2Ikvk3ussaZMe-WzIXcEZHsAxFHog1olwUAXQI50DoGCDdz1w1I7xRikj40LUfpxT5zw32Jm_UT-rg";
+    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTY1NTU3OSwiaWF0IjoxNzQ5NjUxOTc5LCJ1c2VySWQiOjM1LCJqdGkiOiIxNDI2NTg4ZC01YzM4LTQ3YzItYTY0YS1hZjdjN2U2MmViOTAifQ.qY3OQLKORsch6NmF2SH08f5aHhCBBfpY_ttOo7GCKTvQUbwvshc5yD6VEUxQgCLsz0TxVrUoGKR1KUc2VDfp6w";
   ////
   // Lấy danh sách bài viết từ API khi load trang
   //   useEffect(() => {
@@ -170,6 +170,37 @@ function Forum() {
     }
   }, [location.state]);
 
+  //Function to wrap text at a specified length
+  function wrapText(str, n) {
+    if (!str) return "";
+    return str.replace(new RegExp(`(.{1,${n}})`, "g"), "$1\n");
+  }
+
+  //Handle delete comment
+  const handleDeleteComment = async (postId, commentId) => {
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      console.log("Deleting comment with ID:", commentId);
+      try {
+        await deleteComment(commentId);
+        //Remove the comment from the comments array
+        setPosts((posts) =>
+          posts.map((post) =>
+            post.id === postId
+              ? {
+                  ...post,
+                  comments: post.comments.filter(
+                    (c) => c.comment_id !== commentId
+                  ),
+                }
+              : post
+          )
+        );
+      } catch (err) {
+        console.error("Failed to delete post:", err);
+      }
+    }
+  };
+
   return (
     <>
       <Navbar mode="forum" />
@@ -280,12 +311,15 @@ function Forum() {
               </div>
             </div>
             <h3 className="text-xl font-bold text-[#FFA1A1] mb-2">
-              {post.title}
+              {wrapText(post.title, 44)}
             </h3>
-            <p className="text-white mb-4">{post.content}</p>
+            <p className="text-white mb-4">{wrapText(post.content, 60)}</p>
             <div className="border-t border-[#FFA1A1] pt-3 mt-3">
               <CommentSection
                 comments={post.comments}
+                handleDeleteComment={(commentId) =>
+                  handleDeleteComment(post.id, commentId)
+                }
                 handleAddComment={(comment) =>
                   handleAddComment(post.id, comment)
                 }

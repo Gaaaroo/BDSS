@@ -30,8 +30,8 @@ public class CommentController {
                 .build();
     }
 
-    @DeleteMapping("/{comment_id}")
-     ApiResponse<CommentResponse> deleteOwnComment(@PathVariable Long comment_id) {
+    @DeleteMapping("/delete")
+     ApiResponse<CommentResponse> deleteOwnComment(@RequestParam Long comment_id) {
         commentService.deleteOwnComment(comment_id);
         return ApiResponse.<CommentResponse>builder()
                 .code(1112)
