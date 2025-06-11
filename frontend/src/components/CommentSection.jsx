@@ -19,8 +19,14 @@ export default function CommentSection({ comments, handleAddComment }) {
     }
   };
 
+  //Function to wrap text at a specified length
+  function wrapText(str, n) {
+    if (!str) return "";
+    return str.replace(new RegExp(`(.{1,${n}})`, "g"), "$1\n");
+  }
+
   return (
-    <div className="mt-">
+    <div className="mt-4">
       <div className="flex mb-2">
         <input
           className="flex-1 p-2 rounded bg-gray-800 text-white"
@@ -39,11 +45,11 @@ export default function CommentSection({ comments, handleAddComment }) {
       <div>
         {comments.map((c, index) => (
           <div key={c.id || index} className="mb-1 text-sm text-gray-200">
-            <span className="font-semibold text-cyan-300">{c.username}:</span>{" "}
-            {c.content}
-            <span className="ml-2 text-xs text-gray-500">
+            <span className="font-semibold text-cyan-300 ">{c.username}:</span>{" "}
+            <span className="">{wrapText(c.content, 82)}</span>
+            <div className="ml-2 text-xs text-gray-500">
               {dayjs(c.created_at).format("HH:mm - DD/MM/YYYY")}
-            </span>
+            </div>
           </div>
         ))}
       </div>

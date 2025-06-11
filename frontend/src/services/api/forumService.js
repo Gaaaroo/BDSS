@@ -36,3 +36,14 @@ export const searchForumPosts = async (token, keyword) => {
   return response.data.data;
 }
 
+export const getMyPosts = async (token, username) => {
+  const response = await axios.get(`${API_BASE_URL}/forum/my-posts`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: { username },
+    withCredentials: true,
+  });
+
+  return response.data.data;
+}

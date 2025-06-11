@@ -9,6 +9,7 @@ import {
   searchForumPosts,
 } from "../services/api/forumService";
 import { createComment } from "../services/api/commentService";
+import { useLocation } from "react-router-dom";
 import { set } from "firebase/database";
 
 function Forum() {
@@ -23,9 +24,11 @@ function Forum() {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ title: "", content: "" });
 
+  const location = useLocation();
+
   // const token = localStorage.getItem("authToken");
   const a =
-    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTYyNjE1MCwiaWF0IjoxNzQ5NjIyNTUwLCJ1c2VySWQiOjM1LCJqdGkiOiI5MTQzZTFkMy03ZDFhLTQ3ZDgtYjA2NS0xNzNlMGFkZjJlNmMifQ.rgv10B97KHJVZMARj2H7bUpLmBwPzzAR1x7iA5CJGlTaFOXAYKcPTi3KSGevCQ5adS3qlkDk8c0vY3nO8cr4Tw";
+    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTY0MDMwNiwiaWF0IjoxNzQ5NjM2NzA2LCJ1c2VySWQiOjM1LCJqdGkiOiI2NTNkYTMwOS0xN2RmLTQ3MjEtODNlYi0zNTBiZDNhZWIxYTUifQ.wVjva2UqEUCNYCQIEdnUfTgVD8tkpQyl_yUJj1gjJagcXk1UWF_Z96nI53UUdpOpQ4PwGGPSr2pTx22rc2l5UQ";
   ////
   // Lấy danh sách bài viết từ API khi load trang
   //   useEffect(() => {
@@ -78,6 +81,16 @@ function Forum() {
       return;
     }
 
+    if(newPost.title.length > 100) {
+      alert("Title must be less than 100 characters.");
+      return;
+    }
+
+    if(newPost.content.length > 100) {
+      alert("Content must be less than 100 characters.");
+      return;
+    }
+
     try {
       const token = a;
       await createPost(token, newPost);
@@ -105,7 +118,12 @@ function Forum() {
   // create comment for a post
   const handleAddComment = async (postId, content) => {
     if (!content) {
-      setError("Please enter content.");
+      alert("Please enter content.");
+      return;
+    }
+
+    if (content.length > 100) {
+      alert("Comment must be less than 100 characters.");
       return;
     }
     console.log("Adding comment to post:", postId, content);
@@ -145,9 +163,16 @@ function Forum() {
     setOpen(false);
   };
 
+  // Check if the post form should be opened based on location state
+  useEffect(() => {
+    if (location.state?.openCreatePost) {
+      setOpen(true);
+    }
+  }, [location.state]);
+
   return (
     <>
-      <Navbar mode="login" />
+      <Navbar mode="forum" />
       <ForumImage
         searchKey={searchKey}
         setSearchKey={setSearchKey}
