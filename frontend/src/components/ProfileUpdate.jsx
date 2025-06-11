@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import MapSelector from "./MapSelector";
 import { updateUserProfile } from "../services/api/userService";
+import { storage } from "../services/api/firebase";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default function ProfileUpdate({
   initialData,
-  token,
   onCancel,
   onSaveSuccess,
 }) {
   const [formData, setFormData] = useState({ ...initialData });
+  const [uploading, setUploading] = useState(false);
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -23,10 +25,26 @@ export default function ProfileUpdate({
     }));
   };
 
+  const handleImageUpload = async (file) => {
+    if (!file) return;
+    const uniqueId = Date.now().toString(36);
+    const imageRef = ref(storage, `profile-images/${uniqueId}-${file.name}`);
+    setUploading(true);
+    try {
+      await uploadBytes(imageRef, file);
+      const downloadUrl = await getDownloadURL(imageRef);
+      setFormData((prev) => ({ ...prev, image_link: downloadUrl }));
+    } catch (error) {
+      console.error("Upload image failed:", error);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updateUserProfile(formData, token);
+      await updateUserProfile(formData);
       onSaveSuccess();
     } catch (error) {
       console.error("Cập nhật thất bại:", error);
@@ -116,13 +134,23 @@ export default function ProfileUpdate({
             />
           </div>
           <div>
-            <label className="block font-medium mb-1">Image Link</label>
+            <label className="block font-medium mb-1">Image Upload</label>
             <input
-              name="image_link"
-              value={formData.image_link}
-              onChange={handleChange}
-              className="input"
+              type="file"
+              accept="image/*"
+              onChange={(e) => handleImageUpload(e.target.files[0])}
+              className="block w-full text-sm text-gray-700"
             />
+            {uploading && (
+              <div className="text-sm text-gray-500">Đang tải ảnh...</div>
+            )}
+            {formData.image_link && (
+              <img
+                src={formData.image_link}
+                alt="Preview"
+                className="mt-2 w-32 h-32 object-cover rounded-full border"
+              />
+            )}
           </div>
         </div>
 
@@ -150,9 +178,10 @@ export default function ProfileUpdate({
           </button>
           <button
             type="submit"
+            disabled={uploading}
             className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700"
           >
-            Lưu
+            {uploading ? "Đang tải..." : "Lưu"}
           </button>
         </div>
       </form>
