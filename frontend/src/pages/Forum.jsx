@@ -2,15 +2,17 @@ import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import ForumImage from "../components/ForumImage";
 import CommentSection from "../components/CommentSection";
+import dayjs from "dayjs";
 import {
   createPost,
   getForumPosts,
   searchForumPosts,
 } from "../services/api/forumService";
 import { createComment } from "../services/api/commentService";
+import { useLocation } from "react-router-dom";
+import { deleteComment } from "../services/api/commentService";
 
 function Forum() {
-  const [showPostModal, setShowPostModal] = useState(false);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
 
@@ -22,8 +24,11 @@ function Forum() {
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ title: "", content: "" });
 
+  const location = useLocation();
+
+  // const token = localStorage.getItem("authToken");
   const a =
-    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTU3ODU5OCwiaWF0IjoxNzQ5NTc0OTk4LCJ1c2VySWQiOjM1LCJqdGkiOiJkZTUwYzkzYy00ZTU4LTRjYTktODZiNi1kNjg5NzAyYTcyZmEifQ._S7Cft2r4AwURZYxkl9UmFNd-sft25giP9acJ8pWCwsKVLr0odUSDGZF5nPsALqkFZQ4VaWVvLUddsnatve-VA";
+    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTY1NTU3OSwiaWF0IjoxNzQ5NjUxOTc5LCJ1c2VySWQiOjM1LCJqdGkiOiIxNDI2NTg4ZC01YzM4LTQ3YzItYTY0YS1hZjdjN2U2MmViOTAifQ.qY3OQLKORsch6NmF2SH08f5aHhCBBfpY_ttOo7GCKTvQUbwvshc5yD6VEUxQgCLsz0TxVrUoGKR1KUc2VDfp6w";
   ////
   // Lấy danh sách bài viết từ API khi load trang
   //   useEffect(() => {
@@ -58,8 +63,10 @@ function Forum() {
           }))
         );
         console.log("Posts fetched successfully", data);
+        setError("");
       } catch (error) {
-        console.error("Error fetching posts", error);
+        if (error.response.data.code === 1015) setError("Not found posts");
+        else setError("Error fetching posts. Please try again.");
       }
     };
 
@@ -70,7 +77,17 @@ function Forum() {
   const handleCreatePost = async () => {
     //e.preventDefault();
     if (!newPost.title || !newPost.content) {
-      setError("Please enter both title and content.");
+      alert("Please enter both title and content.");
+      return;
+    }
+
+    if (newPost.title.length > 100) {
+      alert("Title must be less than 100 characters.");
+      return;
+    }
+
+    if (newPost.content.length > 100) {
+      alert("Content must be less than 100 characters.");
       return;
     }
 
@@ -101,7 +118,12 @@ function Forum() {
   // create comment for a post
   const handleAddComment = async (postId, content) => {
     if (!content) {
-      setError("Please enter content.");
+      alert("Please enter content.");
+      return;
+    }
+
+    if (content.length > 100) {
+      alert("Comment must be less than 100 characters.");
       return;
     }
     console.log("Adding comment to post:", postId, content);
@@ -141,9 +163,47 @@ function Forum() {
     setOpen(false);
   };
 
+  // Check if the post form should be opened based on location state
+  useEffect(() => {
+    if (location.state?.openCreatePost) {
+      setOpen(true);
+    }
+  }, [location.state]);
+
+  //Function to wrap text at a specified length
+  function wrapText(str, n) {
+    if (!str) return "";
+    return str.replace(new RegExp(`(.{1,${n}})`, "g"), "$1\n");
+  }
+
+  //Handle delete comment
+  const handleDeleteComment = async (postId, commentId) => {
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      console.log("Deleting comment with ID:", commentId);
+      try {
+        await deleteComment(commentId);
+        //Remove the comment from the comments array
+        setPosts((posts) =>
+          posts.map((post) =>
+            post.id === postId
+              ? {
+                  ...post,
+                  comments: post.comments.filter(
+                    (c) => c.comment_id !== commentId
+                  ),
+                }
+              : post
+          )
+        );
+      } catch (err) {
+        console.error("Failed to delete post:", err);
+      }
+    }
+  };
+
   return (
     <>
-      <Navbar mode="login" />
+      <Navbar mode="forum" />
       <ForumImage
         searchKey={searchKey}
         setSearchKey={setSearchKey}
@@ -218,51 +278,55 @@ function Forum() {
         )}
       </div>
 
-      {/* Danh sách bài viết */}
-      {posts.map(
-        (post, index) => (
-          console.log("Rendering post:", post),
-          (
-            <div
-              key={post.id || index}
-              className="mb-8 p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg border border-[#FFA1A1] max-w-2xl mx-auto"
-            >
-              <div className="flex items-center mb-3">
-                <div className="w-10 h-10 rounded-full bg-cyan-400 flex items-center justify-center text-white font-bold text-lg mr-3 shadow">
-                  {post.username?.charAt(0) || "U"}
-                </div>
-                <div>
-                  <span className="font-semibold text-cyan-300">
-                    {post.username}
-                  </span>
-                  <span className="ml-3 text-xs text-gray-400">
-                    {post.created_at
-                      ? new Date(post.created_at).toLocaleString("vi-VN", {
-                          year: "numeric",
-                          month: "2-digit",
-                          day: "2-digit",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })
-                      : "Unknown date"}
-                  </span>
-                </div>
+      {error ? (
+        <div className="flex justify-center min-h-[100vh]">
+          <div className="text-center text-red-500 font-semibold my-4 text-lg mt-8">
+            {error}
+          </div>
+        </div>
+      ) : (
+        posts.map((post, index) => (
+          <div
+            key={post.id || index}
+            className=" mt-5 mb-8 p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg border border-[#FFA1A1] max-w-2xl mx-auto"
+          >
+            <div className="flex items-center mb-3">
+              <div className="w-10 h-10 rounded-full bg-cyan-400 flex items-center justify-center text-white font-bold text-lg mr-3 shadow">
+                {post.username?.charAt(0) || "U"}
               </div>
-              <h3 className="text-xl font-bold text-[#FFA1A1] mb-2">
-                {post.title}
-              </h3>
-              <p className="text-white mb-4">{post.content}</p>
-              <div className="border-t border-[#FFA1A1] pt-3 mt-3">
-                <CommentSection
-                  comments={post.comments}
-                  handleAddComment={(comment) =>
-                    handleAddComment(post.id, comment)
-                  }
-                />
+              <div>
+                <span className="font-semibold text-cyan-300">
+                  {post.username}
+                </span>
+                <span className="ml-2 text-xs text-gray-500">
+                  {post.updated_at && post.updated_at !== post.created_at ? (
+                    <>
+                      Update at:{" "}
+                      {dayjs(post.updated_at).format("HH:mm - DD/MM/YYYY")}
+                    </>
+                  ) : (
+                    dayjs(post.created_at).format("HH:mm - DD/MM/YYYY")
+                  )}
+                </span>
               </div>
             </div>
-          )
-        )
+            <h3 className="text-xl font-bold text-[#FFA1A1] mb-2">
+              {wrapText(post.title, 44)}
+            </h3>
+            <p className="text-white mb-4">{wrapText(post.content, 60)}</p>
+            <div className="border-t border-[#FFA1A1] pt-3 mt-3">
+              <CommentSection
+                comments={post.comments}
+                handleDeleteComment={(commentId) =>
+                  handleDeleteComment(post.id, commentId)
+                }
+                handleAddComment={(comment) =>
+                  handleAddComment(post.id, comment)
+                }
+              />
+            </div>
+          </div>
+        ))
       )}
     </>
   );

@@ -21,7 +21,7 @@ export const getForumPosts = async (token) => {
     withCredentials: true,
   });
   
-  return response.data.data;
+  return response.data.data.reverse();
 };
 
 export const searchForumPosts = async (token, keyword) => {
@@ -33,6 +33,41 @@ export const searchForumPosts = async (token, keyword) => {
     withCredentials: true,
   });
 
-  return response.data.data;
+  return response.data.data.reverse();
 }
 
+export const getMyPosts = async (token, username) => {
+  const response = await axios.get(`${API_BASE_URL}/forum/my-posts`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: { username },
+    withCredentials: true,
+  });
+
+  return response.data.data.reverse();
+}
+
+export const deletePost = async (token, postId) => {
+  const response = await axios.delete(`${API_BASE_URL}/forum/my-posts`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    params: { post_id: postId },
+    withCredentials: true,
+  });
+
+  return response.data;
+}
+
+export const updatePost = async (token, postId, postData) => {
+  const response = await axios.put(`${API_BASE_URL}/forum/my-posts/update`, postData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+    },
+    params: { post_id: postId },
+    withCredentials: true,  
+  });
+  return response.data;
+}
