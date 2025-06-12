@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,8 +31,8 @@ public class ForumPostController {
                 .build();
     }
 
-    @DeleteMapping("/{post_id}")
-    ApiResponse<Void> deleteOwnPost(@PathVariable Long post_id) {
+    @DeleteMapping("/my-posts")
+    ApiResponse<Void> deleteOwnPost(@RequestParam Long post_id) {
         forumPostService.deleteOwnPost(post_id);
         return ApiResponse.<Void>builder()
                 .code(1111)
@@ -89,8 +90,8 @@ public class ForumPostController {
     }
 
     //update forum post
-    @PutMapping("/{post_id}")
-    ApiResponse<ForumPostResponse> updateForumPost(@PathVariable Long post_id, @RequestBody ForumPostCreationRequest request) {
+    @PutMapping("/my-posts/update")
+    ApiResponse<ForumPostResponse> updateForumPost(@RequestParam Long post_id, @RequestBody ForumPostCreationRequest request) {
         return ApiResponse.<ForumPostResponse>builder()
                 .code(1111)
                 .data(forumPostService.updateForumPost(post_id, request))
