@@ -29,6 +29,7 @@ const LoginForm = () => {
 
     try {
       await login(form);
+      localStorage.setItem("username", form.username);
       setError("");
       navigate("/");
     } catch (error) {

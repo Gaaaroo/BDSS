@@ -57,13 +57,15 @@ public class CommentService {
         comment.setForumPost(post);
         comment.setCreated_at(LocalDateTime.now());
 
+        log.info("User in comment: {}", comment.getUser());
+        log.info("User in comment: {}", comment.getUser().getUsername());
         log.info("comment created: {}", commentMapper.toCommentResponse(comment));
         //save comment
-        commentRepository.save(comment);
+        Comment savedComment = commentRepository.save(comment);
 
         log.info("comment created: {}", commentMapper.toCommentResponse(comment));
 
-        return commentMapper.toCommentResponse(comment);
+        return commentMapper.toCommentResponse(savedComment);
 
     }
 

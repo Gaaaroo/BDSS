@@ -1,7 +1,12 @@
 import React from "react";
-import MapSelector from "./MapSelector";
+import MapView from "./MapView";
 
 export default function ProfileView({ userData, onEditClick }) {
+  const formatField = (value) =>
+    value === null || value === undefined || value === ""
+      ? "please update your profile"
+      : value;
+
   return (
     <div className="max-w-7xl mx-auto mt-10 p-8 bg-white rounded-2xl shadow-2xl font-sans">
       <div className="grid grid-cols-[37%_60%] gap-10 items-start">
@@ -9,12 +14,17 @@ export default function ProfileView({ userData, onEditClick }) {
         <div className="flex flex-col items-center text-center w-full">
           <div className="flex flex-col items-center mb-6">
             <img
-              src={userData.image_link}
+              src={formatField(userData.image_link)}
               alt="Profile"
               className="w-44 h-44 rounded-full object-cover mb-4 border-4 border-red-700"
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src =
+                  "https://firebasestorage.googleapis.com/v0/b/blooddonationsystem-9f456.firebasestorage.app/o/profile-images%2Fmbqqs93k-avatar.webp?alt=media&token=6b9ef0c4-72dc-45e2-9eed-73c64e236d3d";
+              }}
             />
             <h2 className="text-4xl font-bold text-red-700">
-              {userData.username}
+              {formatField(userData.username)}
             </h2>
           </div>
 
@@ -27,19 +37,19 @@ export default function ProfileView({ userData, onEditClick }) {
                 <div className="min-w-[140px] font-semibold text-gray-600">
                   Full name:
                 </div>
-                <div>{userData.full_name}</div>
+                <div>{formatField(userData.full_name)}</div>
               </div>
               <div className="flex">
                 <div className="min-w-[140px] font-semibold text-gray-600">
                   Gender:
                 </div>
-                <div>{userData.gender}</div>
+                <div>{formatField(userData.gender)}</div>
               </div>
               <div className="flex">
                 <div className="min-w-[140px] font-semibold text-gray-600">
                   Date of Birth:
                 </div>
-                <div>{userData.dob}</div>
+                <div>{formatField(userData.dob)}</div>
               </div>
             </div>
           </div>
@@ -53,33 +63,38 @@ export default function ProfileView({ userData, onEditClick }) {
               <div className="min-w-[140px] font-semibold text-gray-600">
                 Email:
               </div>
-              <div>{userData.email}</div>
+              <div>{formatField(userData.email)}</div>
             </div>
             <div className="flex">
               <div className="min-w-[140px] font-semibold text-gray-600">
                 Phone:
               </div>
-              <div>{userData.phone}</div>
+              <div>{formatField(userData.phone)}</div>
             </div>
             <div className="flex">
               <div className="min-w-[140px] font-semibold text-gray-600">
                 Blood Type:
               </div>
-              <div>{userData.blood_type}</div>
+              <div>{formatField(userData.blood_type)}</div>
             </div>
             <div className="flex items-start">
               <div className="min-w-[140px] font-semibold text-gray-600 mt-2">
                 Address:
               </div>
               <div className="flex-1">
-                <MapSelector
-                  readOnly
-                  initialLocation={{
-                    lat: userData.lat,
-                    lng: userData.lng,
-                    address: userData.address,
-                  }}
-                />
+                {userData.lat && userData.lng && userData.address ? (
+                  <MapView
+                    initialLocation={{
+                      lat: userData.lat,
+                      lng: userData.lng,
+                      address: userData.address,
+                    }}
+                  />
+                ) : (
+                  <div className="italic text-gray-500">
+                    please update your profile
+                  </div>
+                )}
               </div>
             </div>
           </div>

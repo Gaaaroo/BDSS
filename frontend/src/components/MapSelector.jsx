@@ -5,6 +5,7 @@ import {
   Marker,
   Autocomplete,
 } from "@react-google-maps/api";
+import { getNearbyUsers } from "../services/api/userService";
 
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
@@ -30,6 +31,7 @@ function MapSelector({ onLocationSelect, initialLocation }) {
   const [showModal, setShowModal] = useState(false);
   const [addressText, setAddressText] = useState("");
   const [selectedLocation, setSelectedLocation] = useState(null);
+  const [nearbyUsers, setNearbyUsers] = useState([]);
 
   // Ref cho map, autocomplete và geocoder
   const mapRef = useRef(null);
@@ -68,6 +70,10 @@ function MapSelector({ onLocationSelect, initialLocation }) {
 
     // Truyền dữ liệu lên cha
     onLocationSelect({ lat, lng, address: place.formatted_address });
+    // Gọi API lấy danh sách người dùng gần đó
+    getNearbyUsers(lat, lng, 5)
+      .then((users) => setNearbyUsers(users))
+      .catch((err) => console.error("Lỗi khi lấy user gần đó:", err));
   };
 
   // Xử lý khi người dùng click trực tiếp lên bản đồ
@@ -90,6 +96,10 @@ function MapSelector({ onLocationSelect, initialLocation }) {
           // Cập nhật input search nếu tìm được địa chỉ
           const input = document.querySelector("#search-input");
           if (input) input.value = address;
+          // Gọi API lấy danh sách người dùng gần đó
+          getNearbyUsers(lat, lng, 5)
+            .then((users) => setNearbyUsers(users))
+            .catch((err) => console.error("Lỗi khi lấy user gần đó:", err));
         }
       });
     }
@@ -150,7 +160,26 @@ function MapSelector({ onLocationSelect, initialLocation }) {
                   geocoderRef.current = new window.google.maps.Geocoder();
                 }}
               >
-                {marker && <Marker position={marker} />}
+                {/* Marker của (người đang chọn vị trí) */}
+                {marker && (
+                  <Marker
+                    position={marker}
+                    icon={{
+                      url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png", // đỏ
+                    }}
+                  />
+                )}
+
+                {/* Marker của người xung quanh (màu xanh) */}
+                {nearbyUsers.map((user) => (
+                  <Marker
+                    key={user.id}
+                    position={{ lat: user.lat, lng: user.lng }}
+                    icon={{
+                      url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png", // xanh
+                    }}
+                  />
+                ))}
               </GoogleMap>
             </div>
 

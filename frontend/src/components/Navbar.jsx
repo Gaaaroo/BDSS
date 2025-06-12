@@ -10,8 +10,10 @@ import { Link as ScrollLink } from "react-scroll";
 function LogoNavbar() {
   const navigate = useNavigate();
   return (
-    <div className="flex items-center justify-center space-x-2 text-2xl"
-    onClick={() => navigate("/")}>
+    <div
+      className="flex items-center justify-center space-x-2 text-2xl"
+      onClick={() => navigate("/")}
+    >
       <img src={logo} alt="Logo" className="h-16 w-auto" />
       <h1 className="text-red-700 font-bold">BDSS</h1>
     </div>
@@ -169,6 +171,10 @@ export default function Navbar({ mode }) {
 
   const handleLoginClick = () => navigate("/login");
 
+  const handleMyPostsClick = () => navigate("/forum/my-posts");
+
+  const handleForumClick = () => navigate("/forum");
+
   const renderContent = () => {
     switch (mode) {
       case "member":
@@ -205,15 +211,27 @@ export default function Navbar({ mode }) {
             />
           </>
         );
-      case "login":
+      case "forum":
         return (
           <>
             <LogoNavbar />
             <button
               className="ml-4 px-5 py-1.5 text-white bg-red-700 font-bold rounded-lg border-2 border-red-700 hover:bg-red-500 hover:text-white transition"
-              onClick={handleLoginClick}
+              onClick={handleMyPostsClick}
             >
-              Login
+              My Posts
+            </button>
+          </>
+        );
+      case "my-posts":
+        return (
+          <>
+            <LogoNavbar />
+            <button
+              className="ml-4 px-5 py-1.5 text-white bg-red-700 font-bold rounded-lg border-2 border-red-700 hover:bg-red-500 hover:text-white transition"
+              onClick={handleForumClick}
+            >
+              Forum
             </button>
           </>
         );

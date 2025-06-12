@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ForumPostResponse {
+    String post_id;
     String title;
     String content;
     String username;
