@@ -114,10 +114,7 @@ function MapSelector({ onLocationSelect, initialLocation }) {
   };
 
   return (
-    <LoadScript
-      googleMapsApiKey={apiKey} // 👉 Thay bằng API Key thực tế
-      libraries={libraries}
-    >
+    <LoadScript googleMapsApiKey={apiKey} libraries={libraries}>
       <input
         type="text"
         value={addressText}
@@ -129,7 +126,7 @@ function MapSelector({ onLocationSelect, initialLocation }) {
 
       {/* Modal chứa bản đồ và tìm kiếm địa chỉ */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs">
           <div className="bg-white rounded-lg shadow-xl w-[90vw] max-w-4xl relative">
             {/* Ô tìm kiếm địa chỉ (autocomplete) */}
             <div className="p-4 border-b border-gray-300">

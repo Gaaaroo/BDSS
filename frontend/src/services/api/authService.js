@@ -57,7 +57,7 @@ export const verifyOTP = async (otpData) => {
 
 export const resendOTP = async (resendOtpData) => {
   try {
-    const res = await axios.post(`${API_URL}/resend-otp`, resentOTPData, {
+    const res = await axios.post(`${API_URL}/resend-otp`, resendOtpData, {
       headers: {
         "Content-Type": "application/json",
       },
