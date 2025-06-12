@@ -58,19 +58,13 @@ export default function CommentSection({ comments, handleAddComment, handleDelet
                   <span className="font-semibold text-cyan-300">
                     {c.username}:
                   </span>{" "}
-                  <span>{wrapText(c.content, 82)}</span>
+                  <span className="w-[500px]">{wrapText(c.content, 65)}</span>
                 </span>
                 <div className="flex items-center">
-                  <span className="text-xs text-gray-500">
+                  <span className="text-xs text-gray-500 w-[101px] ml-1">
                     {dayjs(c.created_at).format("HH:mm - DD/MM/YYYY")}
                   </span>
-                  <button
-                    className="ml-2 text-gray-400 hover:text-cyan-500"
-                    title="Chỉnh sửa bình luận"
-                    //onClick={() => handleEditComment && handleEditComment(c.id)}
-                  >
-                    <BiEdit />
-                  </button>
+
                   <button
                     className="ml-2 text-gray-400 hover:text-red-500"
                     title="Xóa bình luận"

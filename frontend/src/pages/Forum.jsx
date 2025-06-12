@@ -11,6 +11,7 @@ import {
 import { createComment } from "../services/api/commentService";
 import { useLocation } from "react-router-dom";
 import { deleteComment } from "../services/api/commentService";
+import Footer from "../components/Footer";
 
 function Forum() {
   const [open, setOpen] = useState(false);
@@ -27,8 +28,6 @@ function Forum() {
   const location = useLocation();
 
   // const token = localStorage.getItem("authToken");
-  const a =
-    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTY1NTU3OSwiaWF0IjoxNzQ5NjUxOTc5LCJ1c2VySWQiOjM1LCJqdGkiOiIxNDI2NTg4ZC01YzM4LTQ3YzItYTY0YS1hZjdjN2U2MmViOTAifQ.qY3OQLKORsch6NmF2SH08f5aHhCBBfpY_ttOo7GCKTvQUbwvshc5yD6VEUxQgCLsz0TxVrUoGKR1KUc2VDfp6w";
   ////
   // Lấy danh sách bài viết từ API khi load trang
   //   useEffect(() => {
@@ -46,13 +45,12 @@ function Forum() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const token = a;
         console.log("Search keyword:", keyword);
         let data;
         if (keyword.trim() === "") {
-          data = await getForumPosts(token);
+          data = await getForumPosts();
         } else {
-          data = await searchForumPosts(token, keyword);
+          data = await searchForumPosts(keyword);
         }
         // setPosts(data);
         setPosts(
@@ -92,15 +90,14 @@ function Forum() {
     }
 
     try {
-      const token = a;
-      await createPost(token, newPost);
+      await createPost(newPost);
       setNewPost({ title: "", content: "" });
       setOpen(false);
       let data;
       if (keyword.trim() === "") {
-        data = await getForumPosts(token);
+        data = await getForumPosts();
       } else {
-        data = await searchForumPosts(token, keyword);
+        data = await searchForumPosts(keyword);
       }
       setPosts(
         data.map((post) => ({
@@ -129,14 +126,13 @@ function Forum() {
     console.log("Adding comment to post:", postId, content);
 
     try {
-      const token = a;
-      await createComment(token, { content, post_id: postId });
+      await createComment({ content, post_id: postId });
       console.log(postId, content);
       let data;
       if (keyword.trim() === "") {
-        data = await getForumPosts(token);
+        data = await getForumPosts();
       } else {
-        data = await searchForumPosts(token, keyword);
+        data = await searchForumPosts(keyword);
       }
       console.log("Comments fetched successfully", data);
 
@@ -209,7 +205,7 @@ function Forum() {
         setSearchKey={setSearchKey}
         handleSearch={handleSearch}
       />
-      <div className="fixed bottom-5 right-5 flex flex-col z-50">
+      <div className="fixed bottom-5 right-5 flex flex-col z-50 ">
         {!open && (
           <div
             className="w-14 h-14 bg-cyan-300 rounded-full flex items-center justify-center cursor-pointer text-3xl"
@@ -279,55 +275,58 @@ function Forum() {
       </div>
 
       {error ? (
-        <div className="flex justify-center min-h-[100vh]">
+        <div className="flex justify-center min-h-[100vh]" >
           <div className="text-center text-red-500 font-semibold my-4 text-lg mt-8">
             {error}
           </div>
         </div>
       ) : (
-        posts.map((post, index) => (
-          <div
-            key={post.id || index}
-            className=" mt-5 mb-8 p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg border border-[#FFA1A1] max-w-2xl mx-auto"
-          >
-            <div className="flex items-center mb-3">
-              <div className="w-10 h-10 rounded-full bg-cyan-400 flex items-center justify-center text-white font-bold text-lg mr-3 shadow">
-                {post.username?.charAt(0) || "U"}
+        <div className="max-w-full">
+          {posts.map((post, index) => (
+            <div
+              key={post.id || index}
+              className=" mt-5 mb-8 p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg border border-[#FFA1A1] max-w-2xl mx-auto "
+            >
+              <div className="flex items-center mb-3">
+                <div className="w-10 h-10 rounded-full bg-cyan-400 flex items-center justify-center text-white font-bold text-lg mr-3 shadow">
+                  {post.username?.charAt(0) || "U"}
+                </div>
+                <div>
+                  <span className="font-semibold text-cyan-300">
+                    {post.username}
+                  </span>
+                  <span className="ml-2 text-xs text-gray-500">
+                    {post.updated_at && post.updated_at !== post.created_at ? (
+                      <>
+                        Update at:{" "}
+                        {dayjs(post.updated_at).format("HH:mm - DD/MM/YYYY")}
+                      </>
+                    ) : (
+                      dayjs(post.created_at).format("HH:mm - DD/MM/YYYY")
+                    )}
+                  </span>
+                </div>
               </div>
-              <div>
-                <span className="font-semibold text-cyan-300">
-                  {post.username}
-                </span>
-                <span className="ml-2 text-xs text-gray-500">
-                  {post.updated_at && post.updated_at !== post.created_at ? (
-                    <>
-                      Update at:{" "}
-                      {dayjs(post.updated_at).format("HH:mm - DD/MM/YYYY")}
-                    </>
-                  ) : (
-                    dayjs(post.created_at).format("HH:mm - DD/MM/YYYY")
-                  )}
-                </span>
+              <h3 className="text-xl font-bold text-[#FFA1A1] mb-2">
+                {wrapText(post.title, 44)}
+              </h3>
+              <p className="text-white mb-4">{wrapText(post.content, 60)}</p>
+              <div className="border-t border-[#FFA1A1] pt-3 mt-3">
+                <CommentSection
+                  comments={post.comments}
+                  handleDeleteComment={(commentId) =>
+                    handleDeleteComment(post.id, commentId)
+                  }
+                  handleAddComment={(comment) =>
+                    handleAddComment(post.id, comment)
+                  }
+                />
               </div>
             </div>
-            <h3 className="text-xl font-bold text-[#FFA1A1] mb-2">
-              {wrapText(post.title, 44)}
-            </h3>
-            <p className="text-white mb-4">{wrapText(post.content, 60)}</p>
-            <div className="border-t border-[#FFA1A1] pt-3 mt-3">
-              <CommentSection
-                comments={post.comments}
-                handleDeleteComment={(commentId) =>
-                  handleDeleteComment(post.id, commentId)
-                }
-                handleAddComment={(comment) =>
-                  handleAddComment(post.id, comment)
-                }
-              />
-            </div>
-          </div>
-        ))
+          ))}
+        </div>
       )}
+      <Footer />
     </>
   );
 }
