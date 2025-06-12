@@ -1,5 +1,5 @@
 import React from "react";
-import MapSelector from "./MapSelector";
+import MapView from "./MapView";
 
 export default function ProfileView({ userData, onEditClick }) {
   const formatField = (value) =>
@@ -83,8 +83,7 @@ export default function ProfileView({ userData, onEditClick }) {
               </div>
               <div className="flex-1">
                 {userData.lat && userData.lng && userData.address ? (
-                  <MapSelector
-                    readOnly
+                  <MapView
                     initialLocation={{
                       lat: userData.lat,
                       lng: userData.lng,
