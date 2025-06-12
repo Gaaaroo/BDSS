@@ -9,7 +9,8 @@ import {
 } from "../services/api/forumService";
 import { Link } from "react-router-dom";
 import { BiTrash, BiEdit } from "react-icons/bi";
-import { deleteComment } from "../services/api/commentService";
+import { deleteComment, createComment } from "../services/api/commentService";
+import Footer from "../components/Footer";
 
 function MyPosts() {
   const [posts, setPosts] = useState([]);
@@ -22,18 +23,14 @@ function MyPosts() {
   // Lấy username từ localStorage hoặc token (giả sử đã lưu)
   //const username = localStorage.getItem("username");
   //const token = localStorage.getItem("authToken");
-  const user = "duic";
-  const a =
-    "eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJkdWljIiwic2NvcGUiOiJNRU1CRVIiLCJpc3MiOiJiZHNzLmNvbSIsImV4cCI6MTc0OTY1NTU3OSwiaWF0IjoxNzQ5NjUxOTc5LCJ1c2VySWQiOjM1LCJqdGkiOiIxNDI2NTg4ZC01YzM4LTQ3YzItYTY0YS1hZjdjN2U2MmViOTAifQ.qY3OQLKORsch6NmF2SH08f5aHhCBBfpY_ttOo7GCKTvQUbwvshc5yD6VEUxQgCLsz0TxVrUoGKR1KUc2VDfp6w";
-  const token = a;
-  const username = user;
+  const username = localStorage.getItem("username");
 
   // Get posts of current user
   useEffect(() => {
     const fetchMyPosts = async () => {
       setLoading(true);
       try {
-        const data = await getMyPosts(token, username);
+        const data = await getMyPosts(username);
         // Lọc bài viết của user hiện tại
         const myPosts = data.map((post) => ({
           ...post,
@@ -47,13 +44,13 @@ function MyPosts() {
       setLoading(false);
     };
     fetchMyPosts();
-  }, [token, username]);
+  }, [username]);
 
   // Handle delete post
   const handleDeletePost = async (postId) => {
     if (window.confirm("Are you sure you want to delete this post?")) {
       try {
-        await deletePost(token, postId);
+        await deletePost(postId);
         setPosts(posts.filter((post) => post.id !== postId));
       } catch (err) {
         console.error("Failed to delete post:", err);
@@ -69,6 +66,34 @@ function MyPosts() {
     setOpen(true);
   };
 
+  // Handle add comment
+  const handleAddComment = async (postId, content) => {
+    if (!content) {
+      alert("Please enter content.");
+      return;
+    }
+
+    if (content.length > 100) {
+      alert("Comment must be less than 100 characters.");
+      return;
+    }
+    try {
+      // Gọi API tạo comment mới
+      const newComment = await createComment({ content, post_id: postId });
+      // Cập nhật lại state posts để thêm comment mới vào đúng post
+      setPosts((posts) =>
+        posts.map((post) =>
+          post.id === postId
+            ? { ...post, comments: [...post.comments, newComment] }
+            : post
+        )
+      );
+    } catch (error) {
+      console.error("Failed to add comment:", error?.response?.data?.code);
+      alert("Failed to add comment!");
+    }
+  };
+
   // Handle save edited post
   const handleClosePost = () => {
     setOpen(false);
@@ -77,7 +102,7 @@ function MyPosts() {
 
   const handleUpdatePost = async () => {
     try {
-      await updatePost(token, editingPost.id, {
+      await updatePost(editingPost.id, {
         title: editData.title,
         content: editData.content,
       });
@@ -128,13 +153,12 @@ function MyPosts() {
     return str.replace(new RegExp(`(.{1,${n}})`, "g"), "$1\n");
   }
 
-
   return (
     <>
       <Navbar mode="my-posts" />
       <div className="min-h-screen bg-white">
         <div className="max-w-2xl mx-auto mt-8">
-          <h2 className="text-2xl font-bold mb-6 text-center text-[#FFA1A1]">
+          <h2 className="text-5xl font-bold mb-6 text-center text-[#FFA1A1]">
             My Posts
           </h2>
           {loading ? (
@@ -196,14 +220,16 @@ function MyPosts() {
                 <h3 className="text-xl font-bold text-[#FFA1A1] mb-2">
                   {wrapText(post.title, 44)}
                 </h3>
-                <p className="text-white mb-4">{wrapText(post.title, 60)}</p>
+                <p className="text-white mb-4">{wrapText(post.content, 60)}</p>
                 <div className="border-t border-[#FFA1A1] pt-3 mt-3">
                   <CommentSection
                     comments={post.comments}
                     handleDeleteComment={(commentId) =>
                       handleDeleteComment(post.id, commentId)
                     }
-                    handleAddComment={() => {}}
+                    handleAddComment={(comment) => {
+                      handleAddComment(post.id, comment);
+                    }}
                   />
                 </div>
               </div>
@@ -256,6 +282,7 @@ function MyPosts() {
           </div>
         </>
       )}
+      <Footer />
     </>
   );
 }
