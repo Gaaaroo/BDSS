@@ -2,6 +2,7 @@ package com.swp.bdss.entities;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,7 +18,8 @@ import java.util.Date;
 public class InvalidatedToken {
     @Id
     String token_id;
-    int user_id;
+    @ManyToOne
+    User user;
     Date expiryTime;
 
 }
