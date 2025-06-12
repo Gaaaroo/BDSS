@@ -90,7 +90,7 @@ public class UserService {
         //an toàn hơn
 //        String username = SecurityContextHolder.getContext().getAuthentication().getName();
 //        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
-
+    // commment ở đya nè xog dsafadsg
         User user = userRepository.findById(Integer.parseInt(userId))
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
