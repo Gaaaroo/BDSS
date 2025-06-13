@@ -81,10 +81,10 @@ public class ForumPostController {
     //get all my forum posts
     // my-posts?username=some_username
     @GetMapping("/my-posts")
-    ApiResponse<List<ForumPostResponse>> getMyForumPosts(@RequestParam String username) {
+    ApiResponse<List<ForumPostResponse>> getMyForumPosts() {
         return ApiResponse.<List<ForumPostResponse>>builder()
                 .code(1111)
-                .data(forumPostService.getAllMyForumPostsByUser(username))
+                .data(forumPostService.getAllMyForumPostsByUser())
                 .message("get my forum posts successfully")
                 .build();
     }
