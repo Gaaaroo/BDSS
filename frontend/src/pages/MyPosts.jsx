@@ -20,17 +20,13 @@ function MyPosts() {
   const [editingPost, setEditingPost] = useState(null);
   const [editData, setEditData] = useState({ title: "", content: "" });
 
-  // Lấy username từ localStorage hoặc token (giả sử đã lưu)
-  //const username = localStorage.getItem("username");
-  //const token = localStorage.getItem("authToken");
-  const username = localStorage.getItem("username");
 
   // Get posts of current user
   useEffect(() => {
     const fetchMyPosts = async () => {
       setLoading(true);
       try {
-        const data = await getMyPosts(username);
+        const data = await getMyPosts();
         // Lọc bài viết của user hiện tại
         const myPosts = data.map((post) => ({
           ...post,
@@ -44,7 +40,7 @@ function MyPosts() {
       setLoading(false);
     };
     fetchMyPosts();
-  }, [username]);
+  }, []);
 
   // Handle delete post
   const handleDeletePost = async (postId) => {
