@@ -34,9 +34,9 @@ public class ForumPostService {
         ForumPost forumPost = forumPostMapper.toForumPost(request);
 
         var context = SecurityContextHolder.getContext();
-        String username = context.getAuthentication().getName();
+        int userId = Integer.parseInt(context.getAuthentication().getName());
 
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         forumPost.setUser(user);
@@ -55,10 +55,10 @@ public class ForumPostService {
         ForumPost forumPost = forumPostRepository.findById(post_id)
                 .orElseThrow(() -> new AppException(ErrorCode.FORUM_POST_NOT_EXISTED));
 
-        String username = SecurityContextHolder.getContext()
-                .getAuthentication().getName();
+        var context = SecurityContextHolder.getContext();
+        int userId = Integer.parseInt(context.getAuthentication().getName());
 
-        if(!forumPost.getUser().getUsername().equals(username)){
+        if(forumPost.getUser().getUser_id() != userId){
             throw new AppException(ErrorCode.FORUM_POST_CANNOT_DELETE);
         }
 

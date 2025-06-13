@@ -113,14 +113,14 @@ public class BloodDonateFormService {
     public void deleteBloodDonateForm(String donate_id){
         int id = Integer.parseInt(donate_id);
         BloodDonateForm bloodDonateForm = bloodDonateFormRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.BLODD_DONATE_FORM_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.BLOOD_DONATE_FORM_NOT_EXISTED));
         bloodDonateFormRepository.deleteById(id);
     }
 
     //update form status (ADMIN)
     public BloodDonateFormResponse updateBloodDonateFormStatus(int donate_id, BloodDonateFormUpdateStatusRequest request){
         BloodDonateForm bloodDonateForm = bloodDonateFormRepository.findById(donate_id)
-                .orElseThrow(() -> new AppException(ErrorCode.BLODD_DONATE_FORM_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.BLOOD_DONATE_FORM_NOT_EXISTED));
 
         //check status
         bloodDonateForm.setStatus(request.getStatus());
