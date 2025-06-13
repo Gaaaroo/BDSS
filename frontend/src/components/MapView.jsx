@@ -47,7 +47,7 @@ function MapView({ initialLocation }) {
 
       {/* Modal hiển thị bản đồ */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs">
           <div className="bg-white rounded-lg shadow-xl w-[90vw] max-w-4xl relative">
             <div>
               <GoogleMap
@@ -86,17 +86,22 @@ function MapView({ initialLocation }) {
                     position={{ lat: selectedUser.lat, lng: selectedUser.lng }}
                     onCloseClick={() => setSelectedUser(null)}
                   >
-                    <div className="text-sm">
+                    <div className="flex flex-col items-center p-2 text-center">
                       <img
-                        src={selectedUser.image_link}
+                        src={
+                          selectedUser.image_link?.trim()
+                            ? selectedUser.image_link
+                            : "https://firebasestorage.googleapis.com/v0/b/blooddonationsystem-9f456.firebasestorage.app/o/profile-images%2Fmbqqs93k-avatar.webp?alt=media&token=6b9ef0c4-72dc-45e2-9eed-73c64e236d3d"
+                        }
                         alt={selectedUser.username}
-                        className="w-16 h-16 rounded-full mb-1 object-cover"
+                        className="w-16 h-16 rounded-full object-cover shadow-md mb-2 border"
                         onError={(e) => {
+                          e.target.onerror = null;
                           e.target.src =
-                            "https://firebasestorage.googleapis.com/v0/b/blooddonationsystem-9f456.appspot.com/o/profile-images%2Fdefault.png?alt=media";
+                            "https://firebasestorage.googleapis.com/v0/b/blooddonationsystem-9f456.firebasestorage.app/o/profile-images%2Fmbqqs93k-avatar.webp?alt=media&token=6b9ef0c4-72dc-45e2-9eed-73c64e236d3d";
                         }}
                       />
-                      <div className="font-semibold">
+                      <div className="font-semibold text-sm text-gray-800">
                         {selectedUser.username}
                       </div>
                     </div>
