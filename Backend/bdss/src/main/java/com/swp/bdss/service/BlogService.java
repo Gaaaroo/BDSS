@@ -39,8 +39,8 @@ public class BlogService {
         blog.setCreated_date(LocalDate.now());
 
         var context = SecurityContextHolder.getContext();
-        String username = context.getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
+        int userId = Integer.parseInt(context.getAuthentication().getName());
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         blog.setUser(user);
 
