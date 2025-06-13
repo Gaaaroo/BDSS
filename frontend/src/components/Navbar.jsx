@@ -59,7 +59,8 @@ function UserIcon() {
   // const [showModal, setShowModal] = useState(false);
 
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
+    localStorage.clear();
+
     navigate("/");
   };
   const navigate = useNavigate();

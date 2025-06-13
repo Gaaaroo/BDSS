@@ -1,20 +1,43 @@
 import React from "react";
 import axios from "axios";
 import axiosClient from "../api/axiosClient";
+import { signInWithPopup } from "firebase/auth";
+import { provider, auth } from "./firebase";
 
 export const login = async (form) => {
   try {
-    const response = await axiosClient.post("/auth/login", form,{
-      
-    });
-    const token = response.data.data.token;
+    const response = await axiosClient.post("/auth/login", form, {});
+    const token = response.data.data.accessToken;
+    const refreshToken = response.data.data.refreshToken;
     localStorage.setItem("authToken", token);
+    localStorage.setItem("refreshToken", refreshToken);
     console.log("Login successful:", response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching users:", error);
     console.error("Backend error response:", error.response?.data);
     throw error;
+  }
+};
+
+export const loginWithTokenGoogle = async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    // LẤY FIREBASE ID TOKEN
+    const idToken = await user.getIdToken();
+    console.log("Firebase ID Token:", idToken);
+    localStorage.setItem("firebaseToken", idToken);
+    //GỬI TOKEN LÊN BACKEND
+    const res = await axiosClient.post("/auth/loginWithTokenGoogle");
+    console.log("Login with gg successfull", res.data);
+    const token = res.data.data.accessToken;
+    const refreshToken = res.data.data.refreshToken;
+    localStorage.setItem("authToken", token);
+    localStorage.setItem("refreshToken", refreshToken);
+    return res.data;
+  } catch (error) {
+    console.log("Error from login with GG: ", error);
   }
 };
 

@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import BackHome from "./BackHome";
-import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../services/api/firebase";
-import { login } from "../services/api/authService";
+import { login, loginWithTokenGoogle } from "../services/api/authService";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -21,7 +19,7 @@ const LoginForm = () => {
   //Handle login form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(form);
+    console.log("Data to sent: ", form);
     if (!form.username || !form.password) {
       setError("Please enter both email and password.");
       return;
@@ -41,35 +39,9 @@ const LoginForm = () => {
     navigate("/register");
   };
 
-  // Hàm xử lý đăng nhập với Google
-
   const handleLoginWithGG = async () => {
     try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-
-      // LẤY FIREBASE ID TOKEN
-      const idToken = await user.getIdToken();
-      console.log("Firebase ID Token:", idToken);
-      console.log("hello");
-      // Gửi token lên backend
-      const res = await fetch(
-        "http://localhost:8080/bdss/auth/loginWithTokenGoogle",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!res.ok) {
-        throw new Error("Login failed at backend.");
-      }
-
-      //const data = await res.text();
-      localStorage.setItem("authToken", idToken);
+      await loginWithTokenGoogle();
       navigate("/");
     } catch (error) {
       console.error("Login error:", error);
