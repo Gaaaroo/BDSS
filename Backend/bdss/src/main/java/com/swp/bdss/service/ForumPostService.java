@@ -57,7 +57,7 @@ public class ForumPostService {
 
         int userId = Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
 
-        if(forumPost.getUser().getUser_id() != userId){
+        if(forumPost.getUser().getUserId() != userId){
             throw new AppException(ErrorCode.FORUM_POST_CANNOT_DELETE);
         }
 

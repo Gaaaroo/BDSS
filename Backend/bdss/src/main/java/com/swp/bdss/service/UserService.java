@@ -114,7 +114,7 @@ public class UserService {
 
         return userRepository.findAll().stream()
                 .filter(user -> user.getLat() != null && user.getLng() != null)
-                .filter(user -> user.getUser_id() != userId)
+                .filter(user -> user.getUserId() != userId)
                 .filter(user -> haversine(lat, lng, user.getLat(), user.getLng()) <= radiusKm)
                 .map(userMapper::toUserResponse)
                 .toList();

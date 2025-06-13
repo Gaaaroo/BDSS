@@ -107,7 +107,7 @@ public class AuthenticationService {
 
         User savedUser = userRepository.save(user);
         log.info("{}{}",
-                savedUser.getUser_id(),
+                savedUser.getUserId(),
                 savedUser.getEmail()
         );
         // Generate code - Send email to the user
@@ -208,7 +208,7 @@ public class AuthenticationService {
 
         //body
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(String.valueOf(user.getUser_id()))
+                .subject(String.valueOf(user.getUserId()))
                 .issuer("bdss.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(
