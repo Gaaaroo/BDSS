@@ -39,13 +39,12 @@ export const searchForumPosts = async (keyword) => {
   return response.data.data.reverse();
 };
 
-export const getMyPosts = async (username) => {
+export const getMyPosts = async () => {
   const token = localStorage.getItem("authToken");
   const response = await axios.get(`${API_BASE_URL}/forum/my-posts`, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    params: { username },
     withCredentials: true,
   });
 

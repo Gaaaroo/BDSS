@@ -2,26 +2,27 @@ server:
   port: 8080
   servlet:
     context-path: /bdss
-spring:
-  datasource:
-    url: "jdbc:mysql://root:YBMRhuIxxoLOfpdFFrLiNxMuhxdpJbOo@hopper.proxy.rlwy.net:53163/BDSS"
-    driverClassName: "com.mysql.cj.jdbc.Driver"
-    username: root
-    password: YBMRhuIxxoLOfpdFFrLiNxMuhxdpJbOo
-  jpa:
-    hibernate:
-      ddl-auto: update
-    show-sql: true
 #spring:
 #  datasource:
-#    url: "jdbc:mysql://localhost:3306/BDSS"
+#    url: "jdbc:mysql://root:YBMRhuIxxoLOfpdFFrLiNxMuhxdpJbOo@hopper.proxy.rlwy.net:53163/BDSS"
 #    driverClassName: "com.mysql.cj.jdbc.Driver"
 #    username: root
-#    password: root
+#    password: YBMRhuIxxoLOfpdFFrLiNxMuhxdpJbOo
 #  jpa:
 #    hibernate:
 #      ddl-auto: update
 #    show-sql: true
+
+spring:
+  datasource:
+    url: "jdbc:mysql://localhost:3306/BDSS"
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+    username: root
+    password: duic
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
 
   mail:
     host: smtp.gmail.com

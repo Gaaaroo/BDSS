@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -33,8 +34,7 @@ public class ForumPostService {
         //convert
         ForumPost forumPost = forumPostMapper.toForumPost(request);
 
-        var context = SecurityContextHolder.getContext();
-        int userId = Integer.parseInt(context.getAuthentication().getName());
+        int userId = Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -55,8 +55,7 @@ public class ForumPostService {
         ForumPost forumPost = forumPostRepository.findById(post_id)
                 .orElseThrow(() -> new AppException(ErrorCode.FORUM_POST_NOT_EXISTED));
 
-        var context = SecurityContextHolder.getContext();
-        int userId = Integer.parseInt(context.getAuthentication().getName());
+        int userId = Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
 
         if(forumPost.getUser().getUser_id() != userId){
             throw new AppException(ErrorCode.FORUM_POST_CANNOT_DELETE);
@@ -104,9 +103,11 @@ public class ForumPostService {
     }
 
     //get all forum posts by user
-    public List<ForumPostResponse> getAllMyForumPostsByUser(String username) {
-        User user = userRepository.findByUsername(username)
+    public List<ForumPostResponse> getAllMyForumPostsByUser() {
+        int userId = Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
         List<ForumPostResponse> list = forumPostRepository.findByUser(user).stream()
                 .map(forumPostMapper::toForumPostResponse)
                 .toList();

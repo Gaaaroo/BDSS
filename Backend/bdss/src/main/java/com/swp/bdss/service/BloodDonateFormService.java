@@ -42,9 +42,11 @@ public class BloodDonateFormService {
         BloodDonateForm bloodDonateForm = bloodDonateFormMapper.toBloodDonateForm(request);
 
         //lấy user_id từ token
-        var authentication = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        int userId = Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
         //ktra xem authentication có phải là Jwt không để lấy userId
-        int userId = authentication instanceof Jwt ? Integer.parseInt(((Jwt) authentication).getClaimAsString("userId")) : -1;
+        if (!(SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof Jwt)) {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
 
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         UserResponse userResponse = userMapper.toUserResponse(user);
@@ -80,16 +82,17 @@ public class BloodDonateFormService {
 
     //get all donate form of 1 user and form details (USER)
     public List<BloodDonateFormResponse> getUserBloodDonateForm(){
-        var context = SecurityContextHolder.getContext();
-        String username = context.getAuthentication().getName();
-
+        int userId = Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        String username = user.getUsername();
         List<BloodDonateForm> list = bloodDonateFormRepository.findAllBloodDonateFormByUserUsername(username);
 
         return list.stream().map(bloodDonateForm -> {
             BloodDonateFormResponse response = bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateForm);
 
-            User user = bloodDonateForm.getUser();
-            UserResponse userResponse = userMapper.toUserResponse(user);
+            User savedUser = bloodDonateForm.getUser();
+            UserResponse userResponse = userMapper.toUserResponse(savedUser);
 
             response.setUser(userResponse);
             return response;
