@@ -74,7 +74,7 @@ public class CommentService {
         int userId = Integer.parseInt(SecurityContextHolder.getContext()
                 .getAuthentication().getName());
 
-        if (comment.getUser().getUser_id() != userId) {
+        if (comment.getUser().getUserId() != userId) {
             throw new AppException(ErrorCode.COMMENT_CANNOT_DELETE);
         }
 
