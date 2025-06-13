@@ -13,16 +13,9 @@ export function Title({ title, decription }) {
 }
 
 export default function DonorForm() {
-  const [formData, setFormData] = useState({
-    fullName: "",
-    dob: "",
-    phone: "",
-    bloodType: "",
-    gender: "",
-    email: "",
-    address: "",
-    disease: "",
-  });
+  const [showModal, setShowModal] = useState(false);
+  const [myProfile, setMyProfile] = useState(null);
+  const [diseaseData, setdiseaseData] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
