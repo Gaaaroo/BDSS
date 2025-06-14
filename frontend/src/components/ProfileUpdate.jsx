@@ -3,14 +3,12 @@ import MapSelector from './MapSelector';
 import { updateUserProfile } from '../services/api/userService';
 import { storage } from '../services/api/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { useApp } from '../Contexts/AppContext';
-
+//import { useApp } from '../Contexts/AppContext';
 export default function ProfileUpdate({
   initialData,
   onCancel,
   onSaveSuccess,
 }) {
-  const { setProfile } = useApp(); //lấy hàm setProfile từ context
   const [formData, setFormData] = useState({ ...initialData });
   const [uploading, setUploading] = useState(false);
 
@@ -46,8 +44,7 @@ export default function ProfileUpdate({
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await updateUserProfile(formData);
-      setProfile(res); //cập nhật context ngay sau gọi API thành công
+      await updateUserProfile(formData);
       onSaveSuccess();
     } catch (error) {
       console.error('Cập nhật thất bại:', error);
