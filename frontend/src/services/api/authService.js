@@ -1,17 +1,16 @@
 import React from "react";
 import axios from "axios";
-
-const API_URL = "http://localhost:8080/bdss/auth";
+import axiosClient from "../api/axiosClient";
+import { signInWithPopup } from "firebase/auth";
+import { provider, auth } from "./firebase";
 
 export const login = async (form) => {
   try {
-    const response = await axios.post(`${API_URL}/login`, form, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const token = response.data.data.token;
+    const response = await axiosClient.post("/auth/login", form, {});
+    const token = response.data.data.accessToken;
+    const refreshToken = response.data.data.refreshToken;
     localStorage.setItem("authToken", token);
+    localStorage.setItem("refreshToken", refreshToken);
     console.log("Login successful:", response.data);
     return response.data;
   } catch (error) {
@@ -21,13 +20,30 @@ export const login = async (form) => {
   }
 };
 
+export const loginWithTokenGoogle = async () => {
+  try {
+    const result = await signInWithPopup(auth, provider);
+    const user = result.user;
+    // LẤY FIREBASE ID TOKEN
+    const idToken = await user.getIdToken();
+    console.log("Firebase ID Token:", idToken);
+    localStorage.setItem("firebaseToken", idToken);
+    //GỬI TOKEN LÊN BACKEND
+    const res = await axiosClient.post("/auth/loginWithTokenGoogle");
+    console.log("Login with gg successfull", res.data);
+    const token = res.data.data.accessToken;
+    const refreshToken = res.data.data.refreshToken;
+    localStorage.setItem("authToken", token);
+    localStorage.setItem("refreshToken", refreshToken);
+    return res.data;
+  } catch (error) {
+    console.log("Error from login with GG: ", error);
+  }
+};
+
 export const registerUser = async (userData) => {
   try {
-    const response = await axios.post(`${API_URL}/register`, userData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axiosClient.post("/auth/register", userData);
     return response.data;
   } catch (error) {
     console.error("Backend error details:", error.response?.data);
@@ -39,11 +55,7 @@ export const registerUser = async (userData) => {
 export const verifyOTP = async (otpData) => {
   // throw { code: 1006, message: "OTP code does not exist" };
   try {
-    const res = await axios.post(`${API_URL}/verify`, otpData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const res = await axiosClient.post("/auth/verify", otpData);
     console.log("response >>>>", res);
     return res.data;
   } catch (err) {
@@ -57,11 +69,7 @@ export const verifyOTP = async (otpData) => {
 
 export const resendOTP = async (resendOtpData) => {
   try {
-    const res = await axios.post(`${API_URL}/resend-otp`, resendOtpData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const res = await axiosClient.post("/auth/resend-otp", resendOtpData);
     console.log(res);
     return res.data;
   } catch (error) {
@@ -69,3 +77,48 @@ export const resendOTP = async (resendOtpData) => {
     throw error;
   }
 };
+
+// Add a request interceptor to attach the token
+axiosClient.interceptors.request.use(
+  async (config) => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (err) => {
+    return Promise.reject(err);
+  }
+);
+
+// Add a response interceptor to handle 401 and refresh token
+axiosClient.interceptors.response.use(
+  (res) => res,
+  async (error) => {
+    console.log(error);
+    const originalRequest = error.config;
+    if (error.response.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+      const refreshToken = localStorage.getItem("refreshToken");
+      if (!refreshToken) return Promise.reject(error);
+      try {
+        const res = await axiosClient.post("/auth/refresh", {
+          token: refreshToken,
+        });
+        console.log("New token >>> ", res);
+
+        const newAccessToken = res.data.data.accessToken;
+        localStorage.setItem("authToken", newAccessToken);
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return axiosClient(originalRequest);
+      } catch (error) {
+        localStorage.removeItem("authToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login";
+        return Promise.reject(error);
+      }
+    }
+    return Promise.reject(error);
+  }
+);

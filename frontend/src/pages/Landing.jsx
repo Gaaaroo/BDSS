@@ -24,8 +24,6 @@ export default function Home() {
       setMode("guest");
     }
 
-    console.log(savedToken); // Logs the token
-
     Events.scrollEvent.register("begin", (to, element) => {
       console.log("begin", to, element);
     });

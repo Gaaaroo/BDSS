@@ -13,7 +13,6 @@ import Seeker from "../pages/Seeker";
 import MyActivity from "../pages/MyActivity";
 import Profile from "../pages/Profile";
 import Forum from "../pages/Forum";
-
 import OTP from "../pages/OTP";
 import MyPosts from "../pages/MyPosts";
 
