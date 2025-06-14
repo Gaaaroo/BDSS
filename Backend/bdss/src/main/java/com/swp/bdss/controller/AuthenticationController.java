@@ -65,7 +65,7 @@ public class AuthenticationController {
     @PostMapping("/register")
     ApiResponse<UserResponse> register(@RequestBody UserCreationRequest request){
         return ApiResponse.<UserResponse>builder()
-                .code(1111)
+                .code(1000)
                 .message("OTP sent to your email")
                 .data(authenticationService.registerUserAndSendOtp(request))
                 .build();
@@ -84,7 +84,7 @@ public class AuthenticationController {
     @PostMapping("/resend-otp")
     ApiResponse<UserResponse> resendOtp(@RequestBody VerifyOtpRequest request){
         return ApiResponse.<UserResponse>builder()
-                .code(6868)
+                .code(1000)
                 .data(authenticationService.resendOtp(request))
                 .message("OTP resent successfully")
                 .build();
@@ -116,7 +116,7 @@ public class AuthenticationController {
     ApiResponse<Void> logout (@RequestBody LogoutRequest request) throws ParseException, JOSEException{
         authenticationService.logout(request);
         return ApiResponse.<Void>builder()
-                .code(6666)
+                .code(1000)
                 .message("Logout successful")
                 .build();
     }

@@ -5,8 +5,10 @@ import { provider, auth } from './firebase';
 export const login = async (form) => {
   try {
     const response = await axiosClient.post('/auth/login', form);
-    const token = response.data.data.accessToken;
-    const refreshToken = response.data.data.refreshToken;
+    const token = response.data.accessToken;
+    const refreshToken = response.data.refreshToken;
+    // const token = response.data.data.accessToken;
+    // const refreshToken = response.data.data.refreshToken;
     localStorage.setItem('authToken', token);
     localStorage.setItem('refreshToken', refreshToken);
     console.log('Login successful:', response.data);

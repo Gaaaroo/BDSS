@@ -1,29 +1,29 @@
-import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
-import ForumImage from "../components/ForumImage";
-import CommentSection from "../components/CommentSection";
-import dayjs from "dayjs";
+import React, { useState, useEffect } from 'react';
+import Navbar from '../components/Navbar';
+import ForumImage from '../components/ForumImage';
+import CommentSection from '../components/CommentSection';
+import dayjs from 'dayjs';
 import {
   createPost,
   getForumPosts,
   searchForumPosts,
-} from "../services/api/forumService";
-import { createComment } from "../services/api/commentService";
-import { useLocation } from "react-router-dom";
-import { deleteComment } from "../services/api/commentService";
-import Footer from "../components/Footer";
+} from '../services/api/forumService';
+import { createComment } from '../services/api/commentService';
+import { useLocation } from 'react-router-dom';
+import { deleteComment } from '../services/api/commentService';
+import Footer from '../components/Footer';
 
 function Forum() {
   const [open, setOpen] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   //search
-  const [keyword, setKeyword] = useState("");
-  const [searchKey, setSearchKey] = useState("");
+  const [keyword, setKeyword] = useState('');
+  const [searchKey, setSearchKey] = useState('');
 
   //post
   const [posts, setPosts] = useState([]);
-  const [newPost, setNewPost] = useState({ title: "", content: "" });
+  const [newPost, setNewPost] = useState({ title: '', content: '' });
 
   const location = useLocation();
 
@@ -45,9 +45,9 @@ function Forum() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        console.log("Search keyword:", keyword);
+        console.log('Search keyword:', keyword);
         let data;
-        if (keyword.trim() === "") {
+        if (keyword.trim() === '') {
           data = await getForumPosts();
         } else {
           data = await searchForumPosts(keyword);
@@ -60,11 +60,11 @@ function Forum() {
             comments: post.comments || [],
           }))
         );
-        console.log("Posts fetched successfully", data);
-        setError("");
+        console.log('Posts fetched successfully', data);
+        setError('');
       } catch (error) {
-        if (error.response.data.code === 1015) setError("Not found posts");
-        else setError("Error fetching posts. Please try again.");
+        if (error.response.data.code === 1015) setError('Not found posts');
+        else setError('Error fetching posts. Please try again.');
       }
     };
 
@@ -75,26 +75,26 @@ function Forum() {
   const handleCreatePost = async () => {
     //e.preventDefault();
     if (!newPost.title || !newPost.content) {
-      alert("Please enter both title and content.");
+      alert('Please enter both title and content.');
       return;
     }
 
     if (newPost.title.length > 100) {
-      alert("Title must be less than 100 characters.");
+      alert('Title must be less than 100 characters.');
       return;
     }
 
     if (newPost.content.length > 100) {
-      alert("Content must be less than 100 characters.");
+      alert('Content must be less than 100 characters.');
       return;
     }
 
     try {
       await createPost(newPost);
-      setNewPost({ title: "", content: "" });
+      setNewPost({ title: '', content: '' });
       setOpen(false);
       let data;
-      if (keyword.trim() === "") {
+      if (keyword.trim() === '') {
         data = await getForumPosts();
       } else {
         data = await searchForumPosts(keyword);
@@ -106,35 +106,35 @@ function Forum() {
           comments: post.comments || [],
         }))
       );
-      setError("");
+      setError('');
     } catch (error) {
-      setError("Post failed. Please try again.");
+      setError('Post failed. Please try again.');
     }
   };
 
   // create comment for a post
   const handleAddComment = async (postId, content) => {
     if (!content) {
-      alert("Please enter content.");
+      alert('Please enter content.');
       return;
     }
 
     if (content.length > 100) {
-      alert("Comment must be less than 100 characters.");
+      alert('Comment must be less than 100 characters.');
       return;
     }
-    console.log("Adding comment to post:", postId, content);
+    console.log('Adding comment to post:', postId, content);
 
     try {
       await createComment({ content, post_id: postId });
       console.log(postId, content);
       let data;
-      if (keyword.trim() === "") {
+      if (keyword.trim() === '') {
         data = await getForumPosts();
       } else {
         data = await searchForumPosts(keyword);
       }
-      console.log("Comments fetched successfully", data);
+      console.log('Comments fetched successfully', data);
 
       setPosts(
         data.map((post) => ({
@@ -143,9 +143,9 @@ function Forum() {
           comments: post.comments || [],
         }))
       );
-      setError("");
+      setError('');
     } catch (error) {
-      setError("Comment failed. Please try again.");
+      setError('Comment failed. Please try again.');
     }
   };
 
@@ -168,14 +168,14 @@ function Forum() {
 
   //Function to wrap text at a specified length
   function wrapText(str, n) {
-    if (!str) return "";
-    return str.replace(new RegExp(`(.{1,${n}})`, "g"), "$1\n");
+    if (!str) return '';
+    return str.replace(new RegExp(`(.{1,${n}})`, 'g'), '$1\n');
   }
 
   //Handle delete comment
   const handleDeleteComment = async (postId, commentId) => {
-    if (window.confirm("Are you sure you want to delete this post?")) {
-      console.log("Deleting comment with ID:", commentId);
+    if (window.confirm('Are you sure you want to delete this post?')) {
+      console.log('Deleting comment with ID:', commentId);
       try {
         await deleteComment(commentId);
         //Remove the comment from the comments array
@@ -192,7 +192,16 @@ function Forum() {
           )
         );
       } catch (err) {
-        console.error("Failed to delete post:", err);
+        console.log('Full error object:', err);
+
+        if (err.response?.data) {
+          const { code, message } = err.response.data;
+          console.log('⛔ Error code:', code); // 👉 sẽ in ra: 1017
+          console.log('📝 Error message:', message); // 👉 sẽ in ra: "You cannot delete this comment"
+          alert(`Lỗi ${code}: ${message}`);
+        } else {
+          console.log('Không có response.data trong error!');
+        }
       }
     }
   };
@@ -275,7 +284,7 @@ function Forum() {
       </div>
 
       {error ? (
-        <div className="flex justify-center min-h-[100vh]" >
+        <div className="flex justify-center min-h-[100vh]">
           <div className="text-center text-red-500 font-semibold my-4 text-lg mt-8">
             {error}
           </div>
@@ -289,7 +298,7 @@ function Forum() {
             >
               <div className="flex items-center mb-3">
                 <div className="w-10 h-10 rounded-full bg-cyan-400 flex items-center justify-center text-white font-bold text-lg mr-3 shadow">
-                  {post.username?.charAt(0) || "U"}
+                  {post.username?.charAt(0) || 'U'}
                 </div>
                 <div>
                   <span className="font-semibold text-cyan-300">
@@ -298,11 +307,11 @@ function Forum() {
                   <span className="ml-2 text-xs text-gray-500">
                     {post.updated_at && post.updated_at !== post.created_at ? (
                       <>
-                        Update at:{" "}
-                        {dayjs(post.updated_at).format("HH:mm - DD/MM/YYYY")}
+                        Update at:{' '}
+                        {dayjs(post.updated_at).format('HH:mm - DD/MM/YYYY')}
                       </>
                     ) : (
-                      dayjs(post.created_at).format("HH:mm - DD/MM/YYYY")
+                      dayjs(post.created_at).format('HH:mm - DD/MM/YYYY')
                     )}
                   </span>
                 </div>

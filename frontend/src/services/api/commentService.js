@@ -6,5 +6,7 @@ export const createComment = async (postData) => {
 };
 
 export const deleteComment = async (commentId) => {
-  const response = await axiosClient.delete('/comment/delete');
+  return axiosClient.delete('/comment/delete', {
+    params: { comment_id: commentId },
+  });
 };

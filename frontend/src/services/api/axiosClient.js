@@ -69,4 +69,18 @@ axiosClient.interceptors.response.use(
   }
 );
 
+axiosClient.interceptors.response.use(
+  (response) => {
+    // Nếu response có code thì reject để nhảy vào catch
+    if (response.data && typeof response.data.code !== 'undefined' && response.data.code !== 1000) {
+      return Promise.reject({ response });
+    }
+    return response.data; // Trả về data nếu thành công
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+
 export default axiosClient;

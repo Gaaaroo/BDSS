@@ -24,7 +24,7 @@ public class CommentController {
     @PostMapping
     ApiResponse<CommentResponse> createComment(@RequestBody CommentCreationRequest request){
         return ApiResponse.<CommentResponse>builder()
-                .code(1111)
+                .code(1000)
                 .data(commentService.createComment(request))
                 .message("Create comment successfully")
                 .build();
@@ -34,7 +34,7 @@ public class CommentController {
      ApiResponse<CommentResponse> deleteOwnComment(@RequestParam Long comment_id) {
         commentService.deleteOwnComment(comment_id);
         return ApiResponse.<CommentResponse>builder()
-                .code(1112)
+                .code(1000)
                 .message("Delete comment successfully")
                 .build();
     }
@@ -43,7 +43,7 @@ public class CommentController {
     ApiResponse<CommentResponse> deleteCommentByAdmin(@PathVariable Long comment_id) {
         commentService.deleteCommentByAdmin(comment_id);
         return ApiResponse.<CommentResponse>builder()
-                .code(1112)
+                .code(1000)
                 .message("Admin delete comment successfully")
                 .build();
     }
