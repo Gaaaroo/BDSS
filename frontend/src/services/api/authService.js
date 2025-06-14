@@ -1,21 +1,21 @@
-import React from "react";
-import axios from "axios";
-import axiosClient from "../api/axiosClient";
-import { signInWithPopup } from "firebase/auth";
-import { provider, auth } from "./firebase";
+import React from 'react';
+import axios from 'axios';
+import axiosClient from '../api/axiosClient';
+import { signInWithPopup } from 'firebase/auth';
+import { provider, auth } from './firebase';
 
 export const login = async (form) => {
   try {
-    const response = await axiosClient.post("/auth/login", form, {});
+    const response = await axiosClient.post('/auth/login', form, {});
     const token = response.data.data.accessToken;
     const refreshToken = response.data.data.refreshToken;
-    localStorage.setItem("authToken", token);
-    localStorage.setItem("refreshToken", refreshToken);
-    console.log("Login successful:", response.data);
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('refreshToken', refreshToken);
+    console.log('Login successful:', response.data);
     return response.data;
   } catch (error) {
-    console.error("Error fetching users:", error);
-    console.error("Backend error response:", error.response?.data);
+    console.error('Error fetching users:', error);
+    console.error('Backend error response:', error.response?.data);
     throw error;
   }
 };
@@ -26,28 +26,28 @@ export const loginWithTokenGoogle = async () => {
     const user = result.user;
     // LẤY FIREBASE ID TOKEN
     const idToken = await user.getIdToken();
-    console.log("Firebase ID Token:", idToken);
-    localStorage.setItem("firebaseToken", idToken);
+    // console.log('Firebase ID Token:', idToken);
+    localStorage.setItem('firebaseToken', idToken);
     //GỬI TOKEN LÊN BACKEND
-    const res = await axiosClient.post("/auth/loginWithTokenGoogle");
-    console.log("Login with gg successfull", res.data);
+    const res = await axiosClient.post('/auth/loginWithTokenGoogle');
+    console.log('Login with gg successfull', res.data);
     const token = res.data.data.accessToken;
     const refreshToken = res.data.data.refreshToken;
-    localStorage.setItem("authToken", token);
-    localStorage.setItem("refreshToken", refreshToken);
+    localStorage.setItem('authToken', token);
+    localStorage.setItem('refreshToken', refreshToken);
     return res.data;
   } catch (error) {
-    console.log("Error from login with GG: ", error);
+    console.log('Error from login with GG: ', error);
   }
 };
 
 export const registerUser = async (userData) => {
   try {
-    const response = await axiosClient.post("/auth/register", userData);
+    const response = await axiosClient.post('/auth/register', userData);
     return response.data;
   } catch (error) {
-    console.error("Backend error details:", error.response?.data);
-    console.error("Error registering user:", error);
+    console.error('Backend error details:', error.response?.data);
+    console.error('Error registering user:', error);
     throw error;
   }
 };
@@ -55,21 +55,21 @@ export const registerUser = async (userData) => {
 export const verifyOTP = async (otpData) => {
   // throw { code: 1006, message: "OTP code does not exist" };
   try {
-    const res = await axiosClient.post("/auth/verify", otpData);
-    console.log("response >>>>", res);
+    const res = await axiosClient.post('/auth/verify', otpData);
+    console.log('response >>>>', res);
     return res.data;
   } catch (err) {
-    console.error("Verify OTP error:", err);
+    console.error('Verify OTP error:', err);
 
     throw (
-      err.response?.data || { success: false, message: "Error not defined!" }
+      err.response?.data || { success: false, message: 'Error not defined!' }
     );
   }
 };
 
 export const resendOTP = async (resendOtpData) => {
   try {
-    const res = await axiosClient.post("/auth/resend-otp", resendOtpData);
+    const res = await axiosClient.post('/auth/resend-otp', resendOtpData);
     console.log(res);
     return res.data;
   } catch (error) {
@@ -81,7 +81,7 @@ export const resendOTP = async (resendOtpData) => {
 // Add a request interceptor to attach the token
 axiosClient.interceptors.request.use(
   async (config) => {
-    const token = localStorage.getItem("authToken");
+    const token = localStorage.getItem('authToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -100,22 +100,22 @@ axiosClient.interceptors.response.use(
     const originalRequest = error.config;
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
-      const refreshToken = localStorage.getItem("refreshToken");
+      const refreshToken = localStorage.getItem('refreshToken');
       if (!refreshToken) return Promise.reject(error);
       try {
-        const res = await axiosClient.post("/auth/refresh", {
+        const res = await axiosClient.post('/auth/refresh', {
           token: refreshToken,
         });
-        console.log("New token >>> ", res);
+        console.log('New token >>> ', res);
 
         const newAccessToken = res.data.data.accessToken;
-        localStorage.setItem("authToken", newAccessToken);
+        localStorage.setItem('authToken', newAccessToken);
         originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
         return axiosClient(originalRequest);
       } catch (error) {
-        localStorage.removeItem("authToken");
-        localStorage.removeItem("refreshToken");
-        window.location.href = "/login";
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('refreshToken');
+        window.location.href = '/login';
         return Promise.reject(error);
       }
     }

@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
-import Navbar from "../components/Navbar";
-import ProfileView from "../components/ProfileView";
-import ProfileUpdate from "../components/ProfileUpdate";
-import { getUserProfile } from "../services/api/userService";
+import React, { useState, useEffect } from 'react';
+import Navbar from '../components/Navbar';
+import ProfileView from '../components/ProfileView';
+import ProfileUpdate from '../components/ProfileUpdate';
+import { getUserProfile } from '../services/api/userService';
 
 export default function ProfilePage() {
   const [userData, setUserData] = useState(null);
@@ -13,7 +13,7 @@ export default function ProfilePage() {
       const data = await getUserProfile();
       setUserData(data);
     } catch (err) {
-      console.error("Error fetching user profile:", err);
+      console.error('Error fetching user profile:', err);
     }
   };
 

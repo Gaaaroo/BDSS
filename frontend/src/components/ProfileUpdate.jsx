@@ -1,16 +1,16 @@
-import React, { useState } from "react";
-import MapSelector from "./MapSelector";
-import { updateUserProfile } from "../services/api/userService";
-import { storage } from "../services/api/firebase";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { useProfile } from "../Contexts/ProfileContext";
+import React, { useState } from 'react';
+import MapSelector from './MapSelector';
+import { updateUserProfile } from '../services/api/userService';
+import { storage } from '../services/api/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { useApp } from '../Contexts/AppContext';
 
 export default function ProfileUpdate({
   initialData,
   onCancel,
   onSaveSuccess,
 }) {
-  const { setProfile } = useProfile(); //lấy hàm setProfile từ context
+  const { setProfile } = useApp(); //lấy hàm setProfile từ context
   const [formData, setFormData] = useState({ ...initialData });
   const [uploading, setUploading] = useState(false);
 
@@ -37,7 +37,7 @@ export default function ProfileUpdate({
       const downloadUrl = await getDownloadURL(imageRef);
       setFormData((prev) => ({ ...prev, image_link: downloadUrl }));
     } catch (error) {
-      console.error("Upload image failed:", error);
+      console.error('Upload image failed:', error);
     } finally {
       setUploading(false);
     }
@@ -50,7 +50,7 @@ export default function ProfileUpdate({
       setProfile(res); //cập nhật context ngay sau gọi API thành công
       onSaveSuccess();
     } catch (error) {
-      console.error("Cập nhật thất bại:", error);
+      console.error('Cập nhật thất bại:', error);
     }
   };
 
@@ -184,7 +184,7 @@ export default function ProfileUpdate({
             disabled={uploading}
             className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700"
           >
-            {uploading ? "Đang tải..." : "Lưu"}
+            {uploading ? 'Đang tải...' : 'Lưu'}
           </button>
         </div>
       </form>

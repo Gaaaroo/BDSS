@@ -1,51 +1,55 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import BackHome from "./BackHome";
-import { login, loginWithTokenGoogle } from "../services/api/authService";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import BackHome from './BackHome';
+import { login, loginWithTokenGoogle } from '../services/api/authService';
+import { useApp } from '../Contexts/AppContext';
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const { setIsLogged } = useApp();
   const [form, setForm] = useState({
-    username: "",
-    password: "",
+    username: '',
+    password: '',
   });
 
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setError("");
+    setError('');
   };
   //Handle login form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Data to sent: ", form);
+    console.log('Data to sent: ', form);
     if (!form.username || !form.password) {
-      setError("Please enter both email and password.");
+      setError('Please enter both email and password.');
       return;
     }
 
     try {
       await login(form);
-      localStorage.setItem("username", form.username);
-      setError("");
-      navigate("/");
+      setIsLogged(true);
+      localStorage.setItem('username', form.username);
+      setError('');
+      navigate('/');
     } catch (error) {
-      setError("Login failed. Please try again.");
+      setError('Login failed. Please try again.');
     }
   };
 
   const handleRegisterClick = () => {
-    navigate("/register");
+    navigate('/register');
   };
 
   const handleLoginWithGG = async () => {
     try {
       await loginWithTokenGoogle();
-      navigate("/");
+      setIsLogged(true);
+      navigate('/');
     } catch (error) {
-      console.error("Login error:", error);
-      alert("Đăng nhập thất bại.");
+      console.error('Login error:', error);
+      alert('Đăng nhập thất bại.');
     }
   };
 
