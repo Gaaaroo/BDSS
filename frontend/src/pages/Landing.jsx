@@ -1,41 +1,48 @@
-import React, { useEffect } from "react";
-import Banner from "../components/Banner";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
-import AboutSection from "../components/AboutSection";
-import ImageCarousel from "../components/Slider";
-import HowItWorkSection from "../components/HowItWorkSection";
-import BlogSection from "../components/BlogSection";
+import React, { useEffect } from 'react';
+import Banner from '../components/Banner';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import AboutSection from '../components/AboutSection';
+import ImageCarousel from '../components/Slider';
+import HowItWorkSection from '../components/HowItWorkSection';
+import BlogSection from '../components/BlogSection';
 
-import { Link, Element, Events, scrollSpy } from "react-scroll";
-import WidgetChat from "../components/WidgetChat";
+import { Link, Element, Events, scrollSpy } from 'react-scroll';
+import WidgetChat from '../components/WidgetChat';
+import { useApp } from '../Contexts/AppContext';
 
 export default function Home() {
-  const [isLogin, setIsLogin] = React.useState(false);
-  const [mode, setMode] = React.useState("guest");
+  const { isLogged } = useApp();
+  const [mode, setMode] = React.useState('guest');
 
   useEffect(() => {
-    const savedToken = localStorage.getItem("authToken");
-    if (savedToken != "" && savedToken != null) {
-      setIsLogin(true);
-      setMode("member");
+    console.log('Hello');
+    if (isLogged) {
+      setMode('member');
     } else {
-      setIsLogin(false);
-      setMode("guest");
+      setMode('guest');
     }
 
-    Events.scrollEvent.register("begin", (to, element) => {
-      console.log("begin", to, element);
+    Events.scrollEvent.register('begin', (to, element) => {
+      console.log('begin', to, element);
     });
-    Events.scrollEvent.register("end", (to, element) => {
-      console.log("end", to, element);
+    Events.scrollEvent.register('end', (to, element) => {
+      console.log('end', to, element);
     });
     scrollSpy.update();
     return () => {
-      Events.scrollEvent.remove("begin");
-      Events.scrollEvent.remove("end");
+      Events.scrollEvent.remove('begin');
+      Events.scrollEvent.remove('end');
     };
   }, []);
+
+  useEffect(() => {
+    if (isLogged) {
+      setMode('member');
+    } else {
+      setMode('guest');
+    }
+  }, [isLogged]);
 
   return (
     <>
