@@ -40,12 +40,7 @@ public class CommentService {
         //convert
         Comment comment = commentMapper.toComment(request);
 
-        var principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int userId = principal instanceof Jwt ?
-                Integer.parseInt(((Jwt) principal).getClaimAsString("userId")) : -1;
-        if (userId == -1) {
-            throw new RuntimeException("Cannot get user id");
-        }
+        int userId = Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -76,10 +71,10 @@ public class CommentService {
         Comment comment = commentRepository.findById(comment_id)
                 .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
 
-        String username = SecurityContextHolder.getContext()
-                .getAuthentication().getName();
+        int userId = Integer.parseInt(SecurityContextHolder.getContext()
+                .getAuthentication().getName());
 
-        if (!comment.getUser().getUsername().equals(username)) {
+        if (comment.getUser().getUserId() != userId) {
             throw new AppException(ErrorCode.COMMENT_CANNOT_DELETE);
         }
 

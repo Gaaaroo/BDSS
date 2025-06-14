@@ -64,16 +64,17 @@ public class UserService {
 
     public UserResponse getUserProfile(){
         var context = SecurityContextHolder.getContext();
-        String username = context.getAuthentication().getName();
+        int userId = Integer.parseInt(context.getAuthentication().getName());
 
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         return userMapper.toUserResponse(user);
     }
 
     public UserResponse updateProfile(UserUpdateRequest request){
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
+        var context = SecurityContextHolder.getContext();
+        int userId = Integer.parseInt(context.getAuthentication().getName());
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         userMapper.updateUser(user, request);
 
@@ -87,10 +88,6 @@ public class UserService {
     }
 
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
-        //an toàn hơn
-//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-//        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
-    // commment ở đya nè xog dsafadsg
         User user = userRepository.findById(Integer.parseInt(userId))
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
@@ -112,8 +109,12 @@ public class UserService {
     }
 
     public List<UserResponse> findUserNearby(double lat, double lng, double radiusKm) {
+        var context = SecurityContextHolder.getContext();
+        int userId = Integer.parseInt(context.getAuthentication().getName());
+
         return userRepository.findAll().stream()
                 .filter(user -> user.getLat() != null && user.getLng() != null)
+                .filter(user -> user.getUserId() != userId)
                 .filter(user -> haversine(lat, lng, user.getLat(), user.getLng()) <= radiusKm)
                 .map(userMapper::toUserResponse)
                 .toList();

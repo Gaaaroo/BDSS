@@ -36,9 +36,8 @@ public class BloodReceiveFormService {
         BloodReceiveForm bloodReceiveForm = bloodReceiveFormMapper.toBloodReceiveForm(request);
 
         //Lay UserID từ token
-        var authentication = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        int userId = authentication instanceof Jwt ?
-                Integer.parseInt(((Jwt) authentication).getClaimAsString("userId")) : -1;
+        var context = SecurityContextHolder.getContext();
+        int userId = Integer.parseInt(context.getAuthentication().getName());
 
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
@@ -71,9 +70,9 @@ public class BloodReceiveFormService {
 
     public List<BloodReceiveFormResponse> getMyBloodReceiveForm() {
         var context = SecurityContextHolder.getContext();
-        String username = context.getAuthentication().getName();
+        int userId = Integer.parseInt(context.getAuthentication().getName());
 
-        List<BloodReceiveForm> list = bloodReceiveFormRepository.findAllByUserUsername(username);
+        List<BloodReceiveForm> list = bloodReceiveFormRepository.findAllByUserUserId(userId);
         return list.stream().map(bloodReceiveFormMapper::toBloodReceiveFormResponse).toList();
     }
 
