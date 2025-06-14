@@ -1,12 +1,10 @@
-import React from 'react';
-import axios from 'axios';
 import axiosClient from '../api/axiosClient';
 import { signInWithPopup } from 'firebase/auth';
 import { provider, auth } from './firebase';
 
 export const login = async (form) => {
   try {
-    const response = await axiosClient.post('/auth/login', form, {});
+    const response = await axiosClient.post('/auth/login', form);
     const token = response.data.data.accessToken;
     const refreshToken = response.data.data.refreshToken;
     localStorage.setItem('authToken', token);
@@ -60,7 +58,6 @@ export const verifyOTP = async (otpData) => {
     return res.data;
   } catch (err) {
     console.error('Verify OTP error:', err);
-
     throw (
       err.response?.data || { success: false, message: 'Error not defined!' }
     );
@@ -77,48 +74,3 @@ export const resendOTP = async (resendOtpData) => {
     throw error;
   }
 };
-
-// Add a request interceptor to attach the token
-axiosClient.interceptors.request.use(
-  async (config) => {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (err) => {
-    return Promise.reject(err);
-  }
-);
-
-// Add a response interceptor to handle 401 and refresh token
-axiosClient.interceptors.response.use(
-  (res) => res,
-  async (error) => {
-    console.log(error);
-    const originalRequest = error.config;
-    if (error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      const refreshToken = localStorage.getItem('refreshToken');
-      if (!refreshToken) return Promise.reject(error);
-      try {
-        const res = await axiosClient.post('/auth/refresh', {
-          token: refreshToken,
-        });
-        console.log('New token >>> ', res);
-
-        const newAccessToken = res.data.data.accessToken;
-        localStorage.setItem('authToken', newAccessToken);
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return axiosClient(originalRequest);
-      } catch (error) {
-        localStorage.removeItem('authToken');
-        localStorage.removeItem('refreshToken');
-        window.location.href = '/login';
-        return Promise.reject(error);
-      }
-    }
-    return Promise.reject(error);
-  }
-);
