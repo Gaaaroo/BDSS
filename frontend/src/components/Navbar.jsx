@@ -3,6 +3,8 @@ import logo from "../assets/images/logo.jpg";
 import { CircleUser, HeartHandshake, House } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Link as ScrollLink } from "react-scroll";
+import { useProfile } from "../Contexts/ProfileContext";
+
 //import { useState } from "react";
 
 // LogoNavbar
@@ -57,10 +59,10 @@ function Menu() {
 function UserIcon() {
   const [open, setOpen] = React.useState(false);
   // const [showModal, setShowModal] = useState(false);
-
+  const { setProfile } = useProfile();
   const handleLogout = () => {
     localStorage.clear();
-
+    setProfile(null);
     navigate("/");
   };
   const navigate = useNavigate();
