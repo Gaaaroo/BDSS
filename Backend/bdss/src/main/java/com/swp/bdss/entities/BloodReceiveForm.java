@@ -15,6 +15,7 @@ import java.time.LocalDate;
 @Table(name = "receive_request")
 public class BloodReceiveForm {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     int receive_id;
     @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "user_id")
