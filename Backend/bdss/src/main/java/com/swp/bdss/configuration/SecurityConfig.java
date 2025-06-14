@@ -1,6 +1,5 @@
 package com.swp.bdss.configuration;
 
-import com.swp.bdss.exception.AppException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,10 +13,14 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.web.SecurityFilterChain;
@@ -46,8 +49,7 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(request ->
                 request.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers(PUBLIC_URLS)
-                        .permitAll()
+                        .requestMatchers(PUBLIC_URLS).permitAll()
                         .anyRequest()
                         .authenticated());
 
@@ -71,16 +73,24 @@ public class SecurityConfig {
                 .macAlgorithm(MacAlgorithm.HS512)
                 .build();
 
-        decoder.setJwtValidator(jwt -> {
+        // Tạo validator check token_type mặc định
+        JwtTimestampValidator timestampValidator = new JwtTimestampValidator();
+        OAuth2TokenValidator<Jwt> combinedValidator = getJwtOAuth2TokenValidator(timestampValidator);
+        decoder.setJwtValidator(combinedValidator);
+        return decoder;
+    }
+
+    private static OAuth2TokenValidator<Jwt> getJwtOAuth2TokenValidator(JwtTimestampValidator timestampValidator) {
+        OAuth2TokenValidator<Jwt> tokenTypeValidator = jwt -> {
             String tokenType = jwt.getClaimAsString("token_type");
-            if (!tokenType.equals("access")) {
+            if(!tokenType.equals("access")) {
                 return OAuth2TokenValidatorResult.failure(
-                        new OAuth2Error("invalid_token", "Only access tokens are allowed", null)
-                );
+                        new OAuth2Error("invalid_token_type", "Only access tokens are allowed", null));
             }
             return OAuth2TokenValidatorResult.success();
-        });
-        return decoder;
+        };
+
+        return new DelegatingOAuth2TokenValidator<>(timestampValidator, tokenTypeValidator);
     }
 
     /**
