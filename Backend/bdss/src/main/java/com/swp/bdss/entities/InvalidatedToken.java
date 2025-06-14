@@ -1,8 +1,6 @@
 package com.swp.bdss.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,6 +15,7 @@ import java.util.Date;
 @Entity
 public class InvalidatedToken {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     String token_id;
     @ManyToOne
     User user;

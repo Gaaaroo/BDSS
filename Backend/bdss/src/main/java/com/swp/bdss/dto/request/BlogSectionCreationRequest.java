@@ -4,7 +4,6 @@ import com.swp.bdss.entities.BlogSection;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -12,8 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BlogCreationRequest {
-    String title;
+public class BlogSectionCreationRequest {
+    String content;
     String image_link;
-    List<BlogSectionCreationRequest> sections;
 }
