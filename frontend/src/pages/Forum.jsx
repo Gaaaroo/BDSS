@@ -12,10 +12,12 @@ import { createComment } from '../services/api/commentService';
 import { useLocation } from 'react-router-dom';
 import { deleteComment } from '../services/api/commentService';
 import Footer from '../components/Footer';
+import ErrorModal from '../components/ErrorModal';
 
 function Forum() {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState('');
+  const [errorModal, setErrorModal] = useState({ open: false, message: '' });
 
   //search
   const [keyword, setKeyword] = useState('');
@@ -191,23 +193,38 @@ function Forum() {
               : post
           )
         );
-      } catch (err) {
-        console.log('Full error object:', err);
-
-        if (err.response?.data) {
-          const { code, message } = err.response.data;
-          console.log('⛔ Error code:', code); // 👉 sẽ in ra: 1017
-          console.log('📝 Error message:', message); // 👉 sẽ in ra: "You cannot delete this comment"
-          alert(`Lỗi ${code}: ${message}`);
-        } else {
-          console.log('Không có response.data trong error!');
-        }
+      } catch (error) {
+        const backendMessage = error?.response?.data?.message;
+        const backendCode = error?.response?.data?.code;
+        setErrorModal({
+          open: true,
+          message: (
+            <>
+              {backendCode && (
+                <div className="font-semibold text-red-500 pb-2">
+                  Error code: {backendCode}
+                </div>
+              )}
+              <div>
+                {backendMessage ||
+                  'Failed to delete comment. Please try again.'}
+              </div>
+            </>
+          ),
+        });
+        console.log('DSMessage:', backendMessage);
+        console.log('Code:', backendCode);
       }
     }
   };
 
   return (
     <>
+      <ErrorModal
+        open={errorModal.open}
+        message={errorModal.message}
+        onClose={() => setErrorModal({ open: false, message: '' })}
+      />
       <Navbar mode="forum" />
       <ForumImage
         searchKey={searchKey}

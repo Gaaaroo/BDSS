@@ -2,24 +2,24 @@ import axiosClient from './axiosClient';
 
 export const createPost = async (postData) => {
   const response = await axiosClient.post('/forum', postData);
-  return response.data.data;
+  return response;
 };
 
 export const getForumPosts = async () => {
   const response = await axiosClient.get('/forum');
-  return response.data.data.reverse();
+  return response.reverse();
 };
 
 export const searchForumPosts = async (keyword) => {
   const response = await axiosClient.get('/forum/search', {
     params: { keyword },
   });
-  return response.data.data.reverse();
+  return response.reverse();
 };
 
 export const getMyPosts = async () => {
   const response = await axiosClient.get('/forum/my-posts');
-  return response.data.data.reverse();
+  return response.reverse();
 };
 
 export const deletePost = async (postId) => {
@@ -28,7 +28,7 @@ export const deletePost = async (postId) => {
     withCredentials: true,
   });
 
-  return response.data;
+  return response;
 };
 
 export const updatePost = async (postId, postData) => {
@@ -36,5 +36,5 @@ export const updatePost = async (postId, postData) => {
     params: { post_id: postId },
     withCredentials: true,
   });
-  return response.data;
+  return response;
 };
