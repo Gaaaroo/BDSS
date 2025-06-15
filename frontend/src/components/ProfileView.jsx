@@ -1,10 +1,10 @@
-import React from "react";
-import MapView from "./MapView";
+import React from 'react';
+import MapView from './MapView';
 
 export default function ProfileView({ userData, onEditClick }) {
   const formatField = (value) =>
-    value === null || value === undefined || value === ""
-      ? "please update your profile"
+    value === null || value === undefined || value === ''
+      ? 'please update your profile'
       : value;
 
   return (
@@ -20,7 +20,7 @@ export default function ProfileView({ userData, onEditClick }) {
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src =
-                  "https://firebasestorage.googleapis.com/v0/b/blooddonationsystem-9f456.firebasestorage.app/o/profile-images%2Fmbqqs93k-avatar.webp?alt=media&token=6b9ef0c4-72dc-45e2-9eed-73c64e236d3d";
+                  'https://firebasestorage.googleapis.com/v0/b/blooddonationsystem-9f456.firebasestorage.app/o/profile-images%2Fmbqqs93k-avatar.webp?alt=media&token=6b9ef0c4-72dc-45e2-9eed-73c64e236d3d';
               }}
             />
             <h2 className="text-4xl font-bold text-red-700">

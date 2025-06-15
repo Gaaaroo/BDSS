@@ -10,10 +10,9 @@ export default function ProfileUpdate({
   onCancel,
   onSaveSuccess,
 }) {
-  const { setProfile } = useApp(); //lấy hàm setProfile từ context
+  const { saveProfile } = useApp(); //lấy hàm setProfile từ context
   const [formData, setFormData] = useState({ ...initialData });
   const [uploading, setUploading] = useState(false);
-
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -47,7 +46,8 @@ export default function ProfileUpdate({
     e.preventDefault();
     try {
       const res = await updateUserProfile(formData);
-      setProfile(res); //cập nhật context ngay sau gọi API thành công
+      console.log(res.data);
+      saveProfile(res.data);
       onSaveSuccess();
     } catch (error) {
       console.error('Cập nhật thất bại:', error);
@@ -63,7 +63,7 @@ export default function ProfileUpdate({
             <label className="block font-medium mb-1">Username</label>
             <input
               name="username"
-              value={formData.username}
+              value={formData.username || ''}
               onChange={handleChange}
               className="input"
             />
@@ -72,7 +72,7 @@ export default function ProfileUpdate({
             <label className="block font-medium mb-1">Password</label>
             <input
               name="password"
-              value={formData.password}
+              value={formData.password || ''}
               onChange={handleChange}
               type="password"
               className="input"
@@ -82,7 +82,7 @@ export default function ProfileUpdate({
             <label className="block font-medium mb-1">Full Name</label>
             <input
               name="full_name"
-              value={formData.full_name}
+              value={formData.full_name || ''}
               onChange={handleChange}
               className="input"
             />
@@ -91,7 +91,7 @@ export default function ProfileUpdate({
             <label className="block font-medium mb-1">Gender</label>
             <select
               name="gender"
-              value={formData.gender}
+              value={formData.gender || ''}
               onChange={handleChange}
               className="input"
             >
@@ -104,7 +104,7 @@ export default function ProfileUpdate({
             <input
               name="dob"
               type="date"
-              value={formData.dob}
+              value={formData.dob || ''}
               onChange={handleChange}
               className="input"
             />
@@ -113,7 +113,7 @@ export default function ProfileUpdate({
             <label className="block font-medium mb-1">Email</label>
             <input
               name="email"
-              value={formData.email}
+              value={formData.email || ''}
               onChange={handleChange}
               className="input"
             />
@@ -122,19 +122,29 @@ export default function ProfileUpdate({
             <label className="block font-medium mb-1">Phone</label>
             <input
               name="phone"
-              value={formData.phone}
+              value={formData.phone || ''}
               onChange={handleChange}
               className="input"
             />
           </div>
           <div>
             <label className="block font-medium mb-1">Blood Type</label>
-            <input
+            <select
               name="blood_type"
-              value={formData.blood_type}
+              value={formData.blood_type || ''}
               onChange={handleChange}
               className="input"
-            />
+            >
+              <option value="">Select blood type</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
           </div>
           <div>
             <label className="block font-medium mb-1">Image Upload</label>
