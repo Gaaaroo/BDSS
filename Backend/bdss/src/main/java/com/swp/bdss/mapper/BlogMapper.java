@@ -14,6 +14,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface BlogMapper {
 
+    @Mapping(target = "sections", ignore = true)
     Blog toBlog(BlogCreationRequest request);
 
     @Mapping(source = "blog_id", target = "blog_id")

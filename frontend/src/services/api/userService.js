@@ -1,14 +1,14 @@
 import axiosClient from './axiosClient';
 
 export const getUserProfile = async () => {
-  const token = localStorage.getItem('authToken');
+  //const token = localStorage.getItem('authToken');
   const response = await axiosClient.get('/users/myProfile');
   return response.data.data;
 };
 
 // Cập nhật thông tin người dùng
 export const updateUserProfile = async (updatedData) => {
-  const token = localStorage.getItem('authToken');
+  //const token = localStorage.getItem('authToken');
   const response = await axiosClient.put(
     '/users/myProfile/update',
     updatedData
@@ -17,7 +17,7 @@ export const updateUserProfile = async (updatedData) => {
 };
 
 export const getNearbyUsers = async (lat, lng, radius = 5) => {
-  const token = localStorage.getItem('authToken');
+  //const token = localStorage.getItem('authToken');
   const response = await axiosClient.get('/users/nearby', {
     params: {
       lat,
