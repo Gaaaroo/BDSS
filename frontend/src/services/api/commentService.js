@@ -2,7 +2,7 @@ import axiosClient from './axiosClient';
 
 export const createComment = async (postData) => {
   const response = await axiosClient.post('/comment', postData);
-  return response.data.data;
+  return response;
 };
 
 export const deleteComment = async (commentId) => {

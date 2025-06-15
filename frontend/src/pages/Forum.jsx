@@ -147,6 +147,8 @@ function Forum() {
       );
       setError('');
     } catch (error) {
+      console.error('Add comment error:', error);
+
       setError('Comment failed. Please try again.');
     }
   };

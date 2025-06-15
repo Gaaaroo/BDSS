@@ -10,6 +10,7 @@ import org.mapstruct.Mapping;
 public interface CommentMapper {
     Comment toComment(CommentCreationRequest request);
 
+    @Mapping(source = "user.userId", target = "user_id")
     @Mapping(source = "user.username", target = "username")
     CommentResponse toCommentResponse(Comment comment);
 
