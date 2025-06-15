@@ -3,7 +3,7 @@ import axiosClient from './axiosClient';
 export const getUserProfile = async () => {
   //const token = localStorage.getItem('authToken');
   const response = await axiosClient.get('/users/myProfile');
-  return response.data.data;
+  return response;
 };
 
 // Cập nhật thông tin người dùng
@@ -13,7 +13,7 @@ export const updateUserProfile = async (updatedData) => {
     '/users/myProfile/update',
     updatedData
   );
-  return response.data;
+  return response;
 };
 
 export const getNearbyUsers = async (lat, lng, radius = 5) => {
@@ -25,5 +25,5 @@ export const getNearbyUsers = async (lat, lng, radius = 5) => {
       radius,
     },
   });
-  return response.data.data;
+  return response;
 };
