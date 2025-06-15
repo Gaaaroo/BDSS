@@ -6,13 +6,13 @@ import { getUserProfile } from '../services/api/userService';
 import { LoadScript } from '@react-google-maps/api';
 import { useLocation } from 'react-router-dom';
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-
+// Thư viện cần load thêm từ Google (autocomplete)
+const libraries = ['places'];
 export default function ProfilePage() {
   const [userData, setUserData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const location = useLocation();
-  // Thư viện cần load thêm từ Google (autocomplete)
-  const libraries = ['places'];
+
   const fetchUserData = async () => {
     try {
       const data = await getUserProfile();

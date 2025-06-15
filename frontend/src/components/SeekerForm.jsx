@@ -1,10 +1,13 @@
 import TextInput from './TextInput';
 import { useEffect, useState } from 'react';
 import { useApp } from '../Contexts/AppContext';
+import { useNavigate } from 'react-router';
+import { receiveForm } from '../services/api/receiveFormService';
 export default function SeekerForm() {
   const { profile } = useApp(); //lấy profile từ context
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    fullName: '',
+    fullName: 'abc',
     dob: '',
     phone: '',
     gender: '',
@@ -28,6 +31,9 @@ export default function SeekerForm() {
         gender: profile.gender,
         email: profile.email,
       });
+    } else {
+      alert('You need update your profile');
+      navigate('/profile', { state: { flag: 'update' } });
     }
   }, [profile]);
 
@@ -35,9 +41,17 @@ export default function SeekerForm() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSeekerRegister = (e) => {
+  const handleSeekerRegister = async (e) => {
     e.preventDefault();
-    console.log('Detail form:', formData);
+    await receiveForm({
+      volume: formData.volume,
+      blood_type: formData.bloodType,
+      priority: formData.priority,
+      component_type: formData.type,
+      quantity: formData.quantity,
+      hospital_address: formData.hospital_address,
+    });
+    console.log('Detail receive form:', formData);
   };
 
   return (
@@ -55,14 +69,18 @@ export default function SeekerForm() {
             label="Full Name"
             name="fullName"
             placeholder="Enter your full name"
-            value={formData.fullName}
+            value={formData.fullName || ''}
+            onChange={() => {}}
+            disabled
             required
           />
           <TextInput
             label="Date of Birth"
             name="dob"
             type="date"
-            value={formData.dob}
+            value={formData.dob || ''}
+            onChange={() => {}}
+            disabled
             required
           />
           <TextInput
@@ -70,7 +88,9 @@ export default function SeekerForm() {
             name="phone"
             type="tel"
             placeholder="Enter your phone number"
-            value={formData.phone}
+            value={formData.phone || ''}
+            onChange={() => {}}
+            disabled
             required
           />
           <div>
@@ -79,7 +99,7 @@ export default function SeekerForm() {
             </label>
             <select
               name="bloodType"
-              value={formData.bloodType}
+              value={formData.bloodType || ''}
               onChange={handleChange}
               required
               className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
@@ -129,7 +149,9 @@ export default function SeekerForm() {
             </label>
             <select
               name="gender"
-              value={formData.gender}
+              value={formData.gender || ''}
+              onChange={() => {}}
+              disabled
               required
               className="w-full px-3 text-lg py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
             >
@@ -144,15 +166,16 @@ export default function SeekerForm() {
             name="email"
             type="email"
             placeholder="Enter your email"
-            value={formData.email}
-            onChange={handleChange}
+            value={formData.email || ''}
+            onChange={() => {}}
+            disabled
             required
           />
           <TextInput
             label="Hospital Address"
-            name="address"
+            name="hospital_address"
             placeholder="Enter hospital address"
-            value={formData.hospital_address}
+            value={formData.hospital_address || ''}
             onChange={handleChange}
             required
           />

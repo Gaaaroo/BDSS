@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useApp } from '../Contexts/AppContext';
 import React from 'react';
 import { useNavigate } from 'react-router';
-import { update } from 'firebase/database';
+import { donorForm } from '../services/api/receiveFormService';
 
 export function Title({ title, decription }) {
   return (
@@ -16,9 +16,7 @@ export function Title({ title, decription }) {
 
 export default function DonorForm() {
   const { profile } = useApp(); //lấy profile từ context
-  const [showModal, setShowModal] = useState(false);
-  const [myProfile, setMyProfile] = useState(null);
-  const [diseaseData, setdiseaseData] = useState('');
+  // const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: '',
@@ -54,9 +52,14 @@ export default function DonorForm() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleDonorRegister = (e) => {
+  const handleDonorRegister = async (e) => {
     e.preventDefault();
-    console.log('Detail form:', formData);
+    try {
+      const res = await donorForm({ health_notes: formData.disease });
+      console.log('Detail donor form:', res.data);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -128,6 +131,7 @@ export default function DonorForm() {
               name="gender"
               value={formData.gender}
               onChange={() => {}}
+              disabled
               required
               className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
             >
@@ -144,6 +148,7 @@ export default function DonorForm() {
             placeholder="Enter your email"
             value={formData.email}
             onChange={() => {}}
+            disabled
             required
           />
           <TextInput
@@ -152,6 +157,7 @@ export default function DonorForm() {
             placeholder="Enter your address"
             value={formData.address}
             onChange={() => {}}
+            disabled
             required
           />
           <TextInput
