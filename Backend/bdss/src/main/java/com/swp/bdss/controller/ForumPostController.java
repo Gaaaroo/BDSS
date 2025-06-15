@@ -25,7 +25,7 @@ public class ForumPostController {
     @PostMapping
     ApiResponse<ForumPostResponse> createForumPost(@RequestBody ForumPostCreationRequest request){
         return ApiResponse.<ForumPostResponse>builder()
-                .code(1111)
+                .code(1000)
                 .data(forumPostService.createForumPost(request))
                 .message("create forum post successfully")
                 .build();
@@ -35,7 +35,7 @@ public class ForumPostController {
     ApiResponse<Void> deleteOwnPost(@RequestParam Long post_id) {
         forumPostService.deleteOwnPost(post_id);
         return ApiResponse.<Void>builder()
-                .code(1111)
+                .code(1000)
                 .message("delete forum post successfully")
                 .build();
     }
@@ -44,7 +44,7 @@ public class ForumPostController {
     ApiResponse<Void> deletePostByAdmin(@PathVariable Long post_id) {
         forumPostService.deletePostByAdmin(post_id);
         return ApiResponse.<Void>builder()
-                .code(1111)
+                .code(1000)
                 .message("delete forum post by admin successfully")
                 .build();
     }
@@ -52,7 +52,7 @@ public class ForumPostController {
     @GetMapping
     ApiResponse<List<ForumPostResponse>> getAllForumPosts() {
         return ApiResponse.<List<ForumPostResponse>>builder()
-                .code(1111)
+                .code(1000)
                 .data(forumPostService.getAllForumPosts())
                 .message("get all forum posts successfully")
                 .build();
@@ -61,7 +61,7 @@ public class ForumPostController {
     @GetMapping("/{post_id}")
     ApiResponse<ForumPostResponse> getForumPostById(@PathVariable Long post_id) {
         return ApiResponse.<ForumPostResponse>builder()
-                .code(1111)
+                .code(1000)
                 .data(forumPostService.getForumPostById(post_id))
                 .message("get forum post by id successfully")
                 .build();
@@ -72,7 +72,7 @@ public class ForumPostController {
     @GetMapping("/search")
     ApiResponse<List<ForumPostResponse>> searchForumPosts(@RequestParam String keyword) {
         return ApiResponse.<List<ForumPostResponse>>builder()
-                .code(1111)
+                .code(1000)
                 .data(forumPostService.searchForumPost(keyword))
                 .message("search forum posts successfully")
                 .build();
@@ -83,7 +83,7 @@ public class ForumPostController {
     @GetMapping("/my-posts")
     ApiResponse<List<ForumPostResponse>> getMyForumPosts() {
         return ApiResponse.<List<ForumPostResponse>>builder()
-                .code(1111)
+                .code(1000)
                 .data(forumPostService.getAllMyForumPostsByUser())
                 .message("get my forum posts successfully")
                 .build();
@@ -93,7 +93,7 @@ public class ForumPostController {
     @PutMapping("/my-posts/update")
     ApiResponse<ForumPostResponse> updateForumPost(@RequestParam Long post_id, @RequestBody ForumPostCreationRequest request) {
         return ApiResponse.<ForumPostResponse>builder()
-                .code(1111)
+                .code(1000)
                 .data(forumPostService.updateForumPost(post_id, request))
                 .message("update forum post successfully")
                 .build();

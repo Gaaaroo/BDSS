@@ -27,9 +27,7 @@ axiosClient.interceptors.request.use((config) => {
 });
 
 // Add a response interceptor to handle 401 and refresh token
-axiosClient.interceptors.response.use(
-  (res) => res,
-  async (error) => {
+const handleAuthError =  async (error) => {
     const originalRequest = error.config;
     // Không retry nếu không có config (ví dụ lỗi CORS)
     if (!originalRequest || originalRequest.__isRetryRequest) {
@@ -66,7 +64,20 @@ axiosClient.interceptors.response.use(
         return Promise.reject(error);
       }
     }
+    return Promise.reject(error);
+}
+
+// Xử lý lỗi nghiệp vụ (code !== 1000)
+const handleBusinessError = (response) => {
+  const apiResponse = response.data;
+  if (apiResponse.code !== 1000) {
+    const error = new Error(apiResponse.message || 'Lỗi hệ thống');
+    error.response = { data: apiResponse };
+    throw error; // Đẩy vào catch
   }
-);
+  return apiResponse.data;
+};
+
+axiosClient.interceptors.response.use(handleBusinessError, handleAuthError);
 
 export default axiosClient;
