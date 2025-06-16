@@ -12,15 +12,15 @@ import java.time.LocalDate;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BloodReceiveFormResponse {
-    int receive_id;
+    int receiveId;
     User user;
-    String blood_type;
-    String component_type;
+    String bloodType;
+    String componentType;
     int quantity;
     int volume;
-    String hospital_address;
+    String hospitalAddress;
     String priority;
-    LocalDate request_date;
+    LocalDate requestDate;
     String status;
 
 }

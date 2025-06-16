@@ -11,9 +11,9 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentResponse {
-    Long comment_id;
+    Long commentId;
     String content;
     String username;
-    LocalDateTime created_at;
-    int user_id;
+    LocalDateTime createdAt;
+    int userId;
 }

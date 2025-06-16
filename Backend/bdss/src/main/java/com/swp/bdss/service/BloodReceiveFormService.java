@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -42,7 +41,7 @@ public class BloodReceiveFormService {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         bloodReceiveForm.setUser(user);
-        bloodReceiveForm.setRequest_date(LocalDate.now());
+        bloodReceiveForm.setRequestDate(LocalDate.now());
         bloodReceiveForm.setStatus("pending");
 
         return bloodReceiveFormMapper
@@ -64,7 +63,7 @@ public class BloodReceiveFormService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_EXISTED));
         BloodReceiveFormResponse bloodReceiveFormResponse = bloodReceiveFormMapper
                 .toBloodReceiveFormResponse(bloodReceiveForm);
-        bloodReceiveFormResponse.setReceive_id(bloodReceiveForm.getReceive_id());
+        bloodReceiveFormResponse.setReceiveId(bloodReceiveForm.getReceiveId());
         return bloodReceiveFormResponse;
     }
 

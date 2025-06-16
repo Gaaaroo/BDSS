@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -16,22 +17,74 @@ import java.time.LocalDate;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "userId")
     int userId;
-    String image_link;
+
+    @Column(name = "imageLink")
+    String imageLink;
+
+    @Column(name = "username", unique = true, nullable = false, length = 50)
     String username;
+
+    @Column(name = "password", nullable = true, length = 255)
     String password;
-    String full_name;
+
+    @Column(name = "fullName", length = 100)
+    String fullName;
+
+    @Column(name = "gender", length = 10)
     String gender;
+
+    @Column(name = "dob")
     LocalDate dob;
+
+    @Column(name = "email", unique = true, nullable = false, length = 100)
     String email;
+
+    @Column(name = "phone", length = 20, nullable = false)
     String phone;
+
+    @Column(name = "address", length = 255)
     String address;
+
+    @Column(name = "lat")
     Double lat;
+
+    @Column(name = "lng")
     Double lng;
-    String blood_type;
+
+    @Column(name = "bloodType", length = 10)
+    String bloodType;
+
+    @Column(name = "role", length = 10, nullable = false)
     String role;
-    @Column(nullable = false)
+
+    @Column(name = "status", length = 10, nullable = false)
     String status;
-    boolean is_active = false;
+
+    @Column(name = "isActive", nullable = false)
+    boolean isActive = false;
+
+    // OneToMany relationships
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Blog> blogs;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<BloodDonateForm> bloodDonateForms;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<BloodReceiveForm> bloodReceiveForms;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Comment> comments;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<ForumPost> forumPosts;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<InvalidatedToken> invalidatedTokens;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<OtpCode> otpCodes;
 }

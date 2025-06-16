@@ -3,7 +3,6 @@ package com.swp.bdss.service;
 
 import com.swp.bdss.dto.request.CommentCreationRequest;
 import com.swp.bdss.dto.response.CommentResponse;
-import com.swp.bdss.dto.response.UserResponse;
 import com.swp.bdss.entities.Comment;
 import com.swp.bdss.entities.ForumPost;
 import com.swp.bdss.entities.User;
@@ -19,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -45,12 +43,12 @@ public class CommentService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        ForumPost post = forumPostRepository.findById(request.getPost_id())
+        ForumPost post = forumPostRepository.findById(request.getPostId())
                 .orElseThrow(() -> new AppException(ErrorCode.FORUM_POST_NOT_EXISTED));
 
         comment.setUser(user);
         comment.setForumPost(post);
-        comment.setCreated_at(LocalDateTime.now());
+        comment.setCreatedAt(LocalDateTime.now());
 
         log.info("User in comment: {}", comment.getUser());
         log.info("User in comment: {}", comment.getUser().getUsername());

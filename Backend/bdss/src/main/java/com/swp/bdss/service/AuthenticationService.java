@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -66,7 +65,7 @@ public class AuthenticationService {
                     .authenticated(true)
                     .build();
         } else {
-            var newUser = userService.createUserForLoginGoogle(request.getEmail(), request.getUsername(), request.getImage_link());
+            var newUser = userService.createUserForLoginGoogle(request.getEmail(), request.getUsername(), request.getImageLink());
             var user = userRepository.findByEmail(newUser.getEmail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
             var accessToken = generateAccessToken(user);
             var refreshToken = generateRefreshToken(user);
@@ -180,7 +179,7 @@ public class AuthenticationService {
             // Nếu token chưa bị thu hồi thì lưu
             if (!invalidatedTokenRepository.existsById(jit)) {
                 InvalidatedToken invalidatedToken = InvalidatedToken.builder()
-                        .token_id(jit)
+                        .tokenId(jit)
                         .expiryTime(expirationTime)
                         .user(user)
                         .build();
