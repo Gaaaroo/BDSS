@@ -1,14 +1,14 @@
-import React, { useRef, useState } from "react";
-import { resendOTP, verifyOTP } from "../services/api/authService";
-import { useNavigate } from "react-router";
+import React, { useRef, useState } from 'react';
+import { resendOTP, verifyOTP } from '../services/api/authService';
+import { useNavigate } from 'react-router';
 
 export default function OTPForm({ onSubmit }) {
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [error, setError] = useState("");
+  const [otp, setOtp] = useState(['', '', '', '', '', '']);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
   const inputsRef = Array.from({ length: 6 }, () => useRef());
   const handleChange = (idx, e) => {
-    const value = e.target.value.replace(/[^0-9]/g, "").slice(0, 1);
+    const value = e.target.value.replace(/[^0-9]/g, '').slice(0, 1);
     const newOtp = [...otp];
     newOtp[idx] = value;
     setOtp(newOtp);
@@ -19,15 +19,15 @@ export default function OTPForm({ onSubmit }) {
   };
 
   const handleKeyDown = (idx, e) => {
-    if (e.key === "Backspace" && !otp[idx] && idx > 0) {
+    if (e.key === 'Backspace' && !otp[idx] && idx > 0) {
       inputsRef[idx - 1].current.focus();
     }
   };
 
   const handlePaste = (e) => {
-    const pasted = e.clipboardData.getData("Text").replace(/[^0-9]/g, "");
+    const pasted = e.clipboardData.getData('Text').replace(/[^0-9]/g, '');
     if (pasted.length === 6) {
-      setOtp(pasted.split(""));
+      setOtp(pasted.split(''));
       inputsRef[5].current.focus();
       e.preventDefault();
     }
@@ -35,7 +35,7 @@ export default function OTPForm({ onSubmit }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const code = otp.join("");
+    const code = otp.join('');
     if (onSubmit) onSubmit(code);
   };
 
@@ -63,60 +63,56 @@ export default function OTPForm({ onSubmit }) {
     ));
 
   const handleVerify = async () => {
-    const email = localStorage.getItem("otpEmail");
-    const otpString = otp.join("");
-    console.log("lấy được email rồi nè: ", email);
-    console.log("Mã otp nè: ", otpString);
+    const email = localStorage.getItem('otpEmail');
+    const otpString = otp.join('');
+    console.log('lấy được email rồi nè: ', email);
+    console.log('Mã otp nè: ', otpString);
     if (!email) {
-      setError("Email Not Found!!");
+      setError('Email Not Found!!');
       return;
     }
     try {
       const res = await verifyOTP({ email, otp: otpString });
-      console.log(res);
-      if (res.data) {
-        console.log("Verify successful");
-        setError("");
-        navigate("/login");
+      if (res) {
+        console.log('Verify successful');
+        setError('');
+        navigate('/login');
       } else {
-        setError("Wrong OTP Code!!");
+        setError('Verify fail');
       }
     } catch (err) {
-      console.log("lỗi nè", err);
+      console.log('lỗi nè', err);
       if (err.code) {
         setError(err.message);
       } else {
-        setError("An error occurred. Please try again.");
+        setError('An error occurred. Please try again.');
       }
-      console.error("Details error:", err.response?.data || err.message);
     }
   };
 
   const handleResentOTP = async () => {
-    const email = localStorage.getItem("otpEmail");
-    const otpString = otp.join("");
+    const email = localStorage.getItem('otpEmail');
+    const otpString = otp.join('');
     if (!email) {
-      setError("Email Not Found!!");
+      setError('Email Not Found!!');
       return;
     }
     try {
       const res = await resendOTP({ email, otp: otpString });
-      console.log(res);
-      if (res.data) {
-        console.log("Resend OTP successful");
-        setError("");
-        setOtp(["", "", "", "", "", ""]);
+      if (res) {
+        console.log('Resend OTP successful');
+        setError('');
+        setOtp(['', '', '', '', '', '']);
       } else {
-        setError("Failed to resend OTP: ", res.message);
+        setError('Failed to resend OTP: ', res.message);
       }
     } catch (err) {
-      console.log("lỗi nè", err);
+      console.log('lỗi nè', err);
       if (err.code) {
         setError(err.message);
       } else {
-        setError("An error occurred. Please try again.");
+        setError('An error occurred. Please try again.');
       }
-      console.error("Details error:", err.response?.data || err.message);
     }
   };
   return (
@@ -152,7 +148,7 @@ export default function OTPForm({ onSubmit }) {
         <button
           type="submit"
           className="w-full bg-gradient-to-r from-red-500 to-red-700 text-white py-3 rounded-md font-semibold text-lg hover:from-red-400 hover:to-red-700 transition disabled:opacity-50"
-          disabled={otp.some((v) => v === "")}
+          disabled={otp.some((v) => v === '')}
           onClick={handleVerify}
         >
           Confirm OTP
