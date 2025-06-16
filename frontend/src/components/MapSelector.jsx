@@ -1,18 +1,16 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from 'react';
 import {
   GoogleMap,
   LoadScript,
   Marker,
   Autocomplete,
-} from "@react-google-maps/api";
-import { getNearbyUsers } from "../services/api/userService";
-
-const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+} from '@react-google-maps/api';
+import { getNearbyUsers } from '../services/api/userService';
 
 // Kích thước bản đồ hiển thị
 const containerStyle = {
-  width: "100%",
-  height: "80vh",
+  width: '100%',
+  height: '80vh',
 };
 
 // Tọa độ trung tâm mặc định (TP. Hồ Chí Minh)
@@ -21,15 +19,12 @@ const defaultCenter = {
   lng: 106.700806,
 };
 
-// Thư viện cần load thêm từ Google (autocomplete)
-const libraries = ["places"];
-
 function MapSelector({ onLocationSelect, initialLocation }) {
   // Trạng thái lưu vị trí marker
   const [marker, setMarker] = useState(null);
   const [mapCenter, setMapCenter] = useState(defaultCenter);
   const [showModal, setShowModal] = useState(false);
-  const [addressText, setAddressText] = useState("");
+  const [addressText, setAddressText] = useState('');
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [nearbyUsers, setNearbyUsers] = useState([]);
 
@@ -46,7 +41,7 @@ function MapSelector({ onLocationSelect, initialLocation }) {
       setMarker(location);
       setMapCenter(location);
       setSelectedLocation({ lat, lng, address });
-      setAddressText(address || "");
+      setAddressText(address || '');
     }
   }, [initialLocation]);
 
@@ -73,7 +68,7 @@ function MapSelector({ onLocationSelect, initialLocation }) {
     // Gọi API lấy danh sách người dùng gần đó
     getNearbyUsers(lat, lng, 5)
       .then((users) => setNearbyUsers(users))
-      .catch((err) => console.error("Lỗi khi lấy user gần đó:", err));
+      .catch((err) => console.error('Lỗi khi lấy user gần đó:', err));
   };
 
   // Xử lý khi người dùng click trực tiếp lên bản đồ
@@ -89,17 +84,17 @@ function MapSelector({ onLocationSelect, initialLocation }) {
     // Dùng Geocoder để lấy địa chỉ từ tọa độ
     if (geocoderRef.current) {
       geocoderRef.current.geocode({ location }, (results, status) => {
-        if (status === "OK" && results[0]) {
+        if (status === 'OK' && results[0]) {
           const address = results[0].formatted_address;
           setAddressText(address);
           setSelectedLocation({ lat, lng, address });
           // Cập nhật input search nếu tìm được địa chỉ
-          const input = document.querySelector("#search-input");
+          const input = document.querySelector('#search-input');
           if (input) input.value = address;
           // Gọi API lấy danh sách người dùng gần đó
           getNearbyUsers(lat, lng, 5)
             .then((users) => setNearbyUsers(users))
-            .catch((err) => console.error("Lỗi khi lấy user gần đó:", err));
+            .catch((err) => console.error('Lỗi khi lấy user gần đó:', err));
         }
       });
     }
@@ -114,7 +109,7 @@ function MapSelector({ onLocationSelect, initialLocation }) {
   };
 
   return (
-    <LoadScript googleMapsApiKey={apiKey} libraries={libraries}>
+    <>
       <input
         type="text"
         value={addressText}
@@ -160,20 +155,21 @@ function MapSelector({ onLocationSelect, initialLocation }) {
                 {/* Marker của (người đang chọn vị trí) */}
                 {marker && (
                   <Marker
+                    key={'marker'}
                     position={marker}
                     icon={{
-                      url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png", // đỏ
+                      url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png', // đỏ
                     }}
                   />
                 )}
 
                 {/* Marker của người xung quanh (màu xanh) */}
-                {nearbyUsers.map((user) => (
+                {nearbyUsers.map((user, idx) => (
                   <Marker
-                    key={user.id}
+                    key={idx}
                     position={{ lat: user.lat, lng: user.lng }}
                     icon={{
-                      url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png", // xanh
+                      url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png', // xanh
                     }}
                   />
                 ))}
@@ -192,7 +188,7 @@ function MapSelector({ onLocationSelect, initialLocation }) {
           </div>
         </div>
       )}
-    </LoadScript>
+    </>
   );
 }
 

@@ -12,7 +12,7 @@ export const login = async (form) => {
     localStorage.setItem('authToken', token);
     localStorage.setItem('refreshToken', refreshToken);
     console.log('Login successful:', response);
-    return response.data;
+    return response;
   } catch (error) {
     console.error('Error fetching users:', error);
     console.error('Backend error details:', error.response?.data?.code);
@@ -30,7 +30,7 @@ export const loginWithTokenGoogle = async () => {
     localStorage.setItem('firebaseToken', idToken);
     //GỬI TOKEN LÊN BACKEND
     const res = await axiosClient.post('/auth/loginWithTokenGoogle');
-    console.log('Login with gg successfull', res.data);
+    console.log('Login with gg successfull', res);
     const token = res.accessToken;
     const refreshToken = res.refreshToken;
     localStorage.setItem('authToken', token);

@@ -1,16 +1,27 @@
-import React from "react";
-import img from "../assets/images/cover-photo.jpg";
-import { useNavigate } from "react-router-dom";
+import React from 'react';
+import img from '../assets/images/cover-photo.jpg';
+import { useNavigate } from 'react-router-dom';
+import { useApp } from '../Contexts/AppContext';
 export default function Banner() {
   const navigate = useNavigate();
+  const { isLogged } = useApp();
+  const [showModal, setShowModal] = React.useState(false);
   const handleBloodButtonClick = () => {
-    navigate("/blood-compatibility");
+    navigate('/blood-compatibility');
   };
   const handleDonorRegister = () => {
-    navigate("/become-a-donor");
+    if (!isLogged) {
+      setShowModal(true);
+      return;
+    }
+    navigate('/become-a-donor');
   };
   const handleSeekerRegister = () => {
-    navigate("/become-a-seeker");
+    if (!isLogged) {
+      setShowModal(true);
+      return;
+    }
+    navigate('/become-a-seeker');
   };
   return (
     <div className="relative w-full h-[450px] overflow-hidden">
@@ -41,6 +52,31 @@ export default function Banner() {
           Blood type
         </button>
       </div>
+      {showModal && (
+        <div
+          className="fixed inset-0 bg-opacity-50 flex items-start justify-center z-50 backdrop-brightness-50"
+          onClick={() => setShowModal(false)} // Click outside closes modal
+        >
+          <div
+            className="relative bg-white rounded-lg p-6 w-[600px] shadow-lg m-10"
+            onClick={(e) => e.stopPropagation()} // Prevent closing on inner click
+          >
+            <button
+              className="absolute top-2 right-3 text-gray-500 hover:text-red-600 text-2xl font-bold focus:outline-none"
+              onClick={() => setShowModal(false)}
+            >
+              &times;
+            </button>
+            <h1 className="text-2xl font-bold text-red-700 mb-4">
+              Please Login!
+            </h1>
+            <p className="text-gray-700 mb-6 justify-around">
+              "Oops! Looks like you're not logged in yet. Please log in to
+              continue registering - we promise it’ll only take a moment!"
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

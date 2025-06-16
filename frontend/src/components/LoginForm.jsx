@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import BackHome from './BackHome';
 import { login, loginWithTokenGoogle } from '../services/api/authService';
 import { useApp } from '../Contexts/AppContext';
+import { getUserProfile } from '../services/api/userService';
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -30,7 +31,6 @@ const LoginForm = () => {
     try {
       await login(form);
       setIsLogged(true);
-      localStorage.setItem('username', form.username);
       setError('');
       navigate('/');
     } catch (error) {

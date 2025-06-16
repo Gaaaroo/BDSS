@@ -1,7 +1,9 @@
-import TextInput from "./TextInput";
-import { useState } from "react";
-
-import React from "react";
+import TextInput from './TextInput';
+import { useEffect, useState } from 'react';
+import { useApp } from '../Contexts/AppContext';
+import React from 'react';
+import { useNavigate } from 'react-router';
+import { donorForm } from '../services/api/bloodFormService';
 
 export function Title({ title, decription }) {
   return (
@@ -13,18 +15,51 @@ export function Title({ title, decription }) {
 }
 
 export default function DonorForm() {
-  const [showModal, setShowModal] = useState(false);
-  const [myProfile, setMyProfile] = useState(null);
-  const [diseaseData, setdiseaseData] = useState("");
+  const { profile } = useApp(); //lấy profile từ context
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    fullName: '',
+    dob: '',
+    phone: '',
+    bloodType: '',
+    gender: '',
+    email: '',
+    address: 'abc',
+    disease: '',
+  });
+
+  useEffect(() => {
+    console.log('data from profile:', profile);
+    if (profile) {
+      setFormData({
+        ...formData,
+        fullName: profile.full_name,
+        dob: profile.dob,
+        phone: profile.phone,
+        bloodType: profile.blood_type,
+        gender: profile.gender,
+        email: profile.email,
+        address: profile.address,
+      });
+    } else {
+      console.log(profile);
+      alert('You need update your profile');
+      navigate('/profile', { state: { flag: 'update' } });
+    }
+  }, [profile]);
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleDonorRegister = (e) => {
+  const handleDonorRegister = async (e) => {
     e.preventDefault();
-    // Handle form submission
+    try {
+      const res = await donorForm({ health_notes: formData.disease });
+      console.log('Detail donor form:', res);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -43,7 +78,7 @@ export default function DonorForm() {
             name="fullName"
             placeholder="Enter your full name"
             value={formData.fullName}
-            onChange={handleChange}
+            onChange={() => {}}
             required
           />
           <TextInput
@@ -51,7 +86,7 @@ export default function DonorForm() {
             name="dob"
             type="date"
             value={formData.dob}
-            onChange={handleChange}
+            onChange={() => {}}
             required
           />
           <TextInput
@@ -60,7 +95,7 @@ export default function DonorForm() {
             type="tel"
             placeholder="Enter your phone number"
             value={formData.phone}
-            onChange={handleChange}
+            onChange={() => {}}
             required
           />
           <div>
@@ -70,7 +105,7 @@ export default function DonorForm() {
             <select
               name="bloodType"
               value={formData.bloodType}
-              onChange={handleChange}
+              onChange={() => {}}
               required
               className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
             >
@@ -95,7 +130,8 @@ export default function DonorForm() {
             <select
               name="gender"
               value={formData.gender}
-              onChange={handleChange}
+              onChange={() => {}}
+              disabled
               required
               className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
             >
@@ -111,7 +147,8 @@ export default function DonorForm() {
             type="email"
             placeholder="Enter your email"
             value={formData.email}
-            onChange={handleChange}
+            onChange={() => {}}
+            disabled
             required
           />
           <TextInput
@@ -119,7 +156,8 @@ export default function DonorForm() {
             name="address"
             placeholder="Enter your address"
             value={formData.address}
-            onChange={handleChange}
+            onChange={() => {}}
+            disabled
             required
           />
           <TextInput
