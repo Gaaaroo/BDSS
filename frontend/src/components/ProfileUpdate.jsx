@@ -9,7 +9,7 @@ export default function ProfileUpdate({
   onCancel,
   onSaveSuccess,
 }) {
-  const { saveProfile } = useApp(); //lấy hàm setProfile từ context
+  const { saveProfile } = useApp(); //lấy hàm saveProfile từ context
   const [formData, setFormData] = useState({ ...initialData });
   const [uploading, setUploading] = useState(false);
   const handleChange = (e) => {

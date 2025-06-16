@@ -115,15 +115,23 @@ export default function SeekerForm() {
               <option value="O-">O-</option>
             </select>
           </div>
-          <TextInput
-            label="Volume (ml)"
-            name="volume"
-            type="number"
-            placeholder="Enter required volume"
-            value={formData.volume || ''}
-            onChange={handleChange}
-            required
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Volume (ml)
+            </label>
+            <select
+              name="volume"
+              value={formData.volume || ''}
+              onChange={handleChange}
+              required
+              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
+            >
+              <option value="">Select volume (ml)</option>
+              <option value="350">350</option>
+              <option value="400">400</option>
+              <option value="450">450</option>
+            </select>
+          </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Priority
@@ -179,14 +187,25 @@ export default function SeekerForm() {
             onChange={handleChange}
             required
           />
-          <TextInput
-            label="Type"
-            name="type"
-            placeholder="Enter blood component type"
-            value={formData.type || ''}
-            onChange={handleChange}
-            required
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Type
+            </label>
+            <select
+              label="Type"
+              name="type"
+              value={formData.type || ''}
+              onChange={handleChange}
+              required
+              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
+            >
+              <option value="">Select blood component type</option>
+              <option value="Whole">Whole</option>
+              <option value="RBC">RBC</option>
+              <option value="Plasma">Plasma</option>
+              <option value="Platelets">Platelets</option>
+            </select>
+          </div>
           <TextInput
             label="Quantity"
             name="quantity"

@@ -30,7 +30,7 @@ export const loginWithTokenGoogle = async () => {
     localStorage.setItem('firebaseToken', idToken);
     //GỬI TOKEN LÊN BACKEND
     const res = await axiosClient.post('/auth/loginWithTokenGoogle');
-    console.log('Login with gg successfull', res.data);
+    console.log('Login with gg successfull', res);
     const token = res.accessToken;
     const refreshToken = res.refreshToken;
     localStorage.setItem('authToken', token);

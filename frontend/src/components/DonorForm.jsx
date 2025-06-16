@@ -16,7 +16,6 @@ export function Title({ title, decription }) {
 
 export default function DonorForm() {
   const { profile } = useApp(); //lấy profile từ context
-  // const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: '',
@@ -57,7 +56,7 @@ export default function DonorForm() {
     e.preventDefault();
     try {
       const res = await donorForm({ health_notes: formData.disease });
-      console.log('Detail donor form:', res.data);
+      console.log('Detail donor form:', res);
     } catch (error) {
       console.log(error);
     }
