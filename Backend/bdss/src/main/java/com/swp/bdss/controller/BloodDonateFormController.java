@@ -45,7 +45,7 @@ public class BloodDonateFormController {
         return "Delete successfully";
     }
 
-    @GetMapping("/all")
+    @GetMapping
     ApiResponse<List<BloodDonateFormResponse>> getAllUserBloodDonateForm() {
         return ApiResponse.<List<BloodDonateFormResponse>>builder()
                 .code(1000)
