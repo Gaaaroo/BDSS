@@ -31,17 +31,17 @@ public class CommentController {
     }
 
     @DeleteMapping("/delete")
-     ApiResponse<CommentResponse> deleteOwnComment(@RequestParam Long comment_id) {
-        commentService.deleteOwnComment(comment_id);
+     ApiResponse<CommentResponse> deleteOwnComment(@RequestParam Long commentId) {
+        commentService.deleteOwnComment(commentId);
         return ApiResponse.<CommentResponse>builder()
                 .code(1000)
                 .message("Delete comment successfully")
                 .build();
     }
 
-    @DeleteMapping("/admin/{comment_id}")
-    ApiResponse<CommentResponse> deleteCommentByAdmin(@PathVariable Long comment_id) {
-        commentService.deleteCommentByAdmin(comment_id);
+    @DeleteMapping("/admin/{commentId}")
+    ApiResponse<CommentResponse> deleteCommentByAdmin(@PathVariable Long commentId) {
+        commentService.deleteCommentByAdmin(commentId);
         return ApiResponse.<CommentResponse>builder()
                 .code(1000)
                 .message("Admin delete comment successfully")
