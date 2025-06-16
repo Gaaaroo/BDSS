@@ -3,7 +3,7 @@ import MapSelector from './MapSelector';
 import { updateUserProfile } from '../services/api/userService';
 import { storage } from '../services/api/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-//import { useApp } from '../Contexts/AppContext';
+import { useApp } from '../Contexts/AppContext';
 export default function ProfileUpdate({
   initialData,
   onCancel,
@@ -45,8 +45,8 @@ export default function ProfileUpdate({
     e.preventDefault();
     try {
       const res = await updateUserProfile(formData);
-      console.log(res.data);
-      saveProfile(res.data);
+      console.log(res);
+      saveProfile(res);
       onSaveSuccess();
     } catch (error) {
       console.error('Cập nhật thất bại:', error);

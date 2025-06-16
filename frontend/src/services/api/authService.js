@@ -12,7 +12,7 @@ export const login = async (form) => {
     localStorage.setItem('authToken', token);
     localStorage.setItem('refreshToken', refreshToken);
     console.log('Login successful:', response);
-    return response.data;
+    return response;
   } catch (error) {
     console.error('Error fetching users:', error);
     console.error('Backend error details:', error.response?.data?.code);

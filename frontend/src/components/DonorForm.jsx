@@ -43,6 +43,7 @@ export default function DonorForm() {
         address: profile.address,
       });
     } else {
+      console.log(profile);
       alert('You need update your profile');
       navigate('/profile', { state: { flag: 'update' } });
     }
