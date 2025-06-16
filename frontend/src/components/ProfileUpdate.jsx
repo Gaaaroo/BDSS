@@ -3,15 +3,15 @@ import MapSelector from './MapSelector';
 import { updateUserProfile } from '../services/api/userService';
 import { storage } from '../services/api/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-//import { useApp } from '../Contexts/AppContext';
+import { useApp } from '../Contexts/AppContext';
 export default function ProfileUpdate({
   initialData,
   onCancel,
   onSaveSuccess,
 }) {
+  const { saveProfile } = useApp(); //lấy hàm saveProfile từ context
   const [formData, setFormData] = useState({ ...initialData });
   const [uploading, setUploading] = useState(false);
-
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -44,7 +44,9 @@ export default function ProfileUpdate({
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await updateUserProfile(formData);
+      const res = await updateUserProfile(formData);
+      console.log(res);
+      saveProfile(res);
       onSaveSuccess();
     } catch (error) {
       console.error('Cập nhật thất bại:', error);
@@ -60,7 +62,7 @@ export default function ProfileUpdate({
             <label className="block font-medium mb-1">Username</label>
             <input
               name="username"
-              value={formData.username}
+              value={formData.username || ''}
               onChange={handleChange}
               className="input"
             />
@@ -69,7 +71,7 @@ export default function ProfileUpdate({
             <label className="block font-medium mb-1">Password</label>
             <input
               name="password"
-              value={formData.password}
+              value={formData.password || ''}
               onChange={handleChange}
               type="password"
               className="input"
@@ -79,7 +81,7 @@ export default function ProfileUpdate({
             <label className="block font-medium mb-1">Full Name</label>
             <input
               name="fullName"
-              value={formData.fullName}
+              value={formData.fullName || ''}
               onChange={handleChange}
               className="input"
             />
@@ -88,7 +90,7 @@ export default function ProfileUpdate({
             <label className="block font-medium mb-1">Gender</label>
             <select
               name="gender"
-              value={formData.gender}
+              value={formData.gender || ''}
               onChange={handleChange}
               className="input"
             >
@@ -101,7 +103,7 @@ export default function ProfileUpdate({
             <input
               name="dob"
               type="date"
-              value={formData.dob}
+              value={formData.dob || ''}
               onChange={handleChange}
               className="input"
             />
@@ -110,7 +112,7 @@ export default function ProfileUpdate({
             <label className="block font-medium mb-1">Email</label>
             <input
               name="email"
-              value={formData.email}
+              value={formData.email || ''}
               onChange={handleChange}
               className="input"
             />
@@ -119,19 +121,30 @@ export default function ProfileUpdate({
             <label className="block font-medium mb-1">Phone</label>
             <input
               name="phone"
-              value={formData.phone}
+              value={formData.phone || ''}
               onChange={handleChange}
               className="input"
             />
           </div>
           <div>
             <label className="block font-medium mb-1">Blood Type</label>
-            <input
+
+            <select
               name="bloodType"
-              value={formData.bloodType}
+              value={formData.bloodType || ''}
               onChange={handleChange}
               className="input"
-            />
+            >
+              <option value="">Select blood type</option>
+              <option value="A+">A+</option>
+              <option value="A-">A-</option>
+              <option value="B+">B+</option>
+              <option value="B-">B-</option>
+              <option value="AB+">AB+</option>
+              <option value="AB-">AB-</option>
+              <option value="O+">O+</option>
+              <option value="O-">O-</option>
+            </select>
           </div>
           <div>
             <label className="block font-medium mb-1">Image Upload</label>

@@ -1,16 +1,16 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from 'react';
 import {
   GoogleMap,
   LoadScript,
   Marker,
   InfoWindow,
   Autocomplete,
-} from "@react-google-maps/api";
-import { getNearbyUsers } from "../services/api/userService";
+} from '@react-google-maps/api';
+import { getNearbyUsers } from '../services/api/userService';
 
 const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
-const containerStyle = { width: "100%", height: "80vh" };
-const libraries = ["places"];
+const containerStyle = { width: '100%', height: '80vh' };
+const libraries = ['places'];
 
 function MapView({ initialLocation }) {
   const [mapCenter, setMapCenter] = useState(null);
@@ -29,16 +29,16 @@ function MapView({ initialLocation }) {
       // Lấy người dùng gần đó
       getNearbyUsers(lat, lng, 5)
         .then((users) => setNearbyUsers(users))
-        .catch((err) => console.error("Lỗi khi lấy user gần đó:", err));
+        .catch((err) => console.error('Lỗi khi lấy user gần đó:', err));
     }
   }, [initialLocation]);
 
   return (
-    <LoadScript googleMapsApiKey={apiKey} libraries={libraries}>
+    <>
       {/* Input hiển thị địa chỉ */}
       <input
         type="text"
-        value={initialLocation?.address || ""}
+        value={initialLocation?.address || ''}
         readOnly
         onClick={() => setShowModal(true)}
         placeholder="Địa chỉ"
@@ -60,12 +60,12 @@ function MapView({ initialLocation }) {
                 }}
               >
                 {/* Marker xanh của người xung quanh */}
-                {nearbyUsers.map((user) => (
+                {nearbyUsers.map((user, idx) => (
                   <Marker
-                    key={user.id}
+                    key={'idx-' + idx}
                     position={{ lat: user.lat, lng: user.lng }}
                     icon={{
-                      url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+                      url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png',
                     }}
                     onClick={() => setSelectedUser(user)}
                   />
@@ -73,9 +73,10 @@ function MapView({ initialLocation }) {
                 {/* Marker đỏ của chính người dùng (vị trí của họ) */}
                 {mapCenter && (
                   <Marker
+                    key={'marker-my-position'}
                     position={mapCenter}
                     icon={{
-                      url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
+                      url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
                     }}
                   />
                 )}
@@ -91,14 +92,14 @@ function MapView({ initialLocation }) {
                         src={
                           selectedUser.image_link?.trim()
                             ? selectedUser.image_link
-                            : "https://firebasestorage.googleapis.com/v0/b/blooddonationsystem-9f456.firebasestorage.app/o/profile-images%2Fmbqqs93k-avatar.webp?alt=media&token=6b9ef0c4-72dc-45e2-9eed-73c64e236d3d"
+                            : 'https://firebasestorage.googleapis.com/v0/b/blooddonationsystem-9f456.firebasestorage.app/o/profile-images%2Fmbqqs93k-avatar.webp?alt=media&token=6b9ef0c4-72dc-45e2-9eed-73c64e236d3d'
                         }
                         alt={selectedUser.username}
                         className="w-16 h-16 rounded-full object-cover shadow-md mb-2 border"
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.src =
-                            "https://firebasestorage.googleapis.com/v0/b/blooddonationsystem-9f456.firebasestorage.app/o/profile-images%2Fmbqqs93k-avatar.webp?alt=media&token=6b9ef0c4-72dc-45e2-9eed-73c64e236d3d";
+                            'https://firebasestorage.googleapis.com/v0/b/blooddonationsystem-9f456.firebasestorage.app/o/profile-images%2Fmbqqs93k-avatar.webp?alt=media&token=6b9ef0c4-72dc-45e2-9eed-73c64e236d3d';
                         }}
                       />
                       <div className="font-semibold text-sm text-gray-800">
@@ -122,7 +123,7 @@ function MapView({ initialLocation }) {
           </div>
         </div>
       )}
-    </LoadScript>
+    </>
   );
 }
 

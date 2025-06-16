@@ -43,7 +43,6 @@ const handleAuthError = async (error) => {
 
   if (error.response.status === 401 && originalRequest._retryCount < 5) {
     originalRequest._retryCount += 1;
-
     const refreshToken = localStorage.getItem('refreshToken');
     if (!refreshToken) {
       return Promise.reject(error);
