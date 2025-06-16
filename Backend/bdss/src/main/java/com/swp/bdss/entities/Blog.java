@@ -17,17 +17,28 @@ import java.util.List;
 @Entity
 @Table(name = "blog")
 public class Blog {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "blog_id")
-    int blog_id;
+    @Column(name = "blogId")
+    int blogId;
+
+    @Column(name = "title", nullable = false)
     String title;
-    @ManyToOne
-    @JoinColumn(name = "created_by", referencedColumnName = "user_id")
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "createdBy", referencedColumnName = "userId", nullable = false)
     User user;
-    LocalDate created_date;
-    String image_link;
+
+    @Column(name = "createdDate")
+    LocalDate createdDate;
+
+    @Column(name = "imageLink")
+    String imageLink;
+
+    @Column(name = "status")
     boolean status;
+
     @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<BlogSection> sections = new ArrayList<>();
+    List<BlogSection> sections = new ArrayList<>();
 }

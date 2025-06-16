@@ -1,6 +1,5 @@
 package com.swp.bdss.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,5 +10,5 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentCreationRequest {
     String content;
-    Long post_id;
+    Long postId;
 }

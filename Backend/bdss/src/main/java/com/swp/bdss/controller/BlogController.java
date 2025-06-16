@@ -3,7 +3,6 @@ package com.swp.bdss.controller;
 import com.swp.bdss.dto.request.BlogCreationRequest;
 import com.swp.bdss.dto.response.ApiResponse;
 import com.swp.bdss.dto.response.BlogResponse;
-import com.swp.bdss.dto.response.BloodReceiveFormResponse;
 import com.swp.bdss.service.BlogService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +25,14 @@ public class BlogController {
         return ApiResponse.<BlogResponse>builder()
                 .code(1000)
                 .data(blogService.createBlog(request))
+                .build();
+    }
+
+    @GetMapping("/top3")
+    ApiResponse<List<BlogResponse>> getTop3Blog() {
+        return ApiResponse.<List<BlogResponse>>builder()
+                .code(1000)
+                .data(blogService.getTop3Blogs())
                 .build();
     }
 

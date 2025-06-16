@@ -1,10 +1,8 @@
 package com.swp.bdss.dto.request;
 
-import com.swp.bdss.entities.BlogSection;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -14,6 +12,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BlogCreationRequest {
     String title;
-    String image_link;
+    String imageLink;
     List<BlogSectionCreationRequest> sections;
 }

@@ -1,7 +1,6 @@
 package com.swp.bdss.service;
 
 import com.swp.bdss.dto.request.ForumPostCreationRequest;
-import com.swp.bdss.dto.response.BloodDonateFormResponse;
 import com.swp.bdss.dto.response.ForumPostResponse;
 import com.swp.bdss.entities.ForumPost;
 import com.swp.bdss.entities.User;
@@ -15,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -40,7 +38,7 @@ public class ForumPostService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         forumPost.setUser(user);
-        forumPost.setCreated_at(LocalDateTime.now());
+        forumPost.setCreatedAt(LocalDateTime.now());
         //save forum post
         forumPostRepository.save(forumPost);
         log.info("forum post created: {}", forumPostMapper.toForumPostResponse(forumPost));
@@ -121,7 +119,7 @@ public class ForumPostService {
 
         forumPost.setTitle(request.getTitle());
         forumPost.setContent(request.getContent());
-        forumPost.setUpdated_at(LocalDateTime.now());
+        forumPost.setUpdatedAt(LocalDateTime.now());
         forumPostRepository.save(forumPost);
 
         return forumPostMapper.toForumPostResponse(forumPost);

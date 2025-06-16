@@ -1,10 +1,7 @@
 package com.swp.bdss.dto.request;
 
-import com.swp.bdss.entities.BlogSection;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -13,5 +10,5 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BlogSectionCreationRequest {
     String content;
-    String image_link;
+    String imageLink;
 }

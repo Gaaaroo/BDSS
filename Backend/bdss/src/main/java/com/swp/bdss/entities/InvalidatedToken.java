@@ -13,12 +13,17 @@ import java.util.Date;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
+@Table(name = "invalidatedTokens")
 public class InvalidatedToken {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    String token_id;
-    @ManyToOne
-    User user;
-    Date expiryTime;
+    @Column(name = "tokenId")
+    String tokenId;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "userId", referencedColumnName = "userId")
+    User user;
+
+    @Column(name = "expiryTime", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    Date expiryTime;
 }
