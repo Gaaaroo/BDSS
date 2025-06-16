@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BloodReceiveFormCreationRequest {
-    String blood_type;
+    String bloodType;
     String componentType;
     int quantity;
     int volume;
