@@ -30,8 +30,8 @@ public class ForumPostController {
     }
 
     @DeleteMapping("/my-posts")
-    ApiResponse<Void> deleteOwnPost(@RequestParam Long post_id) {
-        forumPostService.deleteOwnPost(post_id);
+    ApiResponse<Void> deleteOwnPost(@RequestParam Long postId) {
+        forumPostService.deleteOwnPost(postId);
         return ApiResponse.<Void>builder()
                 .code(1000)
                 .message("delete forum post successfully")
@@ -39,8 +39,8 @@ public class ForumPostController {
     }
 
     @DeleteMapping("/admin/{post_id}")
-    ApiResponse<Void> deletePostByAdmin(@PathVariable Long post_id) {
-        forumPostService.deletePostByAdmin(post_id);
+    ApiResponse<Void> deletePostByAdmin(@PathVariable Long postId) {
+        forumPostService.deletePostByAdmin(postId);
         return ApiResponse.<Void>builder()
                 .code(1000)
                 .message("delete forum post by admin successfully")
@@ -89,10 +89,10 @@ public class ForumPostController {
 
     //update forum post
     @PutMapping("/my-posts/update")
-    ApiResponse<ForumPostResponse> updateForumPost(@RequestParam Long post_id, @RequestBody ForumPostCreationRequest request) {
+    ApiResponse<ForumPostResponse> updateForumPost(@RequestParam Long postId, @RequestBody ForumPostCreationRequest request) {
         return ApiResponse.<ForumPostResponse>builder()
                 .code(1000)
-                .data(forumPostService.updateForumPost(post_id, request))
+                .data(forumPostService.updateForumPost(postId, request))
                 .message("update forum post successfully")
                 .build();
     }

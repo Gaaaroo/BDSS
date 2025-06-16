@@ -24,7 +24,7 @@ export const getMyPosts = async () => {
 
 export const deletePost = async (postId) => {
   const response = await axiosClient.delete('/forum/my-posts', {
-    params: { post_id: postId },
+    params: { postId: postId },
     withCredentials: true,
   });
 
@@ -33,7 +33,7 @@ export const deletePost = async (postId) => {
 
 export const updatePost = async (postId, postData) => {
   const response = await axiosClient.put('/forum/my-posts/update', postData, {
-    params: { post_id: postId },
+    params: { postId: postId },
     withCredentials: true,
   });
   return response;

@@ -62,12 +62,12 @@ export default function CommentSection({
             console.log(c),
             (
               <div
-                key={c.comment_id || index}
+                key={c.commentId || index}
                 className="mb-1 text-sm text-gray-200 flex justify-between items-center"
               >
                 <span>
                   <span className="font-semibold text-cyan-300">
-                    {c.user_id}:
+                    {c.userId}:
                   </span>{' '}
                   <span className="font-semibold text-cyan-300">
                     {c.username}:
@@ -78,11 +78,11 @@ export default function CommentSection({
                   <span className="text-xs text-gray-500 w-[101px] ml-1">
                     {dayjs(c.created_at).format('HH:mm - DD/MM/YYYY')}
                   </span>
-                  {String(c.user_id) === String(currentUserId) ? (
+                  {String(c.userId) === String(currentUserId) ? (
                     <button
                       className="ml-2 text-gray-400 hover:text-red-500"
                       title="Xóa bình luận"
-                      onClick={() => handleDeleteComment(c.comment_id)}
+                      onClick={() => handleDeleteComment(c.commentId)}
                     >
                       <BiTrash />
                     </button>
