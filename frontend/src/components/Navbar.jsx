@@ -122,7 +122,7 @@ function UserIcon() {
         </div>
       )}
       {showModal && (
-        <div className="fixed inset-0 bg-opacity-50 flex items-start justify-center z-50 backdrop-blur">
+        <div className="fixed inset-0 bg-opacity-50 flex items-start justify-center z-50 backdrop-brightness-50">
           <div className="bg-white rounded-lg p-6 w-150 shadow-lg m-10">
             <h1 className="text-2xl font-bold text-red-700 mb-4">Logout</h1>
             <p className="text-gray-700 mb-6">

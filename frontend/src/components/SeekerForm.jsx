@@ -1,31 +1,62 @@
-import TextInput from "./TextInput";
-import { useState } from "react";
-
+import TextInput from './TextInput';
+import { useEffect, useState } from 'react';
+import { useApp } from '../Contexts/AppContext';
+import { useNavigate } from 'react-router';
+import { receiveForm } from '../services/api/bloodFormService';
 export default function SeekerForm() {
+  const { profile } = useApp(); //lấy profile từ context
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    fullName: "",
-    dob: "",
-    phone: "",
-    bloodType: "",
-    gender: "",
-    email: "",
-    address: "",
-    disease: "",
+    fullName: 'abc',
+    dob: '',
+    phone: '',
+    gender: '',
+    email: '',
+    volume: '',
+    bloodType: '',
+    priority: '',
+    type: '',
+    quantity: '',
+    hospital_address: '',
   });
 
+  useEffect(() => {
+    console.log('data from profile:', profile);
+    if (profile) {
+      setFormData({
+        ...formData,
+        fullName: profile.full_name,
+        dob: profile.dob,
+        phone: profile.phone,
+        gender: profile.gender,
+        email: profile.email,
+      });
+    } else {
+      alert('You need update your profile');
+      navigate('/profile', { state: { flag: 'update' } });
+    }
+  }, [profile]);
+
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleDonorRegister = (e) => {
+  const handleSeekerRegister = async (e) => {
     e.preventDefault();
-    // Handle form submission
+    await receiveForm({
+      volume: formData.volume,
+      blood_type: formData.bloodType,
+      priority: formData.priority,
+      component_type: formData.type,
+      quantity: formData.quantity,
+      hospital_address: formData.hospital_address,
+    });
+    console.log('Detail receive form:', formData);
   };
 
   return (
     <form
-      onSubmit={handleDonorRegister}
+      onSubmit={handleSeekerRegister}
       className="space-y-4 bg-gray-50 py-20 mx-[200px] my-20 rounded-2xl"
     >
       <h1 className="text-4xl font-extrabold text-center text-red-700 mb-10 tracking-wide">
@@ -38,16 +69,18 @@ export default function SeekerForm() {
             label="Full Name"
             name="fullName"
             placeholder="Enter your full name"
-            value={formData.fullName}
-            onChange={handleChange}
+            value={formData.fullName || ''}
+            onChange={() => {}}
+            disabled
             required
           />
           <TextInput
             label="Date of Birth"
             name="dob"
             type="date"
-            value={formData.dob}
-            onChange={handleChange}
+            value={formData.dob || ''}
+            onChange={() => {}}
+            disabled
             required
           />
           <TextInput
@@ -55,8 +88,9 @@ export default function SeekerForm() {
             name="phone"
             type="tel"
             placeholder="Enter your phone number"
-            value={formData.phone}
-            onChange={handleChange}
+            value={formData.phone || ''}
+            onChange={() => {}}
+            disabled
             required
           />
           <div>
@@ -65,7 +99,7 @@ export default function SeekerForm() {
             </label>
             <select
               name="bloodType"
-              value={formData.bloodType}
+              value={formData.bloodType || ''}
               onChange={handleChange}
               required
               className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
@@ -81,23 +115,39 @@ export default function SeekerForm() {
               <option value="O-">O-</option>
             </select>
           </div>
-          <TextInput
-            label="Volume (ml)"
-            name="volume"
-            type="number"
-            placeholder="Enter required volume"
-            value={formData.volume || ""}
-            onChange={handleChange}
-            required
-          />
-          <TextInput
-            label="Date Required"
-            name="dateRequired"
-            type="date"
-            value={formData.dateRequired || ""}
-            onChange={handleChange}
-            required
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Volume (ml)
+            </label>
+            <select
+              name="volume"
+              value={formData.volume || ''}
+              onChange={handleChange}
+              required
+              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
+            >
+              <option value="">Select volume (ml)</option>
+              <option value="350">350</option>
+              <option value="400">400</option>
+              <option value="450">450</option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Priority
+            </label>
+            <select
+              name="priority"
+              value={formData.priority || ''}
+              onChange={handleChange}
+              required
+              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
+            >
+              <option value="">Select priority</option>
+              <option value="urgent">Urgent</option>
+              <option value="high">Medium</option>
+            </select>
+          </div>
         </div>
         {/* Left Column */}
         <div className="space-y-4">
@@ -107,8 +157,9 @@ export default function SeekerForm() {
             </label>
             <select
               name="gender"
-              value={formData.gender}
-              onChange={handleChange}
+              value={formData.gender || ''}
+              onChange={() => {}}
+              disabled
               required
               className="w-full px-3 text-lg py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
             >
@@ -123,53 +174,47 @@ export default function SeekerForm() {
             name="email"
             type="email"
             placeholder="Enter your email"
-            value={formData.email}
-            onChange={handleChange}
+            value={formData.email || ''}
+            onChange={() => {}}
+            disabled
             required
           />
           <TextInput
             label="Hospital Address"
-            name="address"
+            name="hospital_address"
             placeholder="Enter hospital address"
-            value={formData.address}
-            onChange={handleChange}
-            required
-          />
-          <TextInput
-            label="Type"
-            name="type"
-            placeholder="Enter blood component type"
-            value={formData.type || ""}
-            onChange={handleChange}
-            required
-          />
-          <TextInput
-            label="Quantity"
-            name="quantity"
-            type="number"
-            placeholder="Enter quantity"
-            value={formData.quantity || ""}
+            value={formData.hospital_address || ''}
             onChange={handleChange}
             required
           />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Priority
+              Type
             </label>
             <select
-              name="priority"
-              value={formData.priority || ""}
+              label="Type"
+              name="type"
+              value={formData.type || ''}
               onChange={handleChange}
               required
               className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
             >
-              <option value="">Select priority</option>
-              <option value="urgent">Urgent</option>
-              <option value="high">High</option>
-              <option value="high">Medium</option>
-              <option value="normal">Normal</option>
+              <option value="">Select blood component type</option>
+              <option value="Whole">Whole</option>
+              <option value="RBC">RBC</option>
+              <option value="Plasma">Plasma</option>
+              <option value="Platelets">Platelets</option>
             </select>
           </div>
+          <TextInput
+            label="Quantity"
+            name="quantity"
+            type="number"
+            placeholder="Enter quantity"
+            value={formData.quantity || ''}
+            onChange={handleChange}
+            required
+          />
         </div>
       </div>
       <div className="flex justify-center">
