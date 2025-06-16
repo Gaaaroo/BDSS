@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BloodReceiveFormResponse {
     int receiveId;
-    User user;
+    UserResponse user;
     String bloodType;
     String componentType;
     int quantity;

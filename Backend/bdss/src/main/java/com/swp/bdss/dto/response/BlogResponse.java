@@ -17,7 +17,6 @@ public class BlogResponse {
     int blogId;
     String title;
     List<BlogSectionCreationRequest> sections;
-    User user;
     LocalDate createdDate;
     String imageLink;
     boolean status;

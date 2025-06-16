@@ -14,7 +14,7 @@ export default function ProfileView({ userData, onEditClick }) {
         <div className="flex flex-col items-center text-center w-full">
           <div className="flex flex-col items-center mb-6">
             <img
-              src={formatField(userData.image_link)}
+              src={formatField(userData.imageLink)}
               alt="Profile"
               className="w-44 h-44 rounded-full object-cover mb-4 border-4 border-red-700"
               onError={(e) => {
@@ -37,7 +37,7 @@ export default function ProfileView({ userData, onEditClick }) {
                 <div className="min-w-[140px] font-semibold text-gray-600">
                   Full name:
                 </div>
-                <div>{formatField(userData.full_name)}</div>
+                <div>{formatField(userData.fullName)}</div>
               </div>
               <div className="flex">
                 <div className="min-w-[140px] font-semibold text-gray-600">
@@ -75,7 +75,7 @@ export default function ProfileView({ userData, onEditClick }) {
               <div className="min-w-[140px] font-semibold text-gray-600">
                 Blood Type:
               </div>
-              <div>{formatField(userData.blood_type)}</div>
+              <div>{formatField(userData.bloodType)}</div>
             </div>
             <div className="flex items-start">
               <div className="min-w-[140px] font-semibold text-gray-600 mt-2">

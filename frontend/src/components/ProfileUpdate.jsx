@@ -33,7 +33,7 @@ export default function ProfileUpdate({
     try {
       await uploadBytes(imageRef, file);
       const downloadUrl = await getDownloadURL(imageRef);
-      setFormData((prev) => ({ ...prev, image_link: downloadUrl }));
+      setFormData((prev) => ({ ...prev, imageLink: downloadUrl }));
     } catch (error) {
       console.error('Upload image failed:', error);
     } finally {
@@ -80,8 +80,8 @@ export default function ProfileUpdate({
           <div>
             <label className="block font-medium mb-1">Full Name</label>
             <input
-              name="full_name"
-              value={formData.full_name || ''}
+              name="fullName"
+              value={formData.fullName || ''}
               onChange={handleChange}
               className="input"
             />
@@ -128,9 +128,10 @@ export default function ProfileUpdate({
           </div>
           <div>
             <label className="block font-medium mb-1">Blood Type</label>
+
             <select
-              name="blood_type"
-              value={formData.blood_type || ''}
+              name="bloodType"
+              value={formData.bloodType || ''}
               onChange={handleChange}
               className="input"
             >
@@ -156,9 +157,9 @@ export default function ProfileUpdate({
             {uploading && (
               <div className="text-sm text-gray-500">Đang tải ảnh...</div>
             )}
-            {formData.image_link && (
+            {formData.imageLink && (
               <img
-                src={formData.image_link}
+                src={formData.imageLink}
                 alt="Preview"
                 className="mt-2 w-32 h-32 object-cover rounded-full border"
               />
