@@ -3,11 +3,13 @@ package com.swp.bdss.service;
 import com.swp.bdss.dto.request.BloodReceiveFormCreationRequest;
 import com.swp.bdss.dto.request.BloodReceiveFormUpdateStatusRequest;
 import com.swp.bdss.dto.response.BloodReceiveFormResponse;
+import com.swp.bdss.dto.response.UserResponse;
 import com.swp.bdss.entities.BloodReceiveForm;
 import com.swp.bdss.entities.User;
 import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
 import com.swp.bdss.mapper.BloodReceiveFormMapper;
+import com.swp.bdss.mapper.UserMapper;
 import com.swp.bdss.repository.BloodReceiveFormRepository;
 import com.swp.bdss.repository.UserRepository;
 import lombok.AccessLevel;
@@ -30,30 +32,37 @@ public class BloodReceiveFormService {
     UserRepository userRepository;
     BloodReceiveFormRepository bloodReceiveFormRepository;
     BloodReceiveFormMapper bloodReceiveFormMapper;
+    UserMapper userMapper;
 
     public BloodReceiveFormResponse createBloodReceiveForm(BloodReceiveFormCreationRequest request) {
         BloodReceiveForm bloodReceiveForm = bloodReceiveFormMapper.toBloodReceiveForm(request);
-
         //Lay UserID từ token
         var context = SecurityContextHolder.getContext();
         int userId = Integer.parseInt(context.getAuthentication().getName());
 
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-
+        bloodReceiveForm.setBloodType(request.getBloodType());
         bloodReceiveForm.setUser(user);
         bloodReceiveForm.setRequestDate(LocalDate.now());
         bloodReceiveForm.setStatus("pending");
+        UserResponse userResponse =userMapper.toUserResponse(user);
 
-        return bloodReceiveFormMapper
+        BloodReceiveFormResponse bloodReceiveFormResponse = bloodReceiveFormMapper
                 .toBloodReceiveFormResponse(bloodReceiveFormRepository.save(bloodReceiveForm));
-        //set fullname cho response tại vì fullname nằm ở user và mapstruct ko lấy trường này -> null hoặc sai
-        //bloodReceiveFormResponse.setUser_name(user.getUsername());
+        bloodReceiveFormResponse.setUser(userResponse);
+        return bloodReceiveFormResponse;
     }
 
     public List<BloodReceiveFormResponse> getAllBloodReceiveForm(){
         List<BloodReceiveFormResponse> formReceiveList = new ArrayList<>();
         formReceiveList = bloodReceiveFormRepository.findAll().stream()
-                .map(bloodReceiveFormMapper::toBloodReceiveFormResponse)
+                .map(bloodReceiveForm -> {
+                    BloodReceiveFormResponse bloodReceiveFormResponse = bloodReceiveFormMapper.toBloodReceiveFormResponse(bloodReceiveForm);
+                    User user = bloodReceiveForm.getUser();
+                    UserResponse userResponse = userMapper.toUserResponse(user);
+                    bloodReceiveFormResponse.setUser(userResponse);
+                    return bloodReceiveFormResponse;
+                })
                 .toList();
         return formReceiveList;
     }
@@ -64,6 +73,10 @@ public class BloodReceiveFormService {
         BloodReceiveFormResponse bloodReceiveFormResponse = bloodReceiveFormMapper
                 .toBloodReceiveFormResponse(bloodReceiveForm);
         bloodReceiveFormResponse.setReceiveId(bloodReceiveForm.getReceiveId());
+        User user = bloodReceiveForm.getUser();
+        UserResponse userResponse = userMapper.toUserResponse(user);
+        bloodReceiveFormResponse.setUser(userResponse);
+
         return bloodReceiveFormResponse;
     }
 
@@ -72,7 +85,14 @@ public class BloodReceiveFormService {
         int userId = Integer.parseInt(context.getAuthentication().getName());
 
         List<BloodReceiveForm> list = bloodReceiveFormRepository.findAllByUserUserId(userId);
-        return list.stream().map(bloodReceiveFormMapper::toBloodReceiveFormResponse).toList();
+        return list.stream().map(bloodReceiveForm -> {
+                    BloodReceiveFormResponse bloodReceiveFormResponse = bloodReceiveFormMapper.toBloodReceiveFormResponse(bloodReceiveForm);
+                    User user = bloodReceiveForm.getUser();
+                    UserResponse userResponse = userMapper.toUserResponse(user);
+                    bloodReceiveFormResponse.setUser(userResponse);
+                    return bloodReceiveFormResponse;
+                })
+                .toList();
     }
 
     public BloodReceiveFormResponse updateBloodReceiveFormStatus(int receiveId, BloodReceiveFormUpdateStatusRequest request) {
