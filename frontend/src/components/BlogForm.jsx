@@ -5,14 +5,14 @@ import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 export default function BlogForm({ initialData = null, onSubmit, onCancel }) {
   const [title, setTitle] = useState('');
   const [imageLink, setImageLink] = useState('');
-  const [sections, setSections] = useState([{ content: '', image_link: '' }]);
+  const [sections, setSections] = useState([{ content: '', imageLink: '' }]);
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (initialData) {
       setTitle(initialData.title);
-      setImageLink(initialData.image_link || '');
-      setSections(initialData.sections || [{ content: '', image_link: '' }]);
+      setImageLink(initialData.imageLink || '');
+      setSections(initialData.sections || [{ content: '', imageLink: '' }]);
     }
   }, [initialData]);
 
@@ -42,7 +42,7 @@ export default function BlogForm({ initialData = null, onSubmit, onCancel }) {
     const url = await uploadImage(file);
     if (!url) return;
     const updated = [...sections];
-    updated[index].image_link = url;
+    updated[index].imageLink = url;
     setSections(updated);
   };
 
@@ -53,7 +53,7 @@ export default function BlogForm({ initialData = null, onSubmit, onCancel }) {
   };
 
   const handleAddSection = () => {
-    setSections([...sections, { content: '', image_link: '' }]);
+    setSections([...sections, { content: '', imageLink: '' }]);
   };
 
   const handleRemoveLastSection = () => {
@@ -64,11 +64,11 @@ export default function BlogForm({ initialData = null, onSubmit, onCancel }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ title, image_link: imageLink, sections });
+    onSubmit({ title, imageLink: imageLink, sections });
     if (!initialData) {
       setTitle('');
       setImageLink('');
-      setSections([{ content: '', image_link: '' }]);
+      setSections([{ content: '', imageLink: '' }]);
     }
   };
 
@@ -128,9 +128,9 @@ export default function BlogForm({ initialData = null, onSubmit, onCancel }) {
               className="w-full p-2 mb-2 border rounded bg-white text-gray-700 cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-red-50 file:text-red-700 hover:file:bg-red-100"
             />
           </label>
-          {section.image_link && (
+          {section.imageLink && (
             <img
-              src={section.image_link}
+              src={section.imageLink}
               alt={`Section ${index + 1}`}
               className="w-full h-40 object-cover rounded"
             />

@@ -17,7 +17,7 @@ export default function BlogList({ blogs, onSelectBlog }) {
               onClick={() => onSelectBlog(blog)}
             >
               <img
-                src={blog.image_link}
+                src={blog.imageLink}
                 alt={blog.title}
                 className="mb-4 w-full h-70 object-cover rounded-md"
               />
@@ -25,7 +25,7 @@ export default function BlogList({ blogs, onSelectBlog }) {
                 {blog.title}
               </h3>
               <p className="text-sm text-gray-500 text-center mb-2">
-                Created: {dayjs(blog.created_date).format('DD/MM/YYYY')}
+                Created: {dayjs(blog.createdDate).format('DD/MM/YYYY')}
               </p>
               <p className="text-gray-700 text-center line-clamp-4">
                 {blog.sections?.[0]?.content || 'No description'}
