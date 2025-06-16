@@ -14,7 +14,7 @@ export const donorForm = async (donorFormData) => {
 
 export const receiveForm = async (receiveFormData) => {
   try {
-    const res = await axiosClient.post('/donateForm', receiveFormData);
+    const res = await axiosClient.post('/receiveForm', receiveFormData);
     console.log('>>>', res);
     return res.data;
   } catch (error) {
