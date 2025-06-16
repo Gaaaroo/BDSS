@@ -99,7 +99,11 @@ public class BloodReceiveFormService {
         BloodReceiveForm bloodReceiveForm = bloodReceiveFormRepository.findById(receiveId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         bloodReceiveForm.setStatus(request.getStatus());
-        return bloodReceiveFormMapper.toBloodReceiveFormResponse(bloodReceiveFormRepository.save(bloodReceiveForm));
+        BloodReceiveFormResponse bloodReceiveFormResponse =
+                bloodReceiveFormMapper.toBloodReceiveFormResponse(bloodReceiveFormRepository.save(bloodReceiveForm));
+        UserResponse userResponse =userMapper.toUserResponse(bloodReceiveForm.getUser());
+        bloodReceiveFormResponse.setUser(userResponse);
+        return bloodReceiveFormResponse;
     }
 
     public void deleteBloodReceiveForm(String id) {
