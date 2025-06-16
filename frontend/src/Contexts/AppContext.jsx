@@ -5,6 +5,7 @@ const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
   const [isLogged, setIsLogged] = useState(false);
+  const [profile, setProfile] = useState();
   const navigate = useNavigate();
   useEffect(() => {
     const authToken = localStorage.getItem('authToken');

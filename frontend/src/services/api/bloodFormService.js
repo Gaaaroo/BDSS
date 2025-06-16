@@ -4,7 +4,7 @@ import React from 'react';
 export const donorForm = async (donorFormData) => {
   try {
     const res = await axiosClient.post('/donateForm', donorFormData);
-    console.log('>>>', res);
+    console.log('Donor >>>', res);
     return res.data;
   } catch (error) {
     console.error('Error:', error);
@@ -15,7 +15,7 @@ export const donorForm = async (donorFormData) => {
 export const receiveForm = async (receiveFormData) => {
   try {
     const res = await axiosClient.post('/receiveForm', receiveFormData);
-    console.log('>>>', res);
+    console.log('Receive >>>', res);
     return res.data;
   } catch (error) {
     console.error('Error:', error);

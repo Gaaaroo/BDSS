@@ -2,7 +2,7 @@ import TextInput from './TextInput';
 import { useEffect, useState } from 'react';
 import { useApp } from '../Contexts/AppContext';
 import { useNavigate } from 'react-router';
-import { receiveForm } from '../services/api/receiveFormService';
+import { receiveForm } from '../services/api/bloodFormService';
 export default function SeekerForm() {
   const { profile } = useApp(); //lấy profile từ context
   const navigate = useNavigate();
