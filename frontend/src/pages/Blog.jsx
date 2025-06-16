@@ -39,7 +39,7 @@ export default function Blog() {
   };
 
   const handleUpdate = async (data) => {
-    await updateBlog(selectedBlog.blog_id, data);
+    await updateBlog(selectedBlog.blogId, data);
     alert('Đã cập nhật blog!');
     setSelectedBlog(null);
     setView('all');

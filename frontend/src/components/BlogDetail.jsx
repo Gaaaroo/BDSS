@@ -9,13 +9,13 @@ export default function BlogDetail({ blog, onBack }) {
       </button>
       <h2 className="text-3xl font-bold mb-2">{blog.title}</h2>
       <p className="text-sm text-gray-500 mb-4">
-        Ngày tạo: {dayjs(blog.created_date).format('DD/MM/YYYY')}
+        Ngày tạo: {dayjs(blog.createdDate).format('DD/MM/YYYY')}
       </p>
       {blog.sections?.map((section, idx) => (
         <div key={idx} className="mb-6">
-          {section.image_link && (
+          {section.imageLink && (
             <img
-              src={section.image_link}
+              src={section.imageLink}
               alt={`Section ${idx}`}
               className="w-full rounded mb-2"
             />
