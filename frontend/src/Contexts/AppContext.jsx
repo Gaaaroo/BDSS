@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router';
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
-  const [profile, setProfile] = useState(null);
   const [isLogged, setIsLogged] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {

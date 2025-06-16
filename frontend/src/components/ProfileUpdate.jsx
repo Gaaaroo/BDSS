@@ -3,8 +3,7 @@ import MapSelector from './MapSelector';
 import { updateUserProfile } from '../services/api/userService';
 import { storage } from '../services/api/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { useApp } from '../Contexts/AppContext';
-
+//import { useApp } from '../Contexts/AppContext';
 export default function ProfileUpdate({
   initialData,
   onCancel,
