@@ -101,7 +101,7 @@ export default function Blog() {
             blogs={myBlogs}
             onSelectBlog={(blog) => {
               setSelectedBlog(blog);
-              setView('update');
+              setView('detail');
             }}
           />
         )}

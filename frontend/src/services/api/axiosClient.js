@@ -27,45 +27,44 @@ axiosClient.interceptors.request.use((config) => {
 });
 
 // Add a response interceptor to handle 401 and refresh token
-const handleAuthError =  async (error) => {
-    const originalRequest = error.config;
-    // Không retry nếu không có config (ví dụ lỗi CORS)
-    if (!originalRequest || originalRequest.__isRetryRequest) {
+const handleAuthError = async (error) => {
+  const originalRequest = error.config;
+  // Không retry nếu không có config (ví dụ lỗi CORS)
+  if (!originalRequest || originalRequest.__isRetryRequest) {
+    return Promise.reject(error);
+  }
+
+  // Gắn cờ để tránh retry vô hạn
+  originalRequest.__isRetryRequest = true;
+  // Nếu chưa từng retry, gán biến retryCount
+  if (!originalRequest._retryCount) {
+    originalRequest._retryCount = 0;
+  }
+
+  if (error.response.status === 401 && originalRequest._retryCount < 5) {
+    originalRequest._retryCount += 1;
+
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) {
       return Promise.reject(error);
     }
-
-    // Gắn cờ để tránh retry vô hạn
-    originalRequest.__isRetryRequest = true;
-    // Nếu chưa từng retry, gán biến retryCount
-    if (!originalRequest._retryCount) {
-      originalRequest._retryCount = 0;
+    try {
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/auth/refresh`,
+        {
+          token: refreshToken,
+        }
+      );
+      const newAccessToken = res.data.data.accessToken;
+      localStorage.setItem('authToken', newAccessToken);
+      originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+      return axiosClient(originalRequest);
+    } catch (error) {
+      return Promise.reject(error);
     }
-
-    if (error.response.status === 401 && originalRequest._retryCount < 5) {
-      originalRequest._retryCount += 1;
-
-      const refreshToken = localStorage.getItem('refreshToken');
-      if (!refreshToken) {
-        return Promise.reject(error);
-      }
-      try {
-        const res = await axiosClient.post(
-          '/auth/refresh',
-          {
-            token: refreshToken,
-          },
-          { _retryCount: 3 }
-        );
-        const newAccessToken = res.data.data.accessToken;
-        localStorage.setItem('authToken', newAccessToken);
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-        return axiosClient(originalRequest);
-      } catch (error) {
-        return Promise.reject(error);
-      }
-    }
-    return Promise.reject(error);
-}
+  }
+  return Promise.reject(error);
+};
 
 // Xử lý lỗi nghiệp vụ (code !== 1000)
 const handleBusinessError = (response) => {
