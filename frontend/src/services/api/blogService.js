@@ -5,6 +5,11 @@ export const getAllBlogs = async () => {
   return response;
 };
 
+export const getTop3Blogs = async () => {
+  const response = await axiosClient.get('blog/top3');
+  return response;
+};
+
 export const getMyBlogs = async () => {
   const response = await axiosClient.get('/blog/myBlog');
   return response;
