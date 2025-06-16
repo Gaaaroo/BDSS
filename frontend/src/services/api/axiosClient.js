@@ -48,13 +48,14 @@ const handleAuthError = async (error) => {
       return Promise.reject(error);
     }
     try {
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/auth/refresh`,
+      const res = await axiosClient.post(
+        '/auth/refresh',
         {
           token: refreshToken,
-        }
+        },
+        { _retryCount: 3 }
       );
-      const newAccessToken = res.data.data.accessToken;
+      const newAccessToken = res.accessToken;
       localStorage.setItem('authToken', newAccessToken);
       originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
       return axiosClient(originalRequest);
