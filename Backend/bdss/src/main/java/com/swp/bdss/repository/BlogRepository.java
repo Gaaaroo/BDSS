@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface BlogRepository extends JpaRepository<Blog, Integer> {
     List<Blog> findAllByUserUserId(int userId);
+    List<Blog> findTop3ByOrderByBlogIdDesc();
 }

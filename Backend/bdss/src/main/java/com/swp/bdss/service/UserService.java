@@ -8,8 +8,6 @@ import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
 import com.swp.bdss.mapper.UserMapper;
 import com.swp.bdss.repository.UserRepository;
-//import org.springframework.security.core.context.SecurityContextHolder;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -17,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -35,7 +32,7 @@ public class UserService {
         user.setUsername(username);
         user.setRole("MEMBER");
         user.setStatus("pending");
-        user.setImage_link(image_link);
+        user.setImageLink(image_link);
 
         User savedUser = userRepository.save(user);
         return userMapper.toUserResponse(savedUser);
@@ -78,10 +75,10 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         userMapper.updateUser(user, request);
 
-        if (request.getBlood_type() == null) {
-            user.setBlood_type("Unknown");
+        if (request.getBloodType() == null) {
+            user.setBloodType("Unknown");
         } else {
-            user.setBlood_type(request.getBlood_type());
+            user.setBloodType(request.getBloodType());
         }
 
         return userMapper.toUserResponse(userRepository.save(user));
@@ -95,10 +92,10 @@ public class UserService {
         var role = request.getRole();
         user.setRole(role);
 
-        if (request.getBlood_type() == null) {
-            request.setBlood_type("Unknown");
+        if (request.getBloodType() == null) {
+            request.setBloodType("Unknown");
         } else {
-            user.setBlood_type(request.getBlood_type());
+            user.setBloodType(request.getBloodType());
         }
 
         return userMapper.toUserResponse(userRepository.save(user));

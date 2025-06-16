@@ -15,8 +15,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -46,7 +44,7 @@ public class AuthenticationController {
             User user = new User();
             user.setUsername(userName);
             user.setEmail(email);
-            user.setImage_link(image);
+            user.setImageLink(image);
 
             return ApiResponse.<AuthenticationResponse>builder()
                     .code(1000)

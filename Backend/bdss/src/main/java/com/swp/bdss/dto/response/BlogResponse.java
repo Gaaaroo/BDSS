@@ -14,11 +14,11 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BlogResponse {
-    int blog_id;
+    int blogId;
     String title;
     List<BlogSectionCreationRequest> sections;
     User user;
-    LocalDate created_date;
-    String image_link;
+    LocalDate createdDate;
+    String imageLink;
     boolean status;
 }

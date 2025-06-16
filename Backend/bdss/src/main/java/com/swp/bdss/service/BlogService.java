@@ -36,7 +36,7 @@ public class BlogService {
         Blog blog = blogMapper.toBlog(request);
 
         blog.setStatus(true);
-        blog.setCreated_date(LocalDate.now());
+        blog.setCreatedDate(LocalDate.now());
 
         var context = SecurityContextHolder.getContext();
         int userId = Integer.parseInt(context.getAuthentication().getName());
@@ -62,6 +62,13 @@ public class BlogService {
                 .toList();
     }
 
+    public List<BlogResponse> getTop3Blogs() {
+        return blogRepository.findTop3ByOrderByBlogIdDesc().stream()
+                .map(blogMapper::toBlogResponse)
+                .toList();
+    }
+
+
     public BlogResponse getBlogById(int blogId){
         return blogMapper.toBlogResponse(blogRepository.findById(blogId)
                 .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOT_EXISTED)));
@@ -86,7 +93,7 @@ public class BlogService {
                 }).collect(Collectors.toList());
         blog.getSections().clear();
         blog.getSections().addAll(sections);
-        blog.setImage_link(request.getImage_link());
+        blog.setImageLink(request.getImageLink());
         return blogMapper.toBlogResponse(blogRepository.save(blog));
     }
 

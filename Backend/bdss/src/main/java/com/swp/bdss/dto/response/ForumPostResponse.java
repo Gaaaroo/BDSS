@@ -1,7 +1,6 @@
 package com.swp.bdss.dto.response;
 
 
-import com.swp.bdss.entities.User;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -14,11 +13,11 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ForumPostResponse {
-    String post_id;
+    String postId;
     String title;
     String content;
     String username;
-    LocalDateTime created_at;
-    LocalDateTime updated_at;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
     List<CommentResponse> comments;
 }

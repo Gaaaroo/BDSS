@@ -13,15 +13,21 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "blog_section")
+@Table(name = "blogSection") // camelCase cho table name nếu cấu hình cho phép
 public class BlogSection {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    @Column(columnDefinition = "TEXT")
-    private String content;
-    private String image_link;
-    @ManyToOne
-    @JoinColumn(name = "blog_id", referencedColumnName = "blog_id")
-    private Blog blog;
+    @Column(name = "id")
+    int id;
+
+    @Column(name = "content", columnDefinition = "TEXT")
+    String content;
+
+    @Column(name = "imageLink")
+    String imageLink;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "blogId", referencedColumnName = "blogId")
+    Blog blog;
 }
