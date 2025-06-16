@@ -30,7 +30,7 @@ function MyPosts() {
         // Lọc bài viết của user hiện tại
         const myPosts = data.map((post) => ({
           ...post,
-          id: post.post_id,
+          id: post.postId,
           comments: post.comments || [],
         }));
         setPosts(myPosts);
@@ -75,7 +75,7 @@ function MyPosts() {
     }
     try {
       // Gọi API tạo comment mới
-      const newComment = await createComment({ content, post_id: postId });
+      const newComment = await createComment({ content, postId: postId });
       // Cập nhật lại state posts để thêm comment mới vào đúng post
       setPosts((posts) =>
         posts.map((post) =>

@@ -58,7 +58,7 @@ function Forum() {
         setPosts(
           data.map((post) => ({
             ...post,
-            id: post.post_id,
+            id: post.postId,
             comments: post.comments || [],
           }))
         );
@@ -104,7 +104,7 @@ function Forum() {
       setPosts(
         data.map((post) => ({
           ...post,
-          id: post.post_id,
+          id: post.postId,
           comments: post.comments || [],
         }))
       );
@@ -128,7 +128,7 @@ function Forum() {
     console.log('Adding comment to post:', postId, content);
 
     try {
-      await createComment({ content, post_id: postId });
+      await createComment({ content, postId: postId });
       console.log(postId, content);
       let data;
       if (keyword.trim() === '') {
@@ -141,7 +141,7 @@ function Forum() {
       setPosts(
         data.map((post) => ({
           ...post,
-          id: post.post_id,
+          id: post.postId,
           comments: post.comments || [],
         }))
       );
@@ -189,7 +189,7 @@ function Forum() {
               ? {
                   ...post,
                   comments: post.comments.filter(
-                    (c) => c.comment_id !== commentId
+                    (c) => c.commentId !== commentId
                   ),
                 }
               : post
