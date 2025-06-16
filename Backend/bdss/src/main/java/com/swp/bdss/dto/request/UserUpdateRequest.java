@@ -11,17 +11,17 @@ import java.time.LocalDate;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserUpdateRequest {
-    String image_link;
+    String imageLink;
     String username;
     String password;
     String gender;
-    String full_name;
+    String fullName;
     LocalDate dob;
     String email;
     Double lat;
     Double lng;
     String phone;
     String address;
-    String blood_type;
+    String bloodType;
     String role;
 }

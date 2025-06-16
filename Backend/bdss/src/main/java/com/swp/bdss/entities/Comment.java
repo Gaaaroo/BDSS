@@ -6,7 +6,6 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -15,24 +14,23 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "comment")
 public class Comment {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "comment_id")
-    Long comment_id;
+    @Column(name = "commentId")
+    Long commentId;
 
-    @Column(nullable = false)
+    @Column(name = "content", nullable = false)
     String content;
 
-    @Column(nullable = false)
-    LocalDateTime created_at;
+    @Column(name = "createdAt", nullable = false)
+    LocalDateTime createdAt;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId", referencedColumnName = "userId", nullable = false)
     User user;
 
-    @ManyToOne
-    @JoinColumn(name = "post_id", referencedColumnName = "post_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "postId", referencedColumnName = "postId", nullable = false)
     ForumPost forumPost;
-
-
 }

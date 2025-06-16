@@ -3,13 +3,11 @@ package com.swp.bdss.controller;
 import com.swp.bdss.dto.request.ForumPostCreationRequest;
 import com.swp.bdss.dto.response.ApiResponse;
 import com.swp.bdss.dto.response.ForumPostResponse;
-import com.swp.bdss.service.BlogService;
 import com.swp.bdss.service.ForumPostService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

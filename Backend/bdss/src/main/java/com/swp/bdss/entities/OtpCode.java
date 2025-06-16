@@ -4,8 +4,6 @@ package com.swp.bdss.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,20 +12,23 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "otp_codes")
+@Table(name = "otpCodes")
 public class OtpCode {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     Long id;
-    @Column(nullable = false)
+
+    @Column(name = "otpCode", nullable = false, length = 10)
     String otpCode;
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "userId", referencedColumnName = "userId", nullable = false)
     User user;
 
-
-    @Column(name = "created_at")
+    @Column(name = "createAt", nullable = false)
     LocalDateTime createAt;
-    @Column(nullable = false)
+
+    @Column(name = "expiresAt", nullable = false)
     LocalDateTime expiresAt;
 }

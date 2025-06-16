@@ -3,10 +3,8 @@ package com.swp.bdss.service;
 import com.swp.bdss.dto.request.BloodDonateFormCreationRequest;
 import com.swp.bdss.dto.request.BloodDonateFormUpdateStatusRequest;
 import com.swp.bdss.dto.response.BloodDonateFormResponse;
-import com.swp.bdss.dto.response.BloodReceiveFormResponse;
 import com.swp.bdss.dto.response.UserResponse;
 import com.swp.bdss.entities.BloodDonateForm;
-import com.swp.bdss.entities.BloodReceiveForm;
 import com.swp.bdss.entities.User;
 import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
@@ -51,7 +49,7 @@ public class BloodDonateFormService {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         UserResponse userResponse = userMapper.toUserResponse(user);
         bloodDonateForm.setUser(user);
-        bloodDonateForm.setRequest_date(LocalDate.now());
+        bloodDonateForm.setRequestDate(LocalDate.now());
         bloodDonateForm.setStatus("pending");
 
         BloodDonateFormResponse bloodDonateFormResponse = bloodDonateFormMapper

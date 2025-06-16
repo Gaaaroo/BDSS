@@ -13,26 +13,30 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "forum_post")
+@Table(name = "forumPosts")
 public class ForumPost {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long post_id;
+    @Column(name = "postId")
+    Long postId;
 
-    @Column(nullable = true, length = 100)
+    @Column(name = "title", nullable = true, length = 100)
     String title;
 
-    @Column(nullable = true, length = 100)
+    @Column(name = "content", nullable = true, length = 100)
     String content;
 
-    LocalDateTime created_at;
+    @Column(name = "createdAt", nullable = false, updatable = false)
+    LocalDateTime createdAt;
 
-    LocalDateTime updated_at;
+    @Column(name = "updatedAt")
+    LocalDateTime updatedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "userId", referencedColumnName = "userId")
     User user;
 
     @OneToMany(mappedBy = "forumPost", cascade = CascadeType.ALL, orphanRemoval = true)
