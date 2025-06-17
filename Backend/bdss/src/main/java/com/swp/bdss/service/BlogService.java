@@ -15,6 +15,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -56,10 +58,9 @@ public class BlogService {
         return blogMapper.toBlogResponse(blog);
     }
 
-    public List<BlogResponse> getAllBlogs() {
-        return blogRepository.findAll().stream()
-                .map(blogMapper::toBlogResponse)
-                .toList();
+    public Page<BlogResponse> getAllBlogs(Pageable pageable) {
+        return blogRepository.findAllByOrderByBlogIdDesc(pageable)
+                .map(blogMapper::toBlogResponse);
     }
 
     public List<BlogResponse> getTop3Blogs() {

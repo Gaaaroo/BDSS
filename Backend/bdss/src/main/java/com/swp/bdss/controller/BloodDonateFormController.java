@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RestController
-@RequestMapping("/donateForm")
+@RequestMapping("/donate-form")
 public class BloodDonateFormController {
     BloodDonateFormService bloodDonateFormService;
 
@@ -53,7 +53,7 @@ public class BloodDonateFormController {
                 .build();
     }
 
-    @GetMapping
+    @GetMapping("/detail")
     ApiResponse<BloodDonateFormResponse> getBloodDonateFormById(@RequestParam String id){
         return ApiResponse.<BloodDonateFormResponse>builder()
                 .code(1000)
@@ -67,6 +67,15 @@ public class BloodDonateFormController {
                 .code(1000)
                 .message( "Update status successfully")
                 .data(bloodDonateFormService.updateBloodDonateFormStatus(id, request))
+                .build();
+    }
+
+    @GetMapping("/search")
+    ApiResponse<List<BloodDonateFormResponse>> searchBloodDonateFormByKeyword(@RequestParam String keyword){
+        return ApiResponse.<List<BloodDonateFormResponse>>builder()
+                .code(1000)
+                .data(bloodDonateFormService.searchBloodDonateFormByKeyWord(keyword))
+                .message("Search blood donate form by keyword successfully")
                 .build();
     }
 }

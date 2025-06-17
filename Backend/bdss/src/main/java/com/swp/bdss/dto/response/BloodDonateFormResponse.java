@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BloodDonateFormResponse {
     int donateId;
-    UserResponse user;
+    UserResponse userResponse;
     //String full_name;
     String healthNotes;
     String status;
