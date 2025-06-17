@@ -30,8 +30,15 @@ public class Blog {
     @JoinColumn(name = "createdBy", referencedColumnName = "userId", nullable = false)
     User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "updatedBy", referencedColumnName = "userId", nullable = true)
+    User userUpdate;
+
     @Column(name = "createdDate")
     LocalDate createdDate;
+
+    @Column(name = "updatedDate")
+    LocalDate updateDate;
 
     @Column(name = "imageLink")
     String imageLink;

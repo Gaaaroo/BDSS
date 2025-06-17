@@ -12,7 +12,9 @@ import java.util.List;
 @Repository
 public interface BlogRepository extends JpaRepository<Blog, Integer> {
     List<Blog> findAllByUserUserId(int userId);
-    List<Blog> findAllByOrderByBlogIdDesc();
     Page<Blog> findAllByOrderByBlogIdDesc(Pageable pageable);
     List<Blog> findTop3ByOrderByBlogIdDesc();
+    Page<Blog> findByUser_UsernameContainingIgnoreCaseOrUserUpdate_UsernameContainingIgnoreCase(
+            String userCreate, String userUpdate, Pageable pageable
+    );
 }

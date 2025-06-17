@@ -17,6 +17,7 @@ import OTP from '../pages/OTP';
 import MyPosts from '../pages/MyPosts';
 import Blog from '../pages/Blog';
 import RequestManagement from '../pages/RequestManagement';
+import BlogManagement from '../pages/BlogManagement';
 import Sidebar from '../Layouts/Sidebar';
 
 export default function AppRoutes() {
@@ -40,6 +41,7 @@ export default function AppRoutes() {
       <Route path="/blog" element={<Blog />} />
       <Route path="/dashboard" element={<Sidebar />} />
       <Route path="/request-management" element={<RequestManagement />} />
+      <Route path="/blog-management" element={<BlogManagement />} />
     </Routes>
   );
 }
