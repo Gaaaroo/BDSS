@@ -24,3 +24,15 @@ export const updateBlog = async (blogId, blogData) => {
   const response = await axiosClient.put(`/blog/${blogId}`, blogData);
   return response;
 };
+
+export const searchBlogByUsername = async (username, page = 0, size = 6) => {
+  const response = await axiosClient.get(
+    `/blog/search?page=${page}&size=${size}&username=${username}`
+  );
+  return response;
+};
+
+export const deleteBlog = async (blogId) => {
+  const response = await axiosClient.delete(`/blog/${blogId}`);
+  return response;
+};

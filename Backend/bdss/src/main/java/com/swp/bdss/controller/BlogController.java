@@ -75,9 +75,20 @@ public class BlogController {
                 .build();
     }
 
-    @DeleteMapping
-    String deleteBlog (@RequestParam int id){
+    @DeleteMapping("/{id}")
+    String deleteBlog (@PathVariable("id") int id){
         blogService.deleteBlog(id);
         return "Delete successfully";
+    }
+
+    @GetMapping("/search")
+    public ApiResponse<Page<BlogResponse>> searchBlogs(
+            @RequestParam String username,
+            Pageable pageable
+    ) {
+        return ApiResponse.<Page<BlogResponse>>builder()
+                .code(1000)
+                .data(blogService.searchBlogsByUsername(username, pageable))
+                .build();
     }
 }

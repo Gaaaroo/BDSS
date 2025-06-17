@@ -58,9 +58,31 @@ public class BlogService {
         return blogMapper.toBlogResponse(blog);
     }
 
+    public Page<BlogResponse> searchBlogsByUsername(String username, Pageable pageable) {
+        Page<Blog> page = blogRepository
+                .findByUser_UsernameContainingIgnoreCaseOrUserUpdate_UsernameContainingIgnoreCase(
+                        username, username, pageable);
+
+        return page.map(blog -> {
+            BlogResponse blogResponse = blogMapper.toBlogResponse(blog);
+            User user = blog.getUser();
+            User userUpdate = blog.getUserUpdate();
+            blogResponse.setUserCreate(user != null ? user.getUsername() : null);
+            blogResponse.setUserUpdate(userUpdate != null ? userUpdate.getUsername() : null);
+            return blogResponse;
+        });
+    }
+
     public Page<BlogResponse> getAllBlogs(Pageable pageable) {
         return blogRepository.findAllByOrderByBlogIdDesc(pageable)
-                .map(blogMapper::toBlogResponse);
+                .map(blog -> {
+                    BlogResponse blogResponse = blogMapper.toBlogResponse(blog);
+                    User user = blog.getUser();
+                    User userUpdate = blog.getUserUpdate();
+                    blogResponse.setUserCreate(user != null ? user.getUsername() : null);
+                    blogResponse.setUserUpdate(userUpdate != null ? userUpdate.getUsername() : null);
+                    return blogResponse;
+                });
     }
 
     public List<BlogResponse> getTop3Blogs() {
@@ -95,14 +117,23 @@ public class BlogService {
         blog.getSections().clear();
         blog.getSections().addAll(sections);
         blog.setImageLink(request.getImageLink());
-        return blogMapper.toBlogResponse(blogRepository.save(blog));
+        blog.setUpdateDate(LocalDate.now());
+
+        //get user update blog
+        var context = SecurityContextHolder.getContext();
+        int userId = Integer.parseInt(context.getAuthentication().getName());
+        User userUpdate = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        blog.setUserUpdate(userUpdate);
+
+        BlogResponse blogResponse = blogMapper.toBlogResponse(blogRepository.save(blog));
+        blogResponse.setUserCreate(blog.getUser().getUsername());
+        blogResponse.setUserUpdate(userUpdate.getUsername());
+        return blogResponse;
     }
 
 
     public void deleteBlog(int blogId) {
-        Blog blog = blogRepository.findById(blogId).orElseThrow(() -> new AppException(ErrorCode.BLOG_NOT_EXISTED));
-        blog.setStatus(false);
-        blogRepository.save(blog);
+        blogRepository.deleteById(blogId);
     }
 
 }

@@ -17,6 +17,8 @@ public interface BlogMapper {
     @Mapping(target = "sections", ignore = true)
     Blog toBlog(BlogCreationRequest request);
 
+    @Mapping(target = "userUpdate", ignore = true)
+    @Mapping(target = "userCreate", ignore = true)
     @Mapping(source = "blogId", target = "blogId")
     BlogResponse toBlogResponse(Blog blog);
 

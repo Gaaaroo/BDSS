@@ -1,13 +1,10 @@
 import React from 'react';
 import Logo from '../assets/images/logo.jpg';
-import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { BiChat } from 'react-icons/bi';
 import { MessagesSquare, Home } from 'lucide-react';
 
 export default function AdminMenu() {
-  const navigate = useNavigate();
-
   return (
     <>
       <div className="fixed top-0 left-0 h-screen w-64 bg-[#F9B3B3] flex flex-col items-center py-6 z-50">
@@ -83,7 +80,7 @@ export default function AdminMenu() {
             Request
           </Link>
           <Link
-            to="/"
+            to="/blog-management"
             className="w-59 h-11 py-2 text-white bg-transparent hover:bg-[#F76C6C] transition-all  hover:font-bold
             flex justify-center items-center
             text-[22px] text-center font-semibold
