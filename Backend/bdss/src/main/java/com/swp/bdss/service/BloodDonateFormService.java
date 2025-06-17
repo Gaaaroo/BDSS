@@ -21,6 +21,7 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +50,7 @@ public class BloodDonateFormService {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         UserResponse userResponse = userMapper.toUserResponse(user);
         bloodDonateForm.setUser(user);
-        bloodDonateForm.setRequestDate(LocalDate.now());
+        bloodDonateForm.setRequestDate(LocalDateTime.now());
         bloodDonateForm.setStatus("pending");
 
         BloodDonateFormResponse bloodDonateFormResponse = bloodDonateFormMapper

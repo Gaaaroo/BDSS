@@ -1,28 +1,28 @@
-import React from "react";
-import { useEffect, useState } from "react";
-import { getAllBloodDonateRequests } from "../services/api/bloodRequestService";
-import { searchForumPosts } from "../services/api/forumService";
-
+import React from 'react';
+import { useEffect, useState } from 'react';
+import {
+  getAllBloodDonateRequests,
+  searchBloodDonateRequests,
+} from '../services/api/bloodRequestService';
+import dayjs from 'dayjs';
+import { BiUser, BiNote } from 'react-icons/bi';
 
 function getStatusColor(status) {
   switch (status) {
-    case "Approve":
-      return "bg-green-400 text-white";
-    case "Process":
-      return "bg-cyan-400 text-white";
-    case "Cancel":
-      return "bg-red-400 text-white";
+    case 'Approved':
+      return 'bg-green-400 text-white';
+    case 'Process':
+      return 'bg-cyan-400 text-white';
+    case 'Rejected':
+      return 'bg-red-400 text-white';
     default:
-      return "bg-gray-300 text-black";
+      return 'bg-gray-300 text-black';
   }
 }
 
-
-
 export default function BloodRequestTable() {
-
-const [keyword, setKeyword] = useState('');
-const [donateRequests, setDonateRequests] = useState([]);
+  const [keyword, setKeyword] = useState('');
+  const [donateRequests, setDonateRequests] = useState([]);
 
   // view all donate request and search posts by keyword
   useEffect(() => {
@@ -30,12 +30,12 @@ const [donateRequests, setDonateRequests] = useState([]);
       try {
         console.log('Search keyword:', keyword);
         let data;
-        // if (keyword.trim() === '') {
+        if (keyword.trim() === '') {
           data = await getAllBloodDonateRequests();
           console.log('Fetching all posts:', data);
-        // } else {
-        //   data = await searchForumPosts(keyword);
-        // }
+        } else {
+          data = await searchBloodDonateRequests(keyword);
+        }
         // setPosts(data);
         setDonateRequests(
           data.map((request) => ({
@@ -53,66 +53,98 @@ const [donateRequests, setDonateRequests] = useState([]);
   }, []);
 
   return (
-    <></>
-    // <div className="bg-pink-300 rounded-xl p-4 mt-4">
-    //   {/* Search and filter */}
-    //   <div className="flex items-center justify-between mb-2">
-    //     <input
-    //       type="text"
-    //       placeholder="Search"
-    //       className="border rounded-full px-3 py-1 outline-none"
-    //     />
-    //     <div className="flex items-center gap-2">
-    //       <span className="font-semibold">Filler</span>
-    //       <button className="border rounded-full px-3 py-1 text-xs">Priority</button>
-    //       <button className="border rounded-full px-3 py-1 text-xs">Priority</button>
-    //     </div>
-    //   </div>
-    //   {/* Table */}
-    //   <div className="overflow-x-auto">
-    //     <table className="min-w-full bg-[#F9B3B3] rounded-lg">
-    //       <thead>
-    //         <tr>
-    //           <th className="px-2 py-2 text-left flex items-center justify-center">RequestId</th>
-    //           <th className="px-2 py-2 text-left w-48">Fullname</th>
-    //           <th className="px-2 py-2 text-left flex items-center justify-center w-18">Gender</th>
-    //           <th className="px-2 py-2 text-left">Blood type</th>
-    //           <th className="px-2 py-2 text-left">Volume</th>
-    //           <th className="px-2 py-2 text-left">Phone</th>
-    //           <th className="px-2 py-2 text-left">Request date</th>
-    //           <th className="px-2 py-2 text-left">Status</th>
-    //         </tr>
-    //       </thead>
-    //       <tbody>
-    //         {data.map((row, idx) => (
-    //           <tr key={idx} className="border-b border-[#f9b3b3] ">
-    //             <td className="px-2 py-1 flex items-center justify-center">
-    //               <span className="bg-white text-black px-2 py-1 rounded font-semibold text-xs border
-    //               flex items-center justify-center w-18">
-    //                 {row.blood}
-    //               </span>
-    //             </td>
-    //             <td className="px-2 py-1 w-48">
-    //               {row.name}
-    //             </td>
-    //             <td className="px-2 py-1 flex items-center justify-center w-18">
-    //               {row.gender}
-    //             </td>
-    //             <td className="px-2 py-1">{row.dob}</td>
-    //             <td className="px-2 py-1">{row.required}</td>
-    //             <td className="px-2 py-1">{row.member}</td>
-    //             <td className="px-2 py-1">{row.phone}</td>
-    //             <td className="px-2 py-1">{row.email}</td>
-    //             <td className="px-2 py-1">
-    //               <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(row.status)}`}>
-    //                 {row.status}
-    //               </span>
-    //             </td>
-    //           </tr>
-    //         ))}
-    //       </tbody>
-    //     </table>
-    //   </div>
-    // </div>
+    <div className="bg-pink-300 rounded-xl p-4 mt-4">
+      {/* Search and filter */}
+      <div className="flex items-center justify-between mb-2">
+        <input
+          type="text"
+          placeholder="Search"
+          className="border rounded-full px-3 py-1 outline-none"
+          value={keyword}
+          onChange={(e) => setKeyword(e.target.value)}
+        />
+        <div className="flex items-center gap-2">
+          <span className="font-semibold">Filler</span>
+          <button className="border rounded-full px-3 py-1 text-xs">
+            Priority
+          </button>
+          <button className="border rounded-full px-3 py-1 text-xs">
+            Priority
+          </button>
+        </div>
+      </div>
+
+      <div className="">
+        <table className="min-w-full bg-[#F9B3B3] rounded-lg">
+          <thead className="bg-[#F76C6C]">
+            <tr className="text-white text-center font-semibold h-8 text-[16px]">
+              <th className="px-3 w-12 text-center">RequestId</th>
+              <th className="px-3 w-48 text-left">Fullname</th>
+              <th className="px-3 w-10 text-center">Gender</th>
+              <th className="px-3 w-30 text-center">Blood type</th>
+              <th className="px-3 w-12 text-center">Volume</th>
+              <th className="px-3 w-12 text-left">Phone</th>
+              <th className="px-3 w-40 text-center">Request date</th>
+              <th className="px-3 w-10 text-center">Status</th>
+              <th className="px-3 w-15 text-center">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {donateRequests.map((request, idx) => (
+              <tr key={idx} className="border-b border-[#f9b3b3] ">
+                <td className="px-3 py-2 w-12 text-center">
+                  {request.donateId}
+                </td>
+                <td className="px-3 w-48 text-left">
+                  {request.userResponse.fullName}
+                </td>
+                <td className="px-3 w-10 text-center">
+                  {request.userResponse.gender}
+                </td>
+                <td className="px-3 w-30 text-center">
+                  {request.userResponse.bloodType}
+                </td>
+                <td className="px-3 w-12 text-center">
+                  {request.volume ? request.volume : 'Updating...'}
+                </td>
+                <td className="px-3 w-12 text-left">
+                  {request.userResponse.phone}
+                </td>
+                <td className="px-3 text-center ">
+                  {dayjs(request.requestDate).format('HH:mm DD/MM/YYYY')}
+                </td>{' '}
+                <td className="px-3 text-center">
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
+                      request.status
+                    )}`}
+                  >
+                    request.status
+                  </span>
+                </td>
+                <td className="px-3 text-center">
+                  <span className="flex items-center justify-center gap-2">
+                    <button
+                      title="View profile"
+                      className="text-cyan-500 hover:text-cyan-700 text-2xl"
+                      onClick={() => handleViewProfile(request.id)}
+                    >
+                      <BiUser />
+                    </button>
+                    <button
+                      title="Staff note"
+                      className="text-yellow-500 hover:text-yellow-700 text-2xl"
+                      onClick={() => handleStaffNote(request.id)}
+                    >
+                      <BiNote />
+                    </button>
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
 }

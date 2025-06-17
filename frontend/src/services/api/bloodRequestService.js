@@ -10,6 +10,12 @@ export const getAllBloodReceiveRequests = async () => {
     return response.reverse();
 }
 
+export const searchBloodDonateRequests = async (keyword) => {
+    const response = await axiosClient.get('/donate-form/search', {
+        params: { keyword },
+    });
+    return response.reverse();
+}
 // export const createPost = async (postData) => {
 //   const response = await axiosClient.post('/forum', postData);
 //   return response;
