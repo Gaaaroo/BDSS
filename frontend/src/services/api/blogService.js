@@ -1,7 +1,7 @@
 import axiosClient from './axiosClient';
 
-export const getAllBlogs = async () => {
-  const response = await axiosClient.get('/blog');
+export const getAllBlogs = async (page = 0, size = 6) => {
+  const response = await axiosClient.get(`/blog?page=${page}&size=${size}`);
   return response;
 };
 

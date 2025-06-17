@@ -8,6 +8,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -37,10 +40,14 @@ public class BlogController {
     }
 
     @GetMapping
-    ApiResponse<List<BlogResponse>> getAllBlog() {
-        return ApiResponse.<List<BlogResponse>>builder()
+    public ApiResponse<Page<BlogResponse>> getAllBlogs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ApiResponse.<Page<BlogResponse>>builder()
                 .code(1000)
-                .data(blogService.getAllBlogs())
+                .data(blogService.getAllBlogs(pageable))
                 .build();
     }
 
