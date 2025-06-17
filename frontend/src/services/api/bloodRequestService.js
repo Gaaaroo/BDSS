@@ -16,6 +16,12 @@ export const searchBloodDonateRequests = async (keyword) => {
     });
     return response.reverse();
 }
+
+export const updateDonationProcessStep = async (stepData) => {
+    const response = await axiosClient.put('/donate-process/update-step', stepData);
+    return response;
+}
+
 // export const createPost = async (postData) => {
 //   const response = await axiosClient.post('/forum', postData);
 //   return response;

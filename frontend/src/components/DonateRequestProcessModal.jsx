@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { BiNote } from 'react-icons/bi';
 
-export default function DonateRequestProcessPanel({ user, onStepChange }) {
+export default function DonateRequestProcessModal({ request, onStepChange }) {
   const [note, setNote] = useState(user.staffNote || '');
   const [openProcessModal, setOpenProcessModal] = useState(false);
   return (
@@ -43,7 +43,7 @@ export default function DonateRequestProcessPanel({ user, onStepChange }) {
                   <span className="block font-semibold text-gray-700 mb-1">
                     Fullname:
                   </span>
-                  <span className="block text-gray-900">{user.fullName}</span>
+                  <span className="block text-gray-900">{request.userResponse.fullName}</span>
                 </div>
                 {/* Các bước quá trình */}
                 <div className="mb-4">

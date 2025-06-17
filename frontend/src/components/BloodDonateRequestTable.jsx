@@ -129,7 +129,7 @@ export default function BloodRequestTable() {
                     {/* Open profile modal */}
                     <ProfileModal user={request.userResponse}/>
                       {/* Open process modal */}
-                    <DonateRequestProcessPanel user={request.userResponse}/>
+                    <DonateRequestProcessPanel request={request}/>
                   </span>
                 </td>
               </tr>

@@ -1,5 +1,6 @@
 package com.swp.bdss.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -36,6 +37,7 @@ public class DonationProcess {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "donateId", referencedColumnName = "donateId", nullable = false)
+            @JsonIgnore
     BloodDonateForm bloodDonateForm;
 
 }

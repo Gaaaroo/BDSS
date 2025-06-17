@@ -100,7 +100,11 @@ public class DonationProcessService {
             bloodDonateFormRepository.save(bloodDonateForm);
         }
 
-        return donationProcessMapper.toUpdateDonationProcessStepResponse(stepToUpdate);
+//        return donationProcessMapper.toUpdateDonationProcessStepResponse(stepToUpdate);
+
+        UpdateDonationProcessStepResponse response = donationProcessMapper.toUpdateDonationProcessStepResponse(stepToUpdate);
+        response.setUpdatedBy(staff.getFullName());
+        return response;
 
     }
 
