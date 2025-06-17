@@ -13,4 +13,5 @@ public class AuthenticationResponse {
     private String accessToken;
     private String refreshToken;
     boolean authenticated;
+    UserResponse userResponse;
 }
