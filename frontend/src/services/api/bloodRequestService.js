@@ -1,12 +1,12 @@
 import axiosClient from './axiosClient';
 
 export const getAllBloodDonateRequests = async () => {
-    const response = await axiosClient.get('/donateForm');
+    const response = await axiosClient.get('/donate-form/all');
     return response.reverse();
 }
 
 export const getAllBloodReceiveRequests = async () => {
-    const response = await axiosClient.get('/receiveForm');
+    const response = await axiosClient.get('/receive-form');
     return response.reverse();
 }
 

@@ -16,8 +16,8 @@ import Forum from '../pages/Forum';
 import OTP from '../pages/OTP';
 import MyPosts from '../pages/MyPosts';
 import Blog from '../pages/Blog';
-import AdminMenu from '../components/AdminMenu';
 import RequestManagement from '../pages/RequestManagement';
+import Sidebar from '../Layouts/Sidebar';
 
 export default function AppRoutes() {
   return (
@@ -38,7 +38,7 @@ export default function AppRoutes() {
       <Route path="*" element={<NotFound />} />
       <Route path="/verify-otp" element={<OTP />} />
       <Route path="/blog" element={<Blog />} />
-      <Route path="/dashboard" element={<AdminMenu />} />
+      <Route path="/dashboard" element={<Sidebar />} />
       <Route path="/request-management" element={<RequestManagement />} />
     </Routes>
   );
