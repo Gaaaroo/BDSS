@@ -57,11 +57,13 @@ public class AuthenticationService {
     public AuthenticationResponse isAuthenticatedForGoogle(User request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             var user = userRepository.findByEmail(request.getEmail()).get();
+            UserResponse userResponse = userMapper.toUserResponse(user);
             var accessToken = generateAccessToken(user);
             var refreshToken = generateRefreshToken(user);
             return AuthenticationResponse.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
+                    .userResponse(userResponse)
                     .authenticated(true)
                     .build();
         } else {
@@ -69,10 +71,12 @@ public class AuthenticationService {
             var user = userRepository.findByEmail(newUser.getEmail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
             var accessToken = generateAccessToken(user);
             var refreshToken = generateRefreshToken(user);
+            UserResponse userResponse = userMapper.toUserResponse(user);
 
             return AuthenticationResponse.builder()
                     .accessToken(accessToken)
                     .refreshToken(refreshToken)
+                    .userResponse(userResponse)
                     .authenticated(true)
                     .build();
         }
@@ -84,12 +88,14 @@ public class AuthenticationService {
         boolean authenticated = user.getPassword().equals(request.getPassword());
 
         if(!authenticated) throw new AppException(ErrorCode.INCORRECT_PASSWORD);
+        UserResponse userResponse = userMapper.toUserResponse(user);
 
         var accessToken = generateAccessToken(user);
         var refreshToken = generateRefreshToken(user);
         return AuthenticationResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
+                .userResponse(userResponse)
                 .authenticated(true)
                 .build();
     }
@@ -243,12 +249,14 @@ public class AuthenticationService {
 
         var userId = Integer.parseInt(signJwt.getJWTClaimsSet().getSubject());
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        UserResponse userResponse = userMapper.toUserResponse(user);
 
 
         var newAccessToken = generateAccessToken(user);
         return AuthenticationResponse.builder()
                 .accessToken(newAccessToken)
                 .refreshToken(request.getToken())
+                .userResponse(userResponse)
                 .authenticated(true)
                 .build();
     }
