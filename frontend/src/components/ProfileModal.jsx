@@ -7,13 +7,15 @@ export default function ExampleProfileModal({ user }) {
   return (
     <div>
       {/* Nút mở modal */}
+      <div className="flex items-center justify-center gap-2">
       <button
         title="View profile"
-        className="text-cyan-500 hover:text-cyan-700 text-xl"
+        className="text-cyan-500 hover:text-cyan-700 text-2xl"
         onClick={() => setOpenProfile(true)}
       >
         <BiUser />
       </button>
+      </div>
 
       {/* Modal */}
       {openProfile && (

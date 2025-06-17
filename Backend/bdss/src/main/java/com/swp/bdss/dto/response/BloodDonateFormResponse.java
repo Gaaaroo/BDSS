@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -16,7 +17,5 @@ public class BloodDonateFormResponse {
     //String full_name;
     String healthNotes;
     String status;
-    LocalDate requestDate;
-    String staffNotes;
-    //cảm giác còn thiếu trường nào đó, nhưng tạm thời để vậy
+    LocalDateTime requestDate;
 }

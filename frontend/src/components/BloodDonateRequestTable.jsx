@@ -5,8 +5,8 @@ import {
   searchBloodDonateRequests,
 } from '../services/api/bloodRequestService';
 import dayjs from 'dayjs';
-import { BiUser, BiNote } from 'react-icons/bi';
 import ProfileModal from './ProfileModal';
+import DonateRequestProcessPanel from './DonateRequestProcessModal';
 
 function getStatusColor(status) {
   switch (status) {
@@ -126,21 +126,10 @@ export default function BloodRequestTable() {
                 </td>
                 <td className="px-3 text-center">
                   <span className="flex items-center justify-center gap-2">
-                    {/* <button
-                      title="View profile"
-                      className="text-cyan-500 hover:text-cyan-700 text-2xl"
-                      onClick={() => handleViewProfile(request.id)}
-                    >
-                      <BiUser />
-                    </button> */}
+                    {/* Open profile modal */}
                     <ProfileModal user={request.userResponse}/>
-                    <button
-                      title="Staff note"
-                      className="text-yellow-500 hover:text-yellow-700 text-2xl"
-                      onClick={() => handleStaffNote(request.id)}
-                    >
-                      <BiNote />
-                    </button>
+                      {/* Open process modal */}
+                    <DonateRequestProcessPanel user={request.userResponse}/>
                   </span>
                 </td>
               </tr>

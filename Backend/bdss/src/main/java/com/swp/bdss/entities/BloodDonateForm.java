@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,12 +29,12 @@ public class BloodDonateForm {
     @Column(name = "healthNotes", columnDefinition = "TEXT")
     String healthNotes;
 
-    @Column(name = "staffNotes", columnDefinition = "TEXT")
-    String staffNotes;
-
     @Column(name = "status", nullable = false)
     String status;
 
     @Column(name = "requestDate", nullable = false)
     LocalDateTime requestDate;
+
+    @OneToMany(mappedBy = "bloodDonateForm", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<DonationProcess> steps;
 }
