@@ -56,7 +56,7 @@ public class BloodDonateFormService {
                 .toBloodDonateFormResponse(bloodDonateFormRepository.save(bloodDonateForm));
 
 //        //set user cho response tại vì user nằm ở user và mapstruct ko lấy trường này -> null hoặc sai
-         bloodDonateFormResponse.setUser(userResponse);
+         bloodDonateFormResponse.setUserResponse(userResponse);
         return bloodDonateFormResponse;
     }
 
@@ -71,7 +71,7 @@ public class BloodDonateFormService {
 
                     User user = bloodDonateForm.getUser();
                     UserResponse userResponse = userMapper.toUserResponse(user);
-                    response.setUser(userResponse);
+                    response.setUserResponse(userResponse);
                     return response;
                 })
                 .toList();
@@ -92,7 +92,7 @@ public class BloodDonateFormService {
             User savedUser = bloodDonateForm.getUser();
             UserResponse userResponse = userMapper.toUserResponse(savedUser);
 
-            response.setUser(userResponse);
+            response.setUserResponse(userResponse);
             return response;
         }).toList();
     }
@@ -106,7 +106,7 @@ public class BloodDonateFormService {
 
         User user = bloodDonateForm.getUser();
         UserResponse userResponse = userMapper.toUserResponse(user);
-        response.setUser(userResponse);
+        response.setUserResponse(userResponse);
         return response;
     }
 
@@ -126,6 +126,18 @@ public class BloodDonateFormService {
         //check status
         bloodDonateForm.setStatus(request.getStatus());
         return bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateFormRepository.save(bloodDonateForm));
+    }
+
+    public List<BloodDonateFormResponse> searchBloodDonateFormByKeyWord(String keyword) {
+        List<BloodDonateFormResponse> list = bloodDonateFormRepository.findByUserFullNameContainingOrUserPhoneContainingOrUserEmailContaining(keyword, keyword, keyword)
+                .stream().map(bloodDonateFormMapper::toBloodDonateFormResponse)
+                .toList();
+
+        if(list.isEmpty()){
+            throw new AppException(ErrorCode.NO_BLOOD_DONATE_FORM);
+        }
+
+        return list;
     }
 
 }

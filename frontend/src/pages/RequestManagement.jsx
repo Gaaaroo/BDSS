@@ -1,12 +1,12 @@
 import React from 'react';
-import AdminMenu from '../components/AdminMenu';
+import SideBar from '../Layouts/Sidebar';
 import BloodRequestToggle from '../components/BloodRequestToggle';
 
 export default function RequestManagement() {
     
     return(
         <>
-        <AdminMenu />
+        <SideBar />
         <BloodRequestToggle />
         </>
     )

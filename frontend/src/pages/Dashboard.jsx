@@ -1,9 +1,10 @@
-import AdminMenu from "../components/AdminMenu";
+import React from 'react';
+import SideBar from '../Layouts/Sidebar';
 
 export default function Dashboard() {
     return (
         <>
-        <AdminMenu />
+        <SideBar />
         </>
     )
 } 

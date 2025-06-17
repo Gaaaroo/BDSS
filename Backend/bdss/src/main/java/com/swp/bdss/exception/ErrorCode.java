@@ -25,7 +25,8 @@ public enum ErrorCode {
     NO_FORUM_POST(1015, "No forum post found", HttpStatus.BAD_REQUEST),
     COMMENT_NOT_EXISTED(1016, "Comment not existed", HttpStatus.BAD_REQUEST),
     COMMENT_CANNOT_DELETE(1017, "You cannot delete this comment", HttpStatus.BAD_REQUEST),
-    INVALID_TOKEN_TYPE(1018, "Invalid token type, token type must be refresh", HttpStatus.BAD_REQUEST)
+    INVALID_TOKEN_TYPE(1018, "Invalid token type, token type must be refresh", HttpStatus.BAD_REQUEST),
+    NO_BLOOD_DONATE_FORM(1019, "No blood donate form found", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;
