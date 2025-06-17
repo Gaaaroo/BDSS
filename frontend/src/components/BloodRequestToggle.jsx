@@ -65,39 +65,38 @@ export default function BloodRequestToggle() {
               <BloodRequestTable />
             </div>
           ) : (
-        <div>
-            <div className="text-center text-lg font-bold text-red-500">
-              Donate Blood Request Content
-            </div>
-            <div className="flex gap-8 mt-8 justify-center items-center">
+            <div>
+              <div className="text-center text-lg font-bold text-red-500">
+                Donate Blood Request Content
+              </div>
+              <div className="flex gap-8 mt-8 justify-center items-center">
                 <div className="bg-[#F9B3B3] rounded-lg px-8 py-4 flex flex-col items-center shadow">
-                  <span className="text-2xl font-bold text-red-600">6</span>
+                  <span className="text-2xl font-bold text-yellow-400">6</span>
                   <span className="text-white font-medium">
-                    Requests Cancel
+                    Pending Request
                   </span>
                 </div>
                 <div className="bg-[#F9B3B3] rounded-lg px-8 py-4 flex flex-col items-center shadow">
                   <span className="text-2xl font-bold text-cyan-400">4</span>
                   <span className="text-white font-medium">
-                    Requests In Process
+                    Processing Request
                   </span>
                 </div>
                 <div className="bg-[#F9B3B3] rounded-lg px-8 py-4 flex flex-col items-center shadow">
                   <span className="text-2xl font-bold text-green-500">6</span>
                   <span className="text-white font-medium">
-                    Requests Approve
+                    Approved Request
                   </span>
                 </div>
                 <div className="bg-[#F9B3B3] rounded-lg px-8 py-4 flex flex-col items-center shadow">
-                  <span className="text-2xl font-bold text-yellow-400">6</span>
+                  <span className="text-2xl font-bold text-red-600">6</span>
                   <span className="text-white font-medium">
-                    Requests Placed
+                    Cancelled Request
                   </span>
                 </div>
               </div>
               <BloodDonateRequestTable />
-        </div>
-            
+            </div>
           )}
         </div>
       </div>
