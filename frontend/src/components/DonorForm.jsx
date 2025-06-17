@@ -33,10 +33,10 @@ export default function DonorForm() {
     if (profile) {
       setFormData({
         ...formData,
-        fullName: profile.full_name,
+        fullName: profile.fullName,
         dob: profile.dob,
         phone: profile.phone,
-        bloodType: profile.blood_type,
+        bloodType: profile.bloodType,
         gender: profile.gender,
         email: profile.email,
         address: profile.address,
@@ -55,7 +55,7 @@ export default function DonorForm() {
   const handleDonorRegister = async (e) => {
     e.preventDefault();
     try {
-      const res = await donorForm({ health_notes: formData.disease });
+      const res = await donorForm({ healthNotes: formData.disease });
       console.log('Detail donor form:', res);
     } catch (error) {
       console.log(error);
