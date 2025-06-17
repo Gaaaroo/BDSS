@@ -6,6 +6,7 @@ import {
 } from '../services/api/bloodRequestService';
 import dayjs from 'dayjs';
 import { BiUser, BiNote } from 'react-icons/bi';
+import ProfileModal from './ProfileModal';
 
 function getStatusColor(status) {
   switch (status) {
@@ -23,6 +24,7 @@ function getStatusColor(status) {
 export default function BloodRequestTable() {
   const [keyword, setKeyword] = useState('');
   const [donateRequests, setDonateRequests] = useState([]);
+  
 
   // view all donate request and search posts by keyword
   useEffect(() => {
@@ -53,7 +55,7 @@ export default function BloodRequestTable() {
   }, []);
 
   return (
-    <div className="bg-pink-300 rounded-xl p-4 mt-4">
+    <div className="overflow-x-auto bg-pink-300 rounded-xl p-4 mt-4">
       {/* Search and filter */}
       <div className="flex items-center justify-between mb-2">
         <input
@@ -112,25 +114,26 @@ export default function BloodRequestTable() {
                 </td>
                 <td className="px-3 text-center ">
                   {dayjs(request.requestDate).format('HH:mm DD/MM/YYYY')}
-                </td>{' '}
+                </td>
                 <td className="px-3 text-center">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(
+                    className={`px-3 py-1 rounded-full text-xs font-semibold text-center ${getStatusColor(
                       request.status
                     )}`}
                   >
-                    request.status
+                    {request.status}
                   </span>
                 </td>
                 <td className="px-3 text-center">
                   <span className="flex items-center justify-center gap-2">
-                    <button
+                    {/* <button
                       title="View profile"
                       className="text-cyan-500 hover:text-cyan-700 text-2xl"
                       onClick={() => handleViewProfile(request.id)}
                     >
                       <BiUser />
-                    </button>
+                    </button> */}
+                    <ProfileModal user={request.userResponse}/>
                     <button
                       title="Staff note"
                       className="text-yellow-500 hover:text-yellow-700 text-2xl"

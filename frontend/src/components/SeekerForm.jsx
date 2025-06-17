@@ -17,7 +17,7 @@ export default function SeekerForm() {
     priority: '',
     type: '',
     quantity: '',
-    hospital_address: '',
+    hospitalAddress: '',
   });
 
   useEffect(() => {
@@ -25,7 +25,7 @@ export default function SeekerForm() {
     if (profile) {
       setFormData({
         ...formData,
-        fullName: profile.full_name,
+        fullName: profile.fullName,
         dob: profile.dob,
         phone: profile.phone,
         gender: profile.gender,
@@ -45,11 +45,11 @@ export default function SeekerForm() {
     e.preventDefault();
     await receiveForm({
       volume: formData.volume,
-      blood_type: formData.bloodType,
+      bloodType: formData.bloodType,
       priority: formData.priority,
-      component_type: formData.type,
+      componentType: formData.type,
       quantity: formData.quantity,
-      hospital_address: formData.hospital_address,
+      hospitalAddress: formData.hospitalAddress,
     });
     console.log('Detail receive form:', formData);
   };
@@ -181,9 +181,9 @@ export default function SeekerForm() {
           />
           <TextInput
             label="Hospital Address"
-            name="hospital_address"
+            name="hospitalAddress"
             placeholder="Enter hospital address"
-            value={formData.hospital_address || ''}
+            value={formData.hospitalAddress || ''}
             onChange={handleChange}
             required
           />
