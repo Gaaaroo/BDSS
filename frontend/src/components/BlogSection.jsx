@@ -25,30 +25,37 @@ export default function Blog() {
   return (
     <div className="p-6 relative">
       {/* Blog List */}
-      <BlogList blogs={blogs} onSelectBlog={(blog) => setSelectedBlog(blog)} />
+      <div>
+        <BlogList
+          blogs={blogs}
+          onSelectBlog={(blog) => setSelectedBlog(blog)}
+        />
 
-      {/* Nút chuyển qua trang tất cả blog */}
-      <button
-        onClick={() => navigate('/blog')}
-        className="mt-6 text-red-600 hover:underline font-medium"
-      >
-        View all blog →
-      </button>
+        {/* Nút chuyển qua trang tất cả blog */}
+        <button
+          onClick={() => navigate('/blog')}
+          className="ml-20 text-red-600 text-2xl hover:underline font-medium"
+        >
+          View all blog →
+        </button>
+      </div>
 
       {/* Popup hiển thị BlogDetail */}
       {selectedBlog && (
         <div className="fixed inset-0 z-100  flex items-center justify-center bg-black/50 backdrop-blur-xs">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto relative">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-5xl w-full max-h-[100vh] relative">
             <button
               onClick={() => setSelectedBlog(null)}
-              className="absolute top-2 right-4 text-gray-600 text-2xl font-bold hover:text-red-600"
+              className="absolute top-2 right-4 text-gray-600 text-4xl font-bold hover:text-red-600 z-10"
             >
               ×
             </button>
-            <BlogDetail
-              blog={selectedBlog}
-              onBack={() => setSelectedBlog(null)}
-            />
+            <div className="mt-5 mb-5 overflow-y-auto max-h-[80vh]">
+              <BlogDetail
+                blog={selectedBlog}
+                onBack={() => setSelectedBlog(null)}
+              />
+            </div>
           </div>
         </div>
       )}
