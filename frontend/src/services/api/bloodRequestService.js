@@ -2,7 +2,7 @@ import axiosClient from './axiosClient';
 
 export const getAllBloodDonateRequests = async () => {
     const response = await axiosClient.get('/donate-form/all');
-    return response.reverse();
+    return response;
 }
 
 export const getAllBloodReceiveRequests = async () => {
@@ -14,7 +14,7 @@ export const searchBloodDonateRequests = async (keyword) => {
     const response = await axiosClient.get('/donate-form/search', {
         params: { keyword },
     });
-    return response.reverse();
+    return response;
 }
 
 export const updateDonationProcessStep = async (stepData) => {

@@ -96,7 +96,7 @@ public class DonationProcessService {
         steps = donationProcessRepository.findAllByBloodDonateFormDonateId(bloodDonateForm.getDonateId());
         boolean allStepsDone = steps.stream().allMatch(step -> "DONE".equalsIgnoreCase(step.getStatus()));
         if(allStepsDone){
-            bloodDonateForm.setStatus("DONE");
+            bloodDonateForm.setStatus("APPROVED");
             bloodDonateFormRepository.save(bloodDonateForm);
         }
 
