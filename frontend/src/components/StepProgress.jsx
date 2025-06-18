@@ -9,16 +9,16 @@ const stepNames = [
 ];
 
 const statusColor = {
-  pending: "bg-yellow-100 text-yellow-800",
-  done: "bg-green-100 text-green-700",
-  failed: "bg-red-100 text-red-700"
+  PENDING: "bg-yellow-100 text-yellow-800",
+  DONE: "bg-green-100 text-green-700",
+  FAILED: "bg-red-100 text-red-700"
 };
 
 export default function StepProgress({ steps }) {
   const [openStepIdx, setOpenStepIdx] = useState(null);
 
   return (
-    <div className="w-full max-w-xl mx-auto bg-[#F9B3B3] rounded-xl shadow-lg px-4 pt-3 pb-6">
+    <div className="w-full max-w-xl mx-auto bg-[#FDE4E4] rounded-xl shadow-lg px-4 pt-3 pb-6">
       <h2 className="text-xl font-bold mb-4 text-center">Step Progress</h2>
       <div className="space-y-4">
         {stepNames.map((name, idx) => {
@@ -68,7 +68,7 @@ export default function StepProgress({ steps }) {
                 </span>
               </div>
               <span
-                className={`capitalize font-bold px-3 py-1 rounded-full text-sm
+                className={`capitalize font-bold px-3 py-1 rounded-full text-sm text-center w-24
                   ${
                     step.status === "DONE"
                       ? "bg-green-200 text-green-700"
@@ -106,7 +106,7 @@ export default function StepProgress({ steps }) {
               <h3 className="text-lg font-bold mb-3">{stepNames[openStepIdx]}</h3>
               <div className="mb-3">
                 <span
-                  className={`px-3 py-1 rounded-full font-semibold ${
+                  className={`px-3 py-1 rounded-full font-semibold w-24 text-center inline-block ${
                     statusColor[steps[openStepIdx]?.status] || "bg-gray-100 text-gray-700"
                   }`}
                 >
