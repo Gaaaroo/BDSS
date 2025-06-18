@@ -1,9 +1,12 @@
 package com.swp.bdss.dto.response;
 
+import com.swp.bdss.entities.DonationProcess;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -16,7 +19,6 @@ public class BloodDonateFormResponse {
     //String full_name;
     String healthNotes;
     String status;
-    LocalDate requestDate;
-    String staffNotes;
-    //cảm giác còn thiếu trường nào đó, nhưng tạm thời để vậy
+    LocalDateTime requestDate;
+    List<UpdateDonationProcessStepResponse> steps;
 }

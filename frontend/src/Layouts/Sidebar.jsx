@@ -99,7 +99,7 @@ export default function StaffMenu() {
             Request
           </Link>
           <Link
-            to="/"
+            to="/blog-management"
             className="w-59 h-11 py-2 text-white bg-transparent hover:bg-[#F76C6C] transition-all  hover:font-bold
             flex justify-center items-center
             text-[22px] text-center font-semibold
