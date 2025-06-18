@@ -4,7 +4,7 @@ import MapView from './MapView';
 export default function ProfileView({ userData, onEditClick }) {
   const formatField = (value) =>
     value === null || value === undefined || value === ''
-      ? 'please update your profile'
+      ? 'Please update your profile'
       : value;
 
   return (
@@ -14,7 +14,7 @@ export default function ProfileView({ userData, onEditClick }) {
         <div className="flex flex-col items-center text-center w-full">
           <div className="flex flex-col items-center mb-6">
             <img
-              src={formatField(userData.imageLink)}
+              src={formatField(userData?.imageLink)}
               alt="Profile"
               className="w-44 h-44 rounded-full object-cover mb-4 border-4 border-red-700"
               onError={(e) => {
@@ -24,32 +24,32 @@ export default function ProfileView({ userData, onEditClick }) {
               }}
             />
             <h2 className="text-4xl font-bold text-red-700">
-              {formatField(userData.username)}
+              {formatField(userData?.username)}
             </h2>
           </div>
 
           <div className="w-full bg-gray-50 rounded-2xl border p-6 shadow-md text-lg text-left">
-            <h3 className="text-xl font-semibold text-gray-700 mb-6">
-              Thông tin cá nhân
+            <h3 className="text-xl font-semibold text-rose-700 mb-6">
+              Personal information
             </h3>
             <div className="space-y-4">
               <div className="flex">
                 <div className="min-w-[140px] font-semibold text-gray-600">
                   Full name:
                 </div>
-                <div>{formatField(userData.fullName)}</div>
+                <div>{formatField(userData?.fullName)}</div>
               </div>
               <div className="flex">
                 <div className="min-w-[140px] font-semibold text-gray-600">
                   Gender:
                 </div>
-                <div>{formatField(userData.gender)}</div>
+                <div>{formatField(userData?.gender)}</div>
               </div>
               <div className="flex">
                 <div className="min-w-[140px] font-semibold text-gray-600">
                   Date of Birth:
                 </div>
-                <div>{formatField(userData.dob)}</div>
+                <div>{formatField(userData?.dob)}</div>
               </div>
             </div>
           </div>
@@ -57,37 +57,37 @@ export default function ProfileView({ userData, onEditClick }) {
 
         {/* Right */}
         <div className="w-full bg-gray-50 rounded-2xl border p-6 shadow-md text-lg h-full">
-          <h3 className="text-xl font-semibold text-gray-700 mb-6">Liên hệ</h3>
+          <h3 className="text-xl font-semibold text-rose-700 mb-6">Contact</h3>
           <div className="space-y-4">
             <div className="flex">
               <div className="min-w-[140px] font-semibold text-gray-600">
                 Email:
               </div>
-              <div>{formatField(userData.email)}</div>
+              <div>{formatField(userData?.email)}</div>
             </div>
             <div className="flex">
               <div className="min-w-[140px] font-semibold text-gray-600">
                 Phone:
               </div>
-              <div>{formatField(userData.phone)}</div>
+              <div>{formatField(userData?.phone)}</div>
             </div>
             <div className="flex">
               <div className="min-w-[140px] font-semibold text-gray-600">
                 Blood Type:
               </div>
-              <div>{formatField(userData.bloodType)}</div>
+              <div>{formatField(userData?.bloodType)}</div>
             </div>
             <div className="flex items-start">
               <div className="min-w-[140px] font-semibold text-gray-600 mt-2">
                 Address:
               </div>
               <div className="flex-1">
-                {userData.lat && userData.lng && userData.address ? (
+                {userData?.lat && userData?.lng && userData?.address ? (
                   <MapView
                     initialLocation={{
-                      lat: userData.lat,
-                      lng: userData.lng,
-                      address: userData.address,
+                      lat: userData?.lat,
+                      lng: userData?.lng,
+                      address: userData?.address,
                     }}
                   />
                 ) : (
@@ -104,7 +104,7 @@ export default function ProfileView({ userData, onEditClick }) {
               onClick={onEditClick}
               className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700"
             >
-              Cập nhật
+              Update
             </button>
           </div>
         </div>
