@@ -17,10 +17,20 @@ export const searchBloodDonateRequests = async (keyword) => {
     return response;
 }
 
+//update step of donation process
 export const updateDonationProcessStep = async (stepData) => {
-    const response = await axiosClient.put('/donate-process/update-step', stepData);
+    const response = await axiosClient.put('/donation-process/update-step', stepData);
     return response;
 }
+
+//get donate request by id
+export const getDonateRequestById = async (donateId) => {
+    const response = await axiosClient.get('/donate-form/detail', {
+        params: { id: donateId },
+    });
+    return response;
+}
+
 
 // export const createPost = async (postData) => {
 //   const response = await axiosClient.post('/forum', postData);

@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { BiNote } from 'react-icons/bi';
 import StepProgress from './StepProgress';
 
-export default function DonateRequestProcessModal({ request, onStepChange }) {
-  const [note, setNote] = useState(request.userResponse.staffNote || '');
+export default function DonateRequestProcessModal({ request}) {
   const [openProcessModal, setOpenProcessModal] = useState(false);
 
   return (
