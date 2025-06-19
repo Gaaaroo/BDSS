@@ -10,11 +10,11 @@ import DonateRequestProcessPanel from './DonateRequestProcessModal';
 
 function getStatusColor(status) {
   switch (status) {
-    case 'Approved':
+    case 'APPROVED':
       return 'bg-green-400 text-white';
-    case 'Process':
+    case 'PROCESSING':
       return 'bg-cyan-400 text-white';
-    case 'Rejected':
+    case 'REJECTED':
       return 'bg-red-400 text-white';
     default:
       return 'bg-gray-300 text-black';
@@ -24,7 +24,6 @@ function getStatusColor(status) {
 export default function BloodRequestTable() {
   const [keyword, setKeyword] = useState('');
   const [donateRequests, setDonateRequests] = useState([]);
-  
 
   // view all donate request and search posts by keyword
   useEffect(() => {
@@ -115,11 +114,18 @@ export default function BloodRequestTable() {
                 <td className="px-3 text-center ">
                   {dayjs(request.requestDate).format('HH:mm DD/MM/YYYY')}
                 </td>
-                <td className="px-3 text-center">
+                <td className="px-3 text-center w-[95px]">
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold text-center ${getStatusColor(
-                      request.status
-                    )}`}
+                    className={`
+      w-[95px] 
+      inline-block 
+      px-0 py-1 
+      rounded-full 
+      text-xs 
+      font-semibold 
+      text-center 
+      ${getStatusColor(request.status)}
+    `}
                   >
                     {request.status}
                   </span>
@@ -127,9 +133,9 @@ export default function BloodRequestTable() {
                 <td className="px-3 text-center">
                   <span className="flex items-center justify-center gap-2">
                     {/* Open profile modal */}
-                    <ProfileModal user={request}/>
-                      {/* Open process modal */}
-                    <DonateRequestProcessPanel request={request}/>
+                    <ProfileModal user={request} />
+                    {/* Open process modal */}
+                    <DonateRequestProcessPanel request={request} />
                   </span>
                 </td>
               </tr>
