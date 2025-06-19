@@ -7,7 +7,7 @@ import ImageCarousel from '../components/Slider';
 import HowItWorkSection from '../components/HowItWorkSection';
 import BlogSection from '../components/BlogSection';
 
-import { Link, Element, Events, scrollSpy } from 'react-scroll';
+import { Element, Events, scrollSpy } from 'react-scroll';
 import WidgetChat from '../components/WidgetChat';
 import { useApp } from '../Contexts/AppContext';
 
@@ -16,7 +16,6 @@ export default function Home() {
   const [mode, setMode] = React.useState('guest');
 
   useEffect(() => {
-    console.log('Hello');
     if (isLogged) {
       setMode('member');
     } else {

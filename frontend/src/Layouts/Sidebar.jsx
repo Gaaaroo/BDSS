@@ -1,10 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Logo from '../assets/images/logo.jpg';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { BiChat } from 'react-icons/bi';
-import { MessagesSquare, Home } from 'lucide-react';
+import { MessagesSquare, Home, LucideGlassWater } from 'lucide-react';
+import { useApp } from '../Contexts/AppContext';
+import LogoutModal from '../components/LogoutModal';
 
-export default function AdminMenu() {
+export default function StaffMenu() {
+  const navigate = useNavigate();
+  const { logout } = useApp();
+  const [showModal, setShowModal] = useState(false);
+  const handleClick = (e) => {
+    e.preventDefault(); //ngăn link điều hướng ngay lập tức
+    console.log('Clicked Log out');
+    setShowModal(true);
+  };
+  const handleCancel = () => {
+    setShowModal(false);
+  };
+  const handleLogout = () => {
+    console.log('bái bai');
+    logout();
+    setShowModal(false);
+    navigate('/');
+  };
   return (
     <>
       <div className="fixed top-0 left-0 h-screen w-64 bg-[#F9B3B3] flex flex-col items-center py-6 z-50">
@@ -53,7 +72,7 @@ export default function AdminMenu() {
             Dashboard
           </Link>
           <Link
-            to="/"
+            to="/inventory"
             className="w-59 h-11 py-2 text-white bg-transparent hover:bg-[#F76C6C] transition-all  hover:font-bold
             flex justify-center items-center
             text-[22px] text-center font-semibold
@@ -62,7 +81,7 @@ export default function AdminMenu() {
             Inventory
           </Link>
           <Link
-            to="/"
+            to="/member-management"
             className="w-59 h-11 py-2 text-white bg-transparent hover:bg-[#F76C6C] transition-all  hover:font-bold
             flex justify-center items-center
             text-[22px] text-center font-semibold
@@ -89,7 +108,8 @@ export default function AdminMenu() {
             Blog
           </Link>
           <Link
-            to="/"
+            to="/login" //Không dùng trực tiếp, dùng để hợp chuẩn
+            onClick={handleClick}
             className="w-59 h-11 py-2 text-white bg-transparent hover:bg-[#F76C6C] transition-all  hover:font-bold
             flex justify-center items-center
             text-[22px] text-center font-semibold
@@ -97,6 +117,9 @@ export default function AdminMenu() {
           >
             Log out
           </Link>
+          {showModal && (
+            <LogoutModal onCancel={handleCancel} onLogout={handleLogout} />
+          )}
         </nav>
       </div>
     </>

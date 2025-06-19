@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import BackHome from './BackHome';
 import { login, loginWithTokenGoogle } from '../services/api/authService';
 import { useApp } from '../Contexts/AppContext';
-import { getUserProfile } from '../services/api/userService';
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -32,7 +31,6 @@ const LoginForm = () => {
       await login(form);
       setIsLogged(true);
       setError('');
-      navigate('/');
     } catch (error) {
       setError('Login failed. Please try again.');
     }
@@ -77,6 +75,7 @@ const LoginForm = () => {
               Username
             </label>
             <input
+              autoComplete="true"
               type="text"
               name="username"
               placeholder="Enter your username"
@@ -91,6 +90,7 @@ const LoginForm = () => {
               Password
             </label>
             <input
+              autoComplete="true"
               type="password"
               name="password"
               placeholder="Enter your password"
