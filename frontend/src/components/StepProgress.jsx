@@ -15,7 +15,7 @@ const statusColor = {
   FAILED: 'bg-red-100 text-red-700',
 };
 
-export default function StepProgress({ steps }) {
+export default function StepProgress({ steps, onReload, donateId }) {
   const [openStepIdx, setOpenStepIdx] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(
     steps[openStepIdx]?.status || 'PENDING'
@@ -34,20 +34,15 @@ export default function StepProgress({ steps }) {
     setLoading(true);
     try {
       await updateDonationProcessStep({
-        donateId: steps[openStepIdx].donateId,
+        donateId,
         stepNumber: openStepIdx + 1,
         status: selectedStatus,
-        note: note,
+        note,
       });
-      // Gọi lại API lấy đơn/steps mới nhất
-      const updatedRequest = await getDonateRequestById(
-        steps[openStepIdx].donateId
-      );
-      setSteps(updatedRequest.steps); // hoặc setRequest(updatedRequest.data.data)
+      await onReload();
       setOpenStepIdx(null);
-      console.log(updatedRequest);
     } catch (error) {
-      alert('Update failed!' + error?.response?.data?.code);
+      alert(error?.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -128,10 +123,7 @@ export default function StepProgress({ steps }) {
       {openStepIdx !== null && (
         <>
           {/* Overlay */}
-          <div
-            className="fixed inset-0 bg-black/30 z-40"
-            onClick={() => setOpenStepIdx(null)}
-          ></div>
+          <div className="fixed inset-0 bg-black/30 z-40"></div>
           {/* Modal content */}
           <div className="ml-64 fixed inset-0 flex items-center justify-center z-50">
             <div className="bg-white rounded-xl shadow-lg p-4 w-full max-w-md relative mx-2">
@@ -177,7 +169,7 @@ export default function StepProgress({ steps }) {
                 </textarea>
               </div>
               <button
-                className="px-4 py-2 bg-cyan-500 hover:bg-cyan-600 text-white rounded font-semibold block mx-auto"
+                className="px-4 py-2 bg-[#F9B3B3] hover:bg-[#F76C6C] text-white rounded-[50px] font-semibold block mx-auto"
                 onClick={handleUpdate}
                 disabled={loading}
               >

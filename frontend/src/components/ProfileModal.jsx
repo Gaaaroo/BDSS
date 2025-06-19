@@ -46,47 +46,48 @@ export default function ExampleProfileModal({ user }) {
                       Fullname:
                     </span>
                     <span className="text-gray-900 text-left">
-                      {user.fullName}
+                      {user.userResponse.fullName}
                     </span>
                   </div>
                   <div className="flex">
                     <span className="font-semibold w-36 text-gray-600 text-left">
                       Gender:
                     </span>
-                    <span className="text-gray-900">{user.gender}</span>
+                    <span className="text-gray-900">{user.userResponse.gender}</span>
                   </div>
                   <div className="flex">
                     <span className="font-semibold w-36 text-gray-600 text-left">
                       Date of birth:
                     </span>
-                    <span className="text-gray-900">{user.dob}</span>
+                    <span className="text-gray-900">{user.userResponse.dob}</span>
                   </div>
                   <div className="flex">
                     <span className="font-semibold w-36 text-gray-600 text-left">
                       Blood type:
                     </span>
-                    <span className="text-gray-900">{user.bloodType}</span>
+                    <span className="text-gray-900">{user.userResponse.bloodType}</span>
                   </div>
                   <div className="flex">
                     <span className="font-semibold w-36 text-gray-600 text-left">
                       Phone:
                     </span>
-                    <span className="text-gray-900">{user.phone}</span>
+                    <span className="text-gray-900">{user.userResponse.phone}</span>
                   </div>
                   <div className="flex">
                     <span className="font-semibold w-36 text-gray-600 text-left">
                       Address:
                     </span>
                     <span className="text-gray-900 text-left break-words max-w-[400px]">
-                      {user.address}
+                      {user.userResponse.address}
                     </span>
                   </div>
                   <div className="flex">
                     <span className="font-semibold w-36 text-gray-600 text-left">
-                      Số lần hiến máu:
+                      Health note:
                     </span>
                     <span className="text-gray-900 text-left">
-                      {user.email}
+                      {user.healthNotes !== null ? user.healthNotes
+                        : 'Normal'}
                     </span>
                   </div>
                 </div>

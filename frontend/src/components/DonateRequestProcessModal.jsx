@@ -1,9 +1,17 @@
 import React, { useState } from 'react';
 import { BiNote } from 'react-icons/bi';
 import StepProgress from './StepProgress';
+import { getDonateRequestById } from '../services/api/bloodRequestService';
 
-export default function DonateRequestProcessModal({ request}) {
+export default function DonateRequestProcessModal({ request }) {
   const [openProcessModal, setOpenProcessModal] = useState(false);
+  const [currentRequest, setCurrentRequest] = useState(request);
+
+  const reloadRequest = async () => {
+    const res = await getDonateRequestById(request.donateId);
+    setCurrentRequest(res);
+    console.log('Reloaded request:', res);
+  };
 
   return (
     <div>
@@ -47,7 +55,7 @@ export default function DonateRequestProcessModal({ request}) {
                       Donor name:
                     </span>
                     <span className="text-gray-900">
-                      {request.userResponse.fullName}
+                      {currentRequest.userResponse.fullName}
                     </span>
                   </div>
                   {/* Phone box */}
@@ -56,13 +64,17 @@ export default function DonateRequestProcessModal({ request}) {
                       Phone:
                     </span>
                     <span className="text-gray-900">
-                      {request.userResponse.phone}
+                      {currentRequest.userResponse.phone}
                     </span>
                   </div>
                 </div>
 
                 {/* Các bước quá trình */}
-                <StepProgress steps={request.steps} />
+                <StepProgress
+                  steps={currentRequest.steps}
+                  onReload={reloadRequest}
+                  donateId={currentRequest.donateId}
+                />
               </div>
             </div>
           </div>

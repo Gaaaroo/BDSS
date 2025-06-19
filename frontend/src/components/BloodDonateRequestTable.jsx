@@ -127,7 +127,7 @@ export default function BloodRequestTable() {
                 <td className="px-3 text-center">
                   <span className="flex items-center justify-center gap-2">
                     {/* Open profile modal */}
-                    <ProfileModal user={request.userResponse}/>
+                    <ProfileModal user={request}/>
                       {/* Open process modal */}
                     <DonateRequestProcessPanel request={request}/>
                   </span>
