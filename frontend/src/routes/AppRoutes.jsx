@@ -21,6 +21,7 @@ import Inventory from '../pages/Inventory';
 import MemberManagement from '../pages/MemberManagement';
 import ProtectedRoute from './ProtectedRoute';
 import { useApp } from '../Contexts/AppContext';
+import BlogManagement from '../pages/BlogManagement';
 
 export default function AppRoutes() {
   const { role } = useApp();
@@ -48,6 +49,7 @@ export default function AppRoutes() {
         <Route path="/request-management" element={<RequestManagement />} />
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/member-management" element={<MemberManagement />} />
+        <Route path="/blog-management" element={<BlogManagement />} />
       </Route>
 
       {/* Member */}

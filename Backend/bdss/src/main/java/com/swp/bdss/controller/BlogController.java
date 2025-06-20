@@ -1,5 +1,6 @@
 package com.swp.bdss.controller;
 
+import com.google.protobuf.Api;
 import com.swp.bdss.dto.request.BlogCreationRequest;
 import com.swp.bdss.dto.response.ApiResponse;
 import com.swp.bdss.dto.response.BlogResponse;
@@ -76,9 +77,12 @@ public class BlogController {
     }
 
     @DeleteMapping("/{id}")
-    String deleteBlog (@PathVariable("id") int id){
+    ApiResponse<String> deleteBlog (@PathVariable("id") int id){
         blogService.deleteBlog(id);
-        return "Delete successfully";
+        return ApiResponse.<String>builder()
+                .code(1000)
+                .data("Delete successful")
+                .build();
     }
 
     @GetMapping("/search")
