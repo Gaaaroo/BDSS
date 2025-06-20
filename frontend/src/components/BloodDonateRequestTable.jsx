@@ -1,5 +1,5 @@
 import React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   getAllBloodDonateRequests,
   searchBloodDonateRequests,
@@ -21,12 +21,12 @@ function getStatusColor(status) {
   }
 }
 
-export default function BloodRequestTable({ selectedStatus }) {
+export default function BloodRequestTable({ selectedStatus, triggerReloadCount }) {
   const [keyword, setKeyword] = useState('');
   const [donateRequests, setDonateRequests] = useState([]);
 
   // view all donate request and search posts by keyword
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     try {
       console.log('Search keyword:', keyword);
       let data;
@@ -47,11 +47,11 @@ export default function BloodRequestTable({ selectedStatus }) {
       console.error('Error fetching posts:', error);
       setDonateRequests([]);
     }
-  };
+  }, [keyword]);
 
   useEffect(() => {
     fetchRequests();
-  }, []);
+  }, [fetchRequests, triggerReloadCount]);
 
   const filteredRequests = selectedStatus
     ? donateRequests.filter((req) => req.status === selectedStatus)
@@ -148,7 +148,7 @@ export default function BloodRequestTable({ selectedStatus }) {
                       {/* Open process modal */}
                       <DonateRequestProcessPanel
                         request={request}
-                        onReloadTable={fetchRequests}
+                        onReloadTable={triggerReloadCount}
                       />
                     </span>
                   </td>

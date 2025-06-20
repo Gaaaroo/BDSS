@@ -88,7 +88,7 @@ export default function StepProgress({
       });
       await onReload();
       if (onReloadTable) {
-        onReloadTable();
+        await onReloadTable();
       }
       setOpenStepIdx(null);
     } catch (error) {

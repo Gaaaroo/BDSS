@@ -4,7 +4,7 @@ import {
   getDonateRequestByStatus,
 } from '../services/api/bloodRequestService';
 
-export default function StatusCard({ setSelectedStatus }) {
+export default function StatusCard({ setSelectedStatus, reloadCount }) {
   const [statusCount, setStatusCount] = useState();
   const [requestsByStatus, setRequestsByStatus] = useState([]);
 
@@ -16,7 +16,7 @@ export default function StatusCard({ setSelectedStatus }) {
     fetchCount().catch((error) => {
       console.error('Error fetching status count:', error);
     });
-  }, []);
+  }, [reloadCount]);
 
   if (!statusCount) return <div>Loading...</div>;
 

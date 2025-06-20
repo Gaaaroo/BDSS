@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BiNote } from 'react-icons/bi';
 import StepProgress from './StepProgress';
 import { getDonateRequestById } from '../services/api/bloodRequestService';
@@ -13,13 +13,27 @@ export default function DonateRequestProcessModal({ request, onReloadTable }) {
     console.log('Reloaded request:', res);
   };
 
+  // Fetch lại dữ liệu mới nhất khi mở modal
+  const handleOpenModal = async () => {
+    try {
+      const res = await getDonateRequestById(request.donateId);
+      setCurrentRequest(res);
+      setOpenProcessModal(true);
+    } catch (error) {
+      setCurrentRequest(request); // fallback nếu lỗi
+      setOpenProcessModal(true);
+    }
+  };
+
+
+
   return (
     <div>
       {/* Icon note */}
       <div className="flex items-center justify-center gap-2">
         <button
           title="View & update process"
-          onClick={() => setOpenProcessModal(true)}
+          onClick={handleOpenModal}
           className="text-yellow-500 hover:text-yellow-700 text-2xl"
         >
           <BiNote />
