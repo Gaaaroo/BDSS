@@ -27,3 +27,13 @@ export const getNearbyUsers = async (lat, lng, radius = 5) => {
   });
   return response;
 };
+
+export const getAllUserProfile = async () => {
+  try {
+    const res = await axiosClient.get('/users');
+    // console.log('User list: ', res);
+    return res;
+  } catch (err) {
+    console.log('Error when get all userProfile:', err);
+  }
+};
