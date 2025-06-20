@@ -21,37 +21,41 @@ function getStatusColor(status) {
   }
 }
 
-export default function BloodRequestTable() {
+export default function BloodRequestTable({ selectedStatus }) {
   const [keyword, setKeyword] = useState('');
   const [donateRequests, setDonateRequests] = useState([]);
 
   // view all donate request and search posts by keyword
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        console.log('Search keyword:', keyword);
-        let data;
-        if (keyword.trim() === '') {
-          data = await getAllBloodDonateRequests();
-          console.log('Fetching all posts:', data);
-        } else {
-          data = await searchBloodDonateRequests(keyword);
-        }
-        // setPosts(data);
-        setDonateRequests(
-          data.map((request) => ({
-            ...request,
-            id: request.donateId,
-          }))
-        );
-        console.log('Posts fetched successfully', data);
-      } catch (error) {
-        if (error.response.data.code === 1015) setError('Not found posts');
+  const fetchRequests = async () => {
+    try {
+      console.log('Search keyword:', keyword);
+      let data;
+      if (keyword.trim() === '') {
+        data = await getAllBloodDonateRequests();
+        console.log('Fetching all posts:', data);
+      } else {
+        data = await searchBloodDonateRequests(keyword);
       }
-    };
+      setDonateRequests(
+        data.map((request) => ({
+          ...request,
+          id: request.donateId,
+        }))
+      );
+      console.log('Posts fetched successfully', data);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      setDonateRequests([]);
+    }
+  };
 
-    fetchPosts();
+  useEffect(() => {
+    fetchRequests();
   }, []);
+
+  const filteredRequests = selectedStatus
+    ? donateRequests.filter((req) => req.status === selectedStatus)
+    : donateRequests;
 
   return (
     <div className="overflow-x-auto bg-pink-300 rounded-xl p-4 mt-4">
@@ -91,32 +95,39 @@ export default function BloodRequestTable() {
             </tr>
           </thead>
           <tbody>
-            {donateRequests.map((request, idx) => (
-              <tr key={idx} className="border-b border-[#f9b3b3] ">
-                <td className="px-3 py-2 w-12 text-center">
-                  {request.donateId}
+            {filteredRequests.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="text-center text-gray-500 py-4">
+                  There's no donation request at this status.
                 </td>
-                <td className="px-3 w-48 text-left">
-                  {request.userResponse.fullName}
-                </td>
-                <td className="px-3 w-10 text-center">
-                  {request.userResponse.gender}
-                </td>
-                <td className="px-3 w-30 text-center">
-                  {request.userResponse.bloodType}
-                </td>
-                <td className="px-3 w-12 text-center">
-                  {request.volume ? request.volume : 'Updating...'}
-                </td>
-                <td className="px-3 w-12 text-left">
-                  {request.userResponse.phone}
-                </td>
-                <td className="px-3 text-center ">
-                  {dayjs(request.requestDate).format('HH:mm DD/MM/YYYY')}
-                </td>
-                <td className="px-3 text-center w-[95px]">
-                  <span
-                    className={`
+              </tr>
+            ) : (
+              filteredRequests.map((request, idx) => (
+                <tr key={idx} className="border-b border-[#f9b3b3] ">
+                  <td className="px-3 py-2 w-12 text-center">
+                    {request.donateId}
+                  </td>
+                  <td className="px-3 w-48 text-left">
+                    {request.userResponse.fullName}
+                  </td>
+                  <td className="px-3 w-10 text-center">
+                    {request.userResponse.gender}
+                  </td>
+                  <td className="px-3 w-30 text-center">
+                    {request.userResponse.bloodType}
+                  </td>
+                  <td className="px-3 w-12 text-center">
+                    {request.volume ? request.volume : 'Updating...'}
+                  </td>
+                  <td className="px-3 w-12 text-left">
+                    {request.userResponse.phone}
+                  </td>
+                  <td className="px-3 text-center ">
+                    {dayjs(request.requestDate).format('HH:mm DD/MM/YYYY')}
+                  </td>
+                  <td className="px-3 text-center w-[95px]">
+                    <span
+                      className={`
       w-[95px] 
       inline-block 
       px-0 py-1 
@@ -126,20 +137,24 @@ export default function BloodRequestTable() {
       text-center 
       ${getStatusColor(request.status)}
     `}
-                  >
-                    {request.status}
-                  </span>
-                </td>
-                <td className="px-3 text-center">
-                  <span className="flex items-center justify-center gap-2">
-                    {/* Open profile modal */}
-                    <ProfileModal user={request} />
-                    {/* Open process modal */}
-                    <DonateRequestProcessPanel request={request} />
-                  </span>
-                </td>
-              </tr>
-            ))}
+                    >
+                      {request.status}
+                    </span>
+                  </td>
+                  <td className="px-3 text-center">
+                    <span className="flex items-center justify-center gap-2">
+                      {/* Open profile modal */}
+                      <ProfileModal user={request} />
+                      {/* Open process modal */}
+                      <DonateRequestProcessPanel
+                        request={request}
+                        onReloadTable={fetchRequests}
+                      />
+                    </span>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

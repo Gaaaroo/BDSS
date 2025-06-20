@@ -3,7 +3,7 @@ import { BiNote } from 'react-icons/bi';
 import StepProgress from './StepProgress';
 import { getDonateRequestById } from '../services/api/bloodRequestService';
 
-export default function DonateRequestProcessModal({ request }) {
+export default function DonateRequestProcessModal({ request, onReloadTable }) {
   const [openProcessModal, setOpenProcessModal] = useState(false);
   const [currentRequest, setCurrentRequest] = useState(request);
 
@@ -74,6 +74,7 @@ export default function DonateRequestProcessModal({ request }) {
                   steps={currentRequest.steps}
                   onReload={reloadRequest}
                   donateId={currentRequest.donateId}
+                  onReloadTable={onReloadTable}
                 />
               </div>
             </div>

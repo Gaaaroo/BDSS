@@ -11,4 +11,6 @@ public interface BloodDonateFormRepository extends JpaRepository<BloodDonateForm
     List<BloodDonateForm> findAllBloodDonateFormByUserUsername(String username);
 
     List<BloodDonateForm> findByUserFullNameContainingOrUserPhoneContainingOrUserEmailContaining(String fullName, String phone, String email);
+
+    List<BloodDonateForm> findAllByStatus(String status);
 }

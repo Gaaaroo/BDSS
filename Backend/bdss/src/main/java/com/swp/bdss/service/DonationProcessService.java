@@ -98,6 +98,9 @@ public class DonationProcessService {
         if(allStepsDone){
             bloodDonateForm.setStatus("APPROVED");
             bloodDonateFormRepository.save(bloodDonateForm);
+        }else{
+            bloodDonateForm.setStatus("PROCESSING");
+            bloodDonateFormRepository.save(bloodDonateForm);
         }
 
 //        return donationProcessMapper.toUpdateDonationProcessStepResponse(stepToUpdate);

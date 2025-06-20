@@ -15,7 +15,12 @@ const statusColor = {
   FAILED: 'bg-red-100 text-red-700',
 };
 
-export default function StepProgress({ steps, onReload, donateId }) {
+export default function StepProgress({
+  steps,
+  onReload,
+  donateId,
+  onReloadTable,
+}) {
   const [openStepIdx, setOpenStepIdx] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(
     steps[openStepIdx]?.status || 'PENDING'
@@ -25,10 +30,10 @@ export default function StepProgress({ steps, onReload, donateId }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-  if (openStepIdx !== null) {
-    setNote(steps[openStepIdx]?.note || '');
-  }
-}, [openStepIdx, steps]);
+    if (openStepIdx !== null) {
+      setNote(steps[openStepIdx]?.note || '');
+    }
+  }, [openStepIdx, steps]);
 
   useEffect(() => {
     if (openStepIdx !== null) {
@@ -36,56 +41,62 @@ export default function StepProgress({ steps, onReload, donateId }) {
     }
   }, [openStepIdx, steps]);
 
-const handleUpdate = async () => {
-  // Check previous steps
-  const allPrevDone = steps.slice(0, openStepIdx).every(step => step.status === 'DONE');
-  // Check next steps
-  const allNextPending = steps.slice(openStepIdx + 1).every(
-    step => !step.status || step.status === 'PENDING'
-  );
+  const handleUpdate = async () => {
+    // Check previous steps
+    const allPrevDone = steps
+      .slice(0, openStepIdx)
+      .every((step) => step.status === 'DONE');
+    // Check next steps
+    const allNextPending = steps
+      .slice(openStepIdx + 1)
+      .every((step) => !step.status || step.status === 'PENDING');
 
-  // If it's the first step
-  if (openStepIdx === 0) {
-    if (!allNextPending) {
-      alert('All following steps must be PENDING!');
-      setLoading(false);
-      return;
+    // If it's the first step
+    if (openStepIdx === 0) {
+      if (!allNextPending) {
+        alert('All following steps must be PENDING!');
+        setLoading(false);
+        return;
+      }
     }
-  }
-  // If it's the last step
-  else if (openStepIdx === steps.length - 1) {
-    if (!allPrevDone) {
-      alert('All previous steps must be DONE!');
-      setLoading(false);
-      return;
+    // If it's the last step
+    else if (openStepIdx === steps.length - 1) {
+      if (!allPrevDone) {
+        alert('All previous steps must be DONE!');
+        setLoading(false);
+        return;
+      }
     }
-  }
-  // Any step in the middle
-  else {
-    if (!allPrevDone || !allNextPending) {
-      alert('All previous steps must be DONE and all following steps must be PENDING!');
-      setLoading(false);
-      return;
+    // Any step in the middle
+    else {
+      if (!allPrevDone || !allNextPending) {
+        alert(
+          'All previous steps must be DONE and all following steps must be PENDING!'
+        );
+        setLoading(false);
+        return;
+      }
     }
-  }
 
-  // If all conditions are met, allow update
-  try {
-    await updateDonationProcessStep({
-      donateId,
-      stepNumber: openStepIdx + 1,
-      status: selectedStatus,
-      note,
-    });
-    await onReload();
-    setOpenStepIdx(null);
-  } catch (error) {
-    alert(error?.response?.data?.message);
-  } finally {
-    setLoading(false);
-  }
-};
-
+    // If all conditions are met, allow update
+    try {
+      await updateDonationProcessStep({
+        donateId,
+        stepNumber: openStepIdx + 1,
+        status: selectedStatus,
+        note,
+      });
+      await onReload();
+      if (onReloadTable) {
+        onReloadTable();
+      }
+      setOpenStepIdx(null);
+    } catch (error) {
+      alert(error?.response?.data?.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="w-full max-w-xl mx-auto bg-[#FDE4E4] rounded-xl shadow-lg px-4 pt-3 pb-6">
