@@ -13,14 +13,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "donationProcess")
-public class DonationProcess {
+@Table(name = "receivingProcess")
+public class ReceivingProcess {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long donationProcessId;
+    Long receivingProcessId;
 
     @Column(name = "step", nullable = false)
-    int stepNumber; //12345
+    int stepNumber; //123
 
     @Column(name = "status", nullable = false)
     String status;
@@ -36,8 +36,7 @@ public class DonationProcess {
     LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "donateId", referencedColumnName = "donateId", nullable = false)
+    @JoinColumn(name = "receiveId", referencedColumnName = "receiveId", nullable = false)
     @JsonIgnore
-    BloodDonateForm bloodDonateForm;
-
+    BloodReceiveForm bloodReceiveForm;
 }
