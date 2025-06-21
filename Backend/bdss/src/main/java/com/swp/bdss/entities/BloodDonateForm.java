@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,4 +37,7 @@ public class BloodDonateForm {
 
     @OneToMany(mappedBy = "bloodDonateForm", cascade = CascadeType.ALL, orphanRemoval = true)
     List<DonationProcess> steps = new ArrayList<>();
+
+    @OneToOne(mappedBy = "bloodDonateForm", cascade = CascadeType.ALL)
+    BloodUnit bloodUnit;
 }

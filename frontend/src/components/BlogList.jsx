@@ -85,7 +85,7 @@ export default function BlogList({
               max={totalPages}
               value={inputPage}
               onChange={(e) => setInputPage(e.target.value)}
-              className="px-4 py-2 w-25 rounded border border-gray-300 rounded"
+              className="px-4 py-2 w-25 rounded border border-gray-300"
               placeholder="page"
             />
             <button

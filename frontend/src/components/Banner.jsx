@@ -58,7 +58,7 @@ export default function Banner() {
           onClick={() => setShowModal(false)} // Click outside closes modal
         >
           <div
-            className="relative bg-white rounded-lg p-6 w-[600px] shadow-lg m-10"
+            className="relative bg-white rounded-lg p-6 w-150 shadow-lg m-10"
             onClick={(e) => e.stopPropagation()} // Prevent closing on inner click
           >
             <button
@@ -70,7 +70,7 @@ export default function Banner() {
             <h1 className="text-2xl font-bold text-red-700 mb-4">
               Please Login!
             </h1>
-            <p className="text-gray-700 mb-6 justify-around">
+            <p className="text-gray-700 mb-2 text-justify">
               "Oops! Looks like you're not logged in yet. Please log in to
               continue registering - we promise it’ll only take a moment!"
             </p>

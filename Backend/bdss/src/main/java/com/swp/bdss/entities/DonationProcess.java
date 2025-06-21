@@ -39,5 +39,4 @@ public class DonationProcess {
     @JoinColumn(name = "donateId", referencedColumnName = "donateId", nullable = false)
     @JsonIgnore
     BloodDonateForm bloodDonateForm;
-
 }
