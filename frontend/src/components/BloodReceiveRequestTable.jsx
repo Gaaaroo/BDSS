@@ -27,6 +27,8 @@ export default function BloodReceiveRequestTable({
 }) {
   const [keyword, setKeyword] = useState('');
   const [donateRequests, setDonateRequests] = useState([]);
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [modalContent, setModalContent] = useState('');
 
   // view all donate request and search posts by keyword
   const fetchRequests = useCallback(async () => {
@@ -59,6 +61,25 @@ export default function BloodReceiveRequestTable({
   const filteredRequests = selectedStatus
     ? donateRequests.filter((req) => req.status === selectedStatus)
     : donateRequests;
+
+  // Modal handler for long hospital address
+  const handleShowModal = (content) => {
+    setModalContent(splitByLength(content, 50) || "NO ADDRESS");
+    setShowAddressModal(true);
+  };
+
+  function splitByLength(str, n) {
+    if (!str) return '';
+    return str.match(new RegExp('.{1,' + n + '}', 'g')).join('\n');
+  }
+
+  //   function insertLineBreaks(str, maxLen) {
+  //   let result = '';
+  //   for (let i = 0; i < str.length; i += maxLen) {
+  //     result += str.slice(i, i + maxLen) + '\n';
+  //   }
+  //   return result;
+  // }
 
   return (
     <div className="w-full flex justify-center items-center">
@@ -165,7 +186,11 @@ export default function BloodReceiveRequestTable({
                     <td className="px-3 w-16 text-center">
                       {request.volume ?? 'Updating...'}
                     </td>
-                    <td className="px-3 w-40 text-left">
+                    <td
+                      className="px-3 w-40 text-left max-w-[160px] truncate cursor-pointer"
+                      title={request.hospitalAddress}
+                      onClick={() => handleShowModal(request.hospitalAddress)}
+                    >
                       {request.hospitalAddress}
                     </td>
                     <td className="px-3 w-16 text-center">
@@ -208,6 +233,29 @@ export default function BloodReceiveRequestTable({
             </tbody>
           </table>
         </div>
+        {/* Modal for long hospital address */}
+        {showAddressModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            {/* Overlay */}
+            <div
+              className="absolute inset-0 bg-black/30"
+              onClick={() => setShowAddressModal(false)}
+            ></div>
+            {/* Modal content */}
+            <div className="relative ml-64 bg-white p-6 rounded-lg shadow-lg max-w-lg w-full z-10 flex flex-col items-center">
+              <div className="mb-4 font-bold text-center">Hospital Address</div>
+              <div className="mb-4 break-words whitespace-pre-line text-center">
+                {modalContent}
+              </div>
+              <button
+                className="px-2 py-1 bg-red-400 text-white rounded hover:bg-red-600"
+                onClick={() => setShowAddressModal(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
