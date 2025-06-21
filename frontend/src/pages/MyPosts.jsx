@@ -158,7 +158,7 @@ function MyPosts() {
             My Posts
           </h2>
           {loading ? (
-            <div className="text-center text-gray-400">Đang tải...</div>
+            <div className="text-center text-gray-400">Loading...</div>
           ) : posts.length === 0 ? (
             <div className="text-center text-gray-400">
               You have no posts yet. Start sharing your thoughts&nbsp;

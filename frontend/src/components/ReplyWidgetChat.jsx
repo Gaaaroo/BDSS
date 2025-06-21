@@ -1,22 +1,22 @@
-import { useEffect, useState, useRef } from "react";
-import dayjs from "dayjs";
-import { db } from "../services/api/firebase";
-import { onValue, push, ref, set, remove } from "firebase/database";
-import { Send } from "lucide-react";
-import { Scroll } from "lucide-react";
+import { useEffect, useState, useRef } from 'react';
+import dayjs from 'dayjs';
+import { db } from '../services/api/firebase';
+import { onValue, push, ref, set, remove } from 'firebase/database';
+import { Send } from 'lucide-react';
+import { Scroll } from 'lucide-react';
 
 function WidgetChatAdmin() {
   const [conversations, setConversations] = useState([]);
 
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [message, setMessage] = useState("");
-  const [adminName, setAdminName] = useState("Admin");
+  const [message, setMessage] = useState('');
+  const [adminName, setAdminName] = useState('Admin');
   const messagesEndRef = useRef(null);
   const [menuOpenId, setMenuOpenId] = useState(null);
   // Lấy danh sách các room
   useEffect(() => {
-    const conversationsRef = ref(db, "conversations");
+    const conversationsRef = ref(db, 'conversations');
     const unsubscribe = onValue(conversationsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
@@ -70,18 +70,18 @@ function WidgetChatAdmin() {
       date: Date.now(),
     };
     push(ref(db, `conversations/${selectedRoom.id}/messages`), newMessage);
-    setMessage("");
+    setMessage('');
     scrollToBottom();
   };
 
   function splitByLength(str, n) {
-    if (!str) return "";
-    return str.match(new RegExp(".{1," + n + "}", "g")).join("\n");
+    if (!str) return '';
+    return str.match(new RegExp('.{1,' + n + '}', 'g')).join('\n');
   }
 
   const scrollToBottom = () => {
     setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
   };
 
@@ -103,14 +103,16 @@ function WidgetChatAdmin() {
   return (
     <div className="flex w-full h-[100vh] max-h-[100vh] border-r overflow-y-auto bg-[#2e2e2e] ">
       {/* Sidebar: Danh sách các room */}
-      <div className="w-[320px] h-[94vh] p-3 bg-[#1f1f1f] mt-[20px] ml-[30px] mr-[20px]
-      rounded-[10px]">
+      <div
+        className="w-[320px] h-[94vh] p-3 bg-[#1f1f1f] mt-[20px] ml-[30px] mr-[20px]
+      rounded-[10px]"
+      >
         <h2 className="font-bold mb-2 text-3xl pl-3">Inbox</h2>
         {conversations.map((conversation) => (
           <div
             key={conversation.id}
             className={`shadow-md rounded-md p-2 mb-2 cursor-pointer flex items-center justify-between hover:bg-[#3a3a3a] transition-colors duration-150 ${
-              selectedRoom?.id === conversation.id ? "bg-[#3a3a3a]" : ""
+              selectedRoom?.id === conversation.id ? 'bg-[#3a3a3a]' : ''
             }`}
             onClick={() => {
               setSelectedRoom(conversation);
@@ -121,26 +123,27 @@ function WidgetChatAdmin() {
             <div className="flex-1 min-w-0 ">
               <h5 className="truncate text-[18px] font-semibold text-gray-200">
                 {conversation.name}
-                
               </h5>
               <p
                 className={`text-sm truncate
     ${
       conversation.unread
-        ? "font-semibold text-[#e84a7a]"
-        : "font-normal text-gray-400"
+        ? 'font-semibold text-[#e84a7a]'
+        : 'font-normal text-gray-400'
     }`}
               >
                 {conversation.lastMessage}
-              </p>{" "}
+              </p>{' '}
               <span className="text-[10px] text-gray-400">
-                {dayjs(conversation.date).format("HH:mm DD/MM/YYYY")}
+                {dayjs(conversation.date).format('HH:mm DD/MM/YYYY')}
               </span>
             </div>
             <div className="relative">
               {conversation.unread && (
-                  <span className="ml-2 text-[#e84a7a] text-4xl font-bold leading-none pb-2 flex items-center">•</span>
-                )}
+                <span className="ml-2 text-[#e84a7a] text-4xl font-bold leading-none pb-2 flex items-center">
+                  •
+                </span>
+              )}
             </div>
             {/* Icon 3 chấm bên phải */}
             <div className="relative">
@@ -180,8 +183,8 @@ function WidgetChatAdmin() {
                       }}
                     >
                       {conversation.pinned
-                        ? "Unpin conversation"
-                        : "Pin conversation"}
+                        ? 'Unpin conversation'
+                        : 'Pin conversation'}
                     </button>
                     <button
                       className="block w-full px-4 py-2 text-left text-red-600 hover:bg-gray-100"
@@ -201,22 +204,26 @@ function WidgetChatAdmin() {
       </div>
 
       {/* Content: Chat của room đang chọn */}
-      <div className="p-3 flex-1 flex flex-col justify-between max-h-[95vh] h-[94vh] 
-      mt-[20px] rounded-[10px] mr-[30px] bg-[#5c003f]">
+      <div
+        className="p-3 flex-1 flex flex-col justify-between max-h-[95vh] h-[94vh] 
+      mt-[20px] rounded-[10px] mr-[30px] bg-[#5c003f]"
+      >
         <div className="flex-1 overflow-y-auto ">
           {selectedRoom ? (
             messages.map((msg, idx) => (
               <div
                 key={msg.id || idx}
-                className={`flex ${idx === 0 ? "mt-3" : ""} ${
-                  msg.name === adminName ? "justify-end pr-4" : "justify-start pl-4"
+                className={`flex ${idx === 0 ? 'mt-3' : ''} ${
+                  msg.name === adminName
+                    ? 'justify-end pr-4'
+                    : 'justify-start pl-4'
                 } mb-2`}
               >
                 <div
                   className={`rounded-[10px] py-2 px-4 max-w-[70%] break-words ${
                     msg.name === adminName
-                      ? "bg-gray-800 text-right text-white "
-                      : "bg-gray-100 text-left text-black"
+                      ? 'bg-gray-800 text-right text-white '
+                      : 'bg-gray-100 text-left text-black'
                   } rounded-md`}
                 >
                   <h5 className="font-semibold text-[10px] text-left text-red-500">
@@ -228,7 +235,7 @@ function WidgetChatAdmin() {
                   </p>
 
                   <span className="text-xs text-gray-400">
-                    {dayjs(msg.date).format("HH:mm DD/MM/YYYY")}
+                    {dayjs(msg.date).format('HH:mm DD/MM/YYYY')}
                   </span>
                 </div>
                 <div ref={messagesEndRef} />
@@ -249,7 +256,7 @@ function WidgetChatAdmin() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Nhập tin nhắn..."
-              onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+              onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
             />
             <button
               className=" text-white p-2 rounded-md ml-2"

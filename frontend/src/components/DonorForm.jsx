@@ -4,6 +4,7 @@ import { useApp } from '../Contexts/AppContext';
 import React from 'react';
 import { useNavigate } from 'react-router';
 import { donorForm } from '../services/api/bloodFormService';
+import CustomModal from './CustomModal';
 
 export function Title({ title, decription }) {
   return (
@@ -17,6 +18,16 @@ export function Title({ title, decription }) {
 export default function DonorForm() {
   const { profile } = useApp(); //lấy profile từ context
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const handleCancel = () => {
+    setShowModal(false);
+    navigate('/');
+  };
+  const handleConfirm = () => {
+    navigate('/profile', {
+      state: { flag: 'update', redirectTo: '/become-a-donor' },
+    });
+  };
   const [formData, setFormData] = useState({
     fullName: '',
     dob: '',
@@ -41,10 +52,7 @@ export default function DonorForm() {
   useEffect(() => {
     if (profile) {
       if (isProfileIncomplete(profile)) {
-        alert('Please update your profile before filling out the form.');
-        navigate('/profile', {
-          state: { flag: 'update', redirectTo: '/become-a-donor' },
-        });
+        setShowModal(true);
       } else {
         setFormData({
           ...formData,
@@ -189,6 +197,13 @@ export default function DonorForm() {
           Register
         </button>
       </div>
+      {showModal && (
+        <CustomModal onCancel={handleCancel} onOk={handleConfirm}>
+          <p className="text-gray-700 mb-6">
+            Please update your profile before filling out the form.
+          </p>
+        </CustomModal>
+      )}
     </form>
   );
 }

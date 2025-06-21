@@ -71,7 +71,7 @@ export const AppProvider = ({ children }) => {
     setIsLogged(false);
     setProfile(null);
     localStorage.clear();
-    console.log('handle logout');
+    console.log('Logout successful!');
   }
 
   return (

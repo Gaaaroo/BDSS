@@ -25,8 +25,7 @@ export default function ProfilePage() {
     fetchUserData();
   }, []);
 
-  if (!userData)
-    return <div className="text-center mt-10">Đang tải thông tin...</div>;
+  if (!userData) return <div className="text-center mt-10">Loading...</div>;
 
   return (
     <div>

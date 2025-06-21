@@ -3,9 +3,20 @@ import { useEffect, useState } from 'react';
 import { useApp } from '../Contexts/AppContext';
 import { useNavigate } from 'react-router';
 import { receiveForm } from '../services/api/bloodFormService';
+import CustomModal from './CustomModal';
 export default function SeekerForm() {
   const { profile } = useApp(); //lấy profile từ context
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const handleCancel = () => {
+    setShowModal(false);
+    navigate('/');
+  };
+  const handleConfirm = () => {
+    navigate('/profile', {
+      state: { flag: 'update', redirectTo: '/become-a-seeker' },
+    });
+  };
   const [formData, setFormData] = useState({
     fullName: 'abc',
     dob: '',
@@ -32,10 +43,7 @@ export default function SeekerForm() {
   useEffect(() => {
     if (profile) {
       if (isProfileIncomplete(profile)) {
-        alert('Please update your profile before filling out the form.');
-        navigate('/profile', {
-          state: { flag: 'update', redirectTo: '/become-a-donor' },
-        });
+        setShowModal(true);
       } else {
         setFormData({
           ...formData,
@@ -237,6 +245,13 @@ export default function SeekerForm() {
           Register
         </button>
       </div>
+      {showModal && (
+        <CustomModal onCancel={handleCancel} onOk={handleConfirm}>
+          <p className="text-gray-700 mb-6">
+            Please update your profile before filling out the form.
+          </p>
+        </CustomModal>
+      )}
     </form>
   );
 }

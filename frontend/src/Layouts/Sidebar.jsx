@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { BiChat } from 'react-icons/bi';
 import { MessagesSquare, Home, LucideGlassWater } from 'lucide-react';
 import { useApp } from '../Contexts/AppContext';
-import LogoutModal from '../components/LogoutModal';
+import CustomModal from '../components/CustomModal';
 
 export default function StaffMenu() {
   const navigate = useNavigate();
@@ -118,7 +118,16 @@ export default function StaffMenu() {
             Log out
           </Link>
           {showModal && (
-            <LogoutModal onCancel={handleCancel} onLogout={handleLogout} />
+            <CustomModal
+              onCancel={handleCancel}
+              onOk={handleLogout}
+              title={'Logout'}
+              okLable={'Yes, Logout'}
+            >
+              <p className="text-gray-700 mb-6">
+                Are you sure you want to Logout?
+              </p>
+            </CustomModal>
           )}
         </nav>
       </div>

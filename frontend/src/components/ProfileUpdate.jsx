@@ -155,7 +155,7 @@ export default function ProfileUpdate({
               className="block w-full text-sm text-gray-700"
             />
             {uploading && (
-              <div className="text-sm text-gray-500">Đang tải ảnh...</div>
+              <div className="text-sm text-gray-500">Loading images...</div>
             )}
             {formData.imageLink && (
               <img
@@ -169,7 +169,7 @@ export default function ProfileUpdate({
 
         <div>
           <label className="block font-medium mb-1">
-            Địa chỉ (chọn trên bản đồ)
+            Address (Select on map)
           </label>
           <MapSelector
             initialLocation={{
@@ -187,14 +187,14 @@ export default function ProfileUpdate({
             onClick={onCancel}
             className="px-6 py-2 bg-red-300 rounded-xl hover:bg-red-400"
           >
-            Hủy
+            Cancel
           </button>
           <button
             type="submit"
             disabled={uploading}
             className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700"
           >
-            {uploading ? 'Đang tải...' : 'Lưu'}
+            {uploading ? 'Loading...' : 'Save'}
           </button>
         </div>
       </form>
