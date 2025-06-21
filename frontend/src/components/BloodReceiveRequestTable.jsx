@@ -1,109 +1,213 @@
-import React from "react";
-
-const data = [
-  {
-    blood: "unknown",
-    name: "Nguyễn Minh Châu",
-    gender: "Male",
-    dob: "20-9-2024",
-    required: "20-9-2024",
-    member: "DucVo",
-    phone: "0987654321",
-    email: "DucVo",
-    status: "Process",
-  },
-  {
-    blood: "A+",
-    name: "Nguyễn Đức Huỳnh",
-    gender: "Female",
-    dob: "20-9-2024",
-    required: "20-9-2024",
-    member: "DucVo",
-    phone: "0987654321",
-    email: "DucVo",
-    status: "Approve",
-  },
-  {
-    blood: "unknown",
-    name: "Nguyễn Đức Võ",
-    gender: "Male",
-    dob: "20-9-2024",
-    required: "20-9-2024",
-    member: "DucVo",
-    phone: "0987654321",
-    email: "DucVo",
-    status: "Process",
-  },
-
-];
+import React from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import dayjs from 'dayjs';
+import {
+  getAllBloodReceiveRequests,
+  searchBloodReceiveRequests,
+} from '../services/api/bloodRequestService';
+import { BiNote, BiUserCircle } from 'react-icons/bi';
 
 function getStatusColor(status) {
   switch (status) {
-    case "Approve":
-      return "bg-green-400 text-white";
-    case "Process":
-      return "bg-cyan-400 text-white";
-    case "Cancel":
-      return "bg-red-400 text-white";
+    case 'Approve':
+      return 'bg-green-400 text-white';
+    case 'Process':
+      return 'bg-cyan-400 text-white';
+    case 'Cancel':
+      return 'bg-red-400 text-white';
     default:
-      return "bg-gray-300 text-black";
+      return 'bg-gray-300 text-black';
   }
 }
 
-export default function BloodRequestTable() {
+export default function BloodReceiveRequestTable({
+  selectedStatus,
+  triggerReloadCount,
+  onClearStatus,
+}) {
+  const [keyword, setKeyword] = useState('');
+  const [donateRequests, setDonateRequests] = useState([]);
+
+  // view all donate request and search posts by keyword
+  const fetchRequests = useCallback(async () => {
+    try {
+      console.log('Search keyword:', keyword);
+      let data;
+      if (keyword.trim() === '') {
+        data = await getAllBloodReceiveRequests();
+        console.log('Fetching all posts:', data);
+      } else {
+        data = await searchBloodReceiveRequests(keyword.trim());
+      }
+      setDonateRequests(
+        data.map((request) => ({
+          ...request,
+          id: request.donateId,
+        }))
+      );
+      console.log('Posts fetched successfully', data);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      setDonateRequests([]);
+    }
+  }, [keyword]);
+
+  useEffect(() => {
+    fetchRequests();
+  }, [fetchRequests, triggerReloadCount]);
+
+  const filteredRequests = selectedStatus
+    ? donateRequests.filter((req) => req.status === selectedStatus)
+    : donateRequests;
+
   return (
-    <div className="bg-pink-300 rounded-xl p-4 mt-4">
-      {/* Search and filter */}
-      <div className="flex items-center justify-between mb-2">
-        <input
-          type="text"
-          placeholder="Search"
-          className="border rounded-full px-3 py-1 outline-none"
-        />
-        <div className="flex items-center gap-2">
-          <span className="font-semibold">Filler</span>
-          <button className="border rounded-full px-3 py-1 text-xs">Priority</button>
-          <button className="border rounded-full px-3 py-1 text-xs">Priority</button>
+    <div className="w-full flex justify-center items-center">
+      <div
+        className="overflow-hidden bg-white rounded-xl pt-5 p-3 shadow border
+       max-w-7xl w-full border-gray-200 mt-10 m-5"
+      >
+        {/* Search and filter */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="relative w-80">
+            <input
+              type="text"
+              placeholder="Search by fullname, phone"
+              className="border border-[#F9B3B3] rounded-full pl-4 pr-9 py-2 outline-none
+      text-gray-700 w-full text-sm h-8
+      bg-pink-50 focus:ring-2 focus:ring-[#F9B3B3] transition"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+            />
+            <div className="absolute right-2 top-1 text-[#F9B3B3] text-lg pointer-events-none">
+              🔍
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mr-2">
+            <button
+              className="rounded-full px-3 text-sm h-7 flex items-center justify-center
+            transition-colors duration-200 hover:text-white hover:font-bold 
+            hover:transform hover:scale-105 hover:bg-red-500
+            bg-[#F9B3B3] text-black font-semibold"
+              onClick={() => {
+                setKeyword('');
+                if (onClearStatus) onClearStatus();
+              }}
+            >
+              All Requests
+            </button>
+          </div>
         </div>
-      </div>
-      {/* Table */}
-      <div className="overflow-x-auto">
-        <table className="min-w-full bg-[#F9B3B3] rounded-lg">
-          <thead>
-            <tr>
-              <th className="px-2 py-2 text-left">Blood Type</th>
-              <th className="px-2 py-2 text-left">Name</th>
-              <th className="px-2 py-2 text-left">Gender</th>
-              <th className="px-2 py-2 text-left">Date of Birth</th>
-              <th className="px-2 py-2 text-left">Date Required</th>
-              <th className="px-2 py-2 text-left">Member</th>
-              <th className="px-2 py-2 text-left">Phone</th>
-              <th className="px-2 py-2 text-left">Email</th>
-              <th className="px-2 py-2 text-left">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.map((row, idx) => (
-              <tr key={idx} className="border-b border-[#f9b3b3]">
-                <td className="px-2 py-1">
-                  <span className="bg-white text-black px-2 py-1 rounded font-semibold text-xs border">{row.blood}</span>
-                </td>
-                <td className="px-2 py-1">{row.name}</td>
-                <td className="px-2 py-1">{row.gender}</td>
-                <td className="px-2 py-1">{row.dob}</td>
-                <td className="px-2 py-1">{row.required}</td>
-                <td className="px-2 py-1">{row.member}</td>
-                <td className="px-2 py-1">{row.phone}</td>
-                <td className="px-2 py-1">{row.email}</td>
-                <td className="px-2 py-1">
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusColor(row.status)}`}>
-                    {row.status}
-                  </span>
-                </td>
+        {/* Table */}
+        <div className="overflow-x-auto">
+          <table className="min-w-full rounded-lg bg-[#F9B3B3]">
+            <thead className="bg-[#F76C6C]">
+              <tr className="text-white text-center font-semibold h-8 text-[16px]">
+                <th className="px-3 w-16 text-center whitespace-nowrap">
+                  ReceiveId
+                </th>
+                <th className="px-3 w-40 text-left whitespace-nowrap">
+                  Fullname
+                </th>
+                <th className="px-3 w-24 text-center whitespace-nowrap">
+                  BloodType
+                </th>
+                <th className="px-3 w-32 text-center whitespace-nowrap">
+                  Component Type
+                </th>
+                <th className="px-3 w-16 text-center whitespace-nowrap">
+                  Quantity
+                </th>
+                <th className="px-3 w-16 text-center whitespace-nowrap">
+                  Volume
+                </th>
+                <th className="px-3 w-40 text-left whitespace-nowrap">
+                  Hospital Address
+                </th>
+                <th className="px-3 w-16 text-center whitespace-nowrap">
+                  Priority
+                </th>
+                <th className="px-3 w-28 text-center whitespace-nowrap">
+                  Require Day
+                </th>
+                <th className="px-3 w-16 text-center whitespace-nowrap">
+                  Status
+                </th>
+                <th className="px-3 w-20 text-center whitespace-nowrap">
+                  Action
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredRequests.length === 0 ? (
+                <tr>
+                  <td colSpan={12} className="text-center text-gray-500 py-4">
+                    There's no receive request at this status.
+                  </td>
+                </tr>
+              ) : (
+                filteredRequests.map((request, idx) => (
+                  <tr key={idx} className="border-[#f9b3b3]">
+                    <td className="px-3 py-2 w-16 text-center">
+                      {request.receiveId}
+                    </td>
+                    <td className="px-3 w-40 text-left">
+                      {request.user?.fullName}
+                    </td>
+                    <td className="px-3 w-24 text-center">
+                      {request.user?.bloodType}
+                    </td>
+                    <td className="px-3 w-32 text-center">
+                      {request.componentType}
+                    </td>
+                    <td className="px-3 w-16 text-center">
+                      {request.quantity ?? 'Updating...'}
+                    </td>
+                    <td className="px-3 w-16 text-center">
+                      {request.volume ?? 'Updating...'}
+                    </td>
+                    <td className="px-3 w-40 text-left">
+                      {request.hospitalAddress}
+                    </td>
+                    <td className="px-3 w-16 text-center">
+                      {request.priority}
+                    </td>
+                    <td className="px-3 w-28 text-center">
+                      {request.requireDate
+                        ? dayjs(request.requireDate).format('DD/MM/YYYY')
+                        : ''}
+                    </td>
+                    <td className="px-3 text-center w-16">
+                      <span
+                        className={`
+                w-[95px]
+                inline-block
+                px-0 py-1
+                rounded-full
+                text-xs
+                font-semibold
+                text-center
+                ${getStatusColor(request.status)}
+              `}
+                      >
+                        {request.status}
+                      </span>
+                    </td>
+                    <td className="px-3 text-center w-20">
+                      <span className="flex items-center justify-center gap-2">
+                        <button title="Note">
+                          <BiNote className="text-2xl text-blue-500 hover:text-blue-700 transition" />
+                        </button>
+                        <button title="Profile">
+                          <BiUserCircle className="text-2xl text-gray-600 hover:text-gray-900 transition" />
+                        </button>
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ package com.swp.bdss.controller;
 import com.swp.bdss.dto.request.BloodReceiveFormCreationRequest;
 import com.swp.bdss.dto.request.BloodReceiveFormUpdateStatusRequest;
 import com.swp.bdss.dto.response.ApiResponse;
+import com.swp.bdss.dto.response.BloodDonateFormResponse;
 import com.swp.bdss.dto.response.BloodReceiveFormResponse;
 import com.swp.bdss.service.BloodReceiveFormService;
 import lombok.AccessLevel;
@@ -75,7 +76,26 @@ public class BloodReceiveFormController {
         return ApiResponse.<Map<String, Long>>builder()
                 .code(1000)
                 .data(bloodReceiveFormService.countReceiveRequestsByStatus())
-                .message("Count donate requests by status successfully")
+                .message("Count receive requests by status successfully")
+                .build();
+    }
+
+    // Get all receive blood forms by status
+    @GetMapping("/by-status")
+    ApiResponse<List<BloodReceiveFormResponse>> getBloodDonateFormsByStatus(@RequestParam String status) {
+        return ApiResponse.<List<BloodReceiveFormResponse>>builder()
+                .code(1000)
+                .data(bloodReceiveFormService.getBloodReceiveFormByStatus(status))
+                .message("Get blood receive forms by status successfully")
+                .build();
+    }
+
+    @GetMapping("/search")
+    ApiResponse<List<BloodReceiveFormResponse>> searchBloodDonateFormByKeyword(@RequestParam String keyword){
+        return ApiResponse.<List<BloodReceiveFormResponse>>builder()
+                .code(1000)
+                .data(bloodReceiveFormService.searchBloodReceiveFormByKeyWord(keyword))
+                .message("Search blood receive form by keyword successfully")
                 .build();
     }
 }

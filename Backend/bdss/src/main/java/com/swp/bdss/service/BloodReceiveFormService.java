@@ -2,6 +2,7 @@ package com.swp.bdss.service;
 
 import com.swp.bdss.dto.request.BloodReceiveFormCreationRequest;
 import com.swp.bdss.dto.request.BloodReceiveFormUpdateStatusRequest;
+import com.swp.bdss.dto.response.BloodDonateFormResponse;
 import com.swp.bdss.dto.response.BloodReceiveFormResponse;
 import com.swp.bdss.dto.response.UserResponse;
 import com.swp.bdss.entities.BloodDonateForm;
@@ -9,6 +10,7 @@ import com.swp.bdss.entities.BloodReceiveForm;
 import com.swp.bdss.entities.User;
 import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
+import com.swp.bdss.mapper.BloodDonateFormMapper;
 import com.swp.bdss.mapper.BloodReceiveFormMapper;
 import com.swp.bdss.mapper.UserMapper;
 import com.swp.bdss.repository.BloodReceiveFormRepository;
@@ -32,6 +34,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BloodReceiveFormService {
+    private final BloodDonateFormMapper bloodDonateFormMapper;
     UserRepository userRepository;
     BloodReceiveFormRepository bloodReceiveFormRepository;
     BloodReceiveFormMapper bloodReceiveFormMapper;
@@ -120,5 +123,24 @@ public class BloodReceiveFormService {
                         BloodReceiveForm::getStatus,
                         Collectors.counting()
                 ));
+    }
+
+    public List<BloodReceiveFormResponse> getBloodReceiveFormByStatus(String status){
+        List<BloodReceiveFormResponse> list = bloodReceiveFormRepository.findAllByStatus(status)
+                .stream().map(bloodReceiveFormMapper::toBloodReceiveFormResponse)
+                .toList();
+        return list;
+    }
+
+    public List<BloodReceiveFormResponse> searchBloodReceiveFormByKeyWord(String keyword) {
+        List<BloodReceiveFormResponse> list = bloodReceiveFormRepository.findByUserFullNameContainingOrUserPhoneContaining(keyword, keyword)
+                .stream().map(bloodReceiveFormMapper::toBloodReceiveFormResponse)
+                .toList();
+
+        if(list.isEmpty()){
+            throw new AppException(ErrorCode.NO_BLOOD_DONATE_FORM);
+        }
+
+        return list;
     }
 }

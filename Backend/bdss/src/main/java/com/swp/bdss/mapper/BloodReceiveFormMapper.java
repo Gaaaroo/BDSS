@@ -14,6 +14,6 @@ public interface BloodReceiveFormMapper {
     BloodReceiveForm toBloodReceiveForm(BloodReceiveFormCreationRequest request);
 
     @Mapping(source = "receiveId", target = "receiveId")
-    @Mapping(target = "user", ignore = true)
+    @Mapping(source = "user", target = "user")
     BloodReceiveFormResponse toBloodReceiveFormResponse(BloodReceiveForm bloodReceiveForm);
 }

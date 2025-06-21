@@ -97,19 +97,19 @@ export default function BloodRequestTable({
           </div>
         </div>
 
-        <div className="">
+        <div className="overflow-x-auto">
           <table className="min-w-full rounded-lg bg-[#F9B3B3]">
             <thead className="bg-[#F76C6C]">
               <tr className="text-white text-center font-semibold h-8 text-[16px]">
-                <th className="px-3 w-12 text-center">RequestId</th>
-                <th className="px-3 w-48 text-left">Fullname</th>
-                <th className="px-3 w-10 text-center">Gender</th>
-                <th className="px-3 w-30 text-center">Blood type</th>
-                <th className="px-3 w-12 text-center">Volume</th>
-                <th className="px-3 w-12 text-left">Phone</th>
-                <th className="px-3 w-40 text-center">Request date</th>
-                <th className="px-3 w-10 text-center">Status</th>
-                <th className="px-3 w-15 text-center">Action</th>
+                <th className="px-3 w-12 text-center whitespace-nowrap">RequestId</th>
+                <th className="px-3 w-48 text-left whitespace-nowrap">Fullname</th>
+                <th className="px-3 w-10 text-center whitespace-nowrap">Gender</th>
+                <th className="px-3 w-30 text-center whitespace-nowrap">Blood type</th>
+                <th className="px-3 w-12 text-center whitespace-nowrap">Volume</th>
+                <th className="px-3 w-12 text-left whitespace-nowrap">Phone</th>
+                <th className="px-3 w-40 text-center whitespace-nowrap">Request date</th>
+                <th className="px-3 w-10 text-center whitespace-nowrap">Status</th>
+                <th className="px-3 w-15 text-center whitespace-nowrap">Action</th>
               </tr>
             </thead>
             <tbody className="">

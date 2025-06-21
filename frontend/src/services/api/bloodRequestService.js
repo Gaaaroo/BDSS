@@ -19,10 +19,17 @@ export const getAllBloodReceiveRequests = async () => {
 
 //search blood donate requests
 export const searchBloodDonateRequests = async (keyword) => {
-  const response = await axiosClient.get('/donate-form/search', {
-    params: { keyword },
-  });
-  return response;
+  try {
+    const response = await axiosClient.get('/donate-form/search', {
+      params: { keyword },
+    });
+    return response;
+  } catch (error) {
+    console.error(
+      error?.response?.message || 'Error searching blood donate requests'
+    );
+    throw error;
+  }
 };
 
 //update step of donation process
@@ -82,6 +89,34 @@ export const countReceiveRequestByStatus = async () => {
     console.error(
       error?.response?.message ||
         'Error fetching donate request count by status'
+    );
+    throw error;
+  }
+};
+
+export const getReceiveRequestByStatus = async (status) => {
+  try {
+    const response = await axiosClient.get('/receive-form/by-status', {
+      params: { status },
+    });
+    return response;
+  } catch (error) {
+    console.error(
+      error?.response?.message || 'Error fetching receive request by status'
+    );
+    throw error;
+  }
+};
+
+export const searchBloodReceiveRequests = async (keyword) => {
+  try {
+    const response = await axiosClient.get('/receive-form/search', {
+      params: { keyword },
+    });
+    return response;
+  } catch (error) {
+    console.error(
+      error?.response?.message || 'Error searching blood receive requests'
     );
     throw error;
   }

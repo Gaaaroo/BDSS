@@ -19,7 +19,6 @@ export default function BloodReceiveRequestDashboard() {
 
   const triggerReloadCount = () => setReloadCount((prev) => prev + 1);
 
-
   return (
     <>
       <div className="text-center text-3xl font-bold text-red-500">
@@ -33,7 +32,11 @@ export default function BloodReceiveRequestDashboard() {
         fetchStatusCount={countReceiveRequestByStatus}
         statuses={receiveStatuses}
       />
-      <BloodReceiveRequestTable />
+      <BloodReceiveRequestTable
+        selectedStatus={selectedStatus}
+        triggerReloadCount={triggerReloadCount}
+        onClearStatus={() => setSelectedStatus(null)}
+      />
     </>
   );
 }
