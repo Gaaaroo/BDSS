@@ -31,7 +31,7 @@ public enum ErrorCode {
     INVALID_STEP_NUMBER(1021, "Step number must between 1 and 5", HttpStatus.BAD_REQUEST),
     STEP_NOT_FINISHED(1022, "Step 5 has not been completed yet", HttpStatus.BAD_REQUEST),
     STEP_NOT_DONE(1023, "Step 5 has not been done yet", HttpStatus.BAD_REQUEST),
-    BLOODUNIT_NOT_EXIST(1024, "Blood unit not exist", HttpStatus.BAD_REQUEST)
+    BLOODUNIT_NOT_EXIST(1024, "Blood unit not exist", HttpStatus.BAD_REQUEST),
     INVALID_STEP_NUMBER1(1025, "Step number must between 1 and 5", HttpStatus.BAD_REQUEST),
     INVALID_STEP_NUMBER2(1026, "Step number must between 1 and 3", HttpStatus.BAD_REQUEST),
     NO_BLOOD_RECEIVE_FORM(1027, "Blood receive form with this id is not existed", HttpStatus.BAD_REQUEST),
