@@ -4,7 +4,7 @@ import { CircleUser, HeartHandshake, House } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Link as ScrollLink } from 'react-scroll';
 import { useApp } from '../Contexts/AppContext';
-import LogoutModal from './LogoutModal';
+import CustomModal from './CustomModal';
 
 // LogoNavbar
 function LogoNavbar() {
@@ -122,7 +122,14 @@ function UserIcon() {
         </div>
       )}
       {showModal && (
-        <LogoutModal onCancel={handleCancel} onLogout={handleLogout} />
+        <CustomModal
+          onCancel={handleCancel}
+          onOk={handleLogout}
+          title={'Logout'}
+          okLable={'Yes, Logout'}
+        >
+          <p className="text-gray-700 mb-6">Are you sure you want to Logout?</p>
+        </CustomModal>
       )}
     </div>
   );

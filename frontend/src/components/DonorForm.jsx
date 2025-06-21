@@ -4,6 +4,7 @@ import { useApp } from '../Contexts/AppContext';
 import React from 'react';
 import { useNavigate } from 'react-router';
 import { donorForm } from '../services/api/bloodFormService';
+import CustomModal from './CustomModal';
 
 export function Title({ title, decription }) {
   return (
@@ -17,6 +18,16 @@ export function Title({ title, decription }) {
 export default function DonorForm() {
   const { profile } = useApp(); //lấy profile từ context
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const handleCancel = () => {
+    setShowModal(false);
+    navigate('/');
+  };
+  const handleConfirm = () => {
+    navigate('/profile', {
+      state: { flag: 'update', redirectTo: '/become-a-donor' },
+    });
+  };
   const [formData, setFormData] = useState({
     fullName: '',
     dob: '',
@@ -24,27 +35,36 @@ export default function DonorForm() {
     bloodType: '',
     gender: '',
     email: '',
-    address: 'abc',
+    address: '',
     disease: '',
   });
-
+  function isProfileIncomplete(profile) {
+    return (
+      !profile.fullName ||
+      !profile.phone ||
+      !profile.address ||
+      !profile.dob ||
+      !profile.gender ||
+      !profile.email ||
+      !profile.bloodType
+    );
+  }
   useEffect(() => {
-    console.log('data from profile:', profile);
     if (profile) {
-      setFormData({
-        ...formData,
-        fullName: profile.fullName,
-        dob: profile.dob,
-        phone: profile.phone,
-        bloodType: profile.bloodType,
-        gender: profile.gender,
-        email: profile.email,
-        address: profile.address,
-      });
-    } else {
-      console.log(profile);
-      alert('You need update your profile');
-      navigate('/profile', { state: { flag: 'update' } });
+      if (isProfileIncomplete(profile)) {
+        setShowModal(true);
+      } else {
+        setFormData({
+          ...formData,
+          fullName: profile.fullName,
+          dob: profile.dob,
+          phone: profile.phone,
+          bloodType: profile.bloodType,
+          gender: profile.gender,
+          email: profile.email,
+          address: profile.address,
+        });
+      }
     }
   }, [profile]);
 
@@ -177,6 +197,13 @@ export default function DonorForm() {
           Register
         </button>
       </div>
+      {showModal && (
+        <CustomModal onCancel={handleCancel} onOk={handleConfirm}>
+          <p className="text-gray-700 mb-6">
+            Please update your profile before filling out the form.
+          </p>
+        </CustomModal>
+      )}
     </form>
   );
 }

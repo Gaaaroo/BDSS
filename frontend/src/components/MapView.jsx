@@ -117,7 +117,7 @@ function MapView({ initialLocation }) {
                 onClick={() => setShowModal(false)}
                 className="px-4 py-2 text-sm text-white bg-red-500 rounded hover:bg-red-600"
               >
-                Đóng
+                Close
               </button>
             </div>
           </div>

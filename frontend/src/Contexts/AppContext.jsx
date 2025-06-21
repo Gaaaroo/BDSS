@@ -12,18 +12,9 @@ export const AppProvider = ({ children }) => {
   const navigate = useNavigate();
   useEffect(() => {
     const authToken = localStorage.getItem('authToken');
-    const savedProfile = localStorage.getItem('profile');
-    console.log('save pf: ', savedProfile);
     if (authToken) {
       setIsLogged(true);
       getUserRole();
-      if (savedProfile) {
-        try {
-          setProfile(JSON.parse(savedProfile));
-        } catch {
-          setProfile(null);
-        }
-      }
     } else {
       setIsLogged(false);
       setProfile(null);
@@ -39,7 +30,7 @@ export const AppProvider = ({ children }) => {
       switch (data.role) {
         case 'MEMBER':
           console.log('Đây là member');
-          // navigate('/');
+          navigate('/');
           break;
         case 'STAFF':
           console.log('Đây là Staff');
@@ -59,14 +50,20 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  useEffect(() => {
-    console.log('profile update:', profile);
-  }, [profile]);
+  const saveProfile = async () => {
+    try {
+      const res = await getUserProfile();
+      setProfile(res);
+    } catch (err) {
+      console.log('Error when save profile', err);
+    }
+  };
 
   useEffect(() => {
     if (isLogged) {
       console.log('call api profile');
       getUserRole();
+      saveProfile();
     }
   }, [isLogged]);
 
@@ -74,12 +71,7 @@ export const AppProvider = ({ children }) => {
     setIsLogged(false);
     setProfile(null);
     localStorage.clear();
-    console.log('handle logout');
-  }
-
-  function saveProfile(profileData) {
-    setProfile(profileData);
-    localStorage.setItem('profile', JSON.stringify(profileData));
+    console.log('Logout successful!');
   }
 
   return (
@@ -90,7 +82,6 @@ export const AppProvider = ({ children }) => {
         isLogged,
         setIsLogged,
         logout,
-        saveProfile,
         getUserRole,
         role,
       }}

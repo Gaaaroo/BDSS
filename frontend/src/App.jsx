@@ -7,8 +7,9 @@ const libraries = ['places'];
 export default function App() {
   return (
     <AppProvider>
-      <LoadScript googleMapsApiKey={apiKey} libraries={libraries} />
-      <AppRoutes />
+      <LoadScript googleMapsApiKey={apiKey} libraries={libraries}>
+        <AppRoutes />
+      </LoadScript>
     </AppProvider>
   );
 }
