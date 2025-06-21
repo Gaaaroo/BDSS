@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -47,4 +48,7 @@ public class BloodReceiveForm {
 
     @Column(name = "requestDate", nullable = false)
     LocalDate requestDate;
+
+    @OneToMany(mappedBy = "receiveForm", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<BloodUnit> bloodUnits;
 }

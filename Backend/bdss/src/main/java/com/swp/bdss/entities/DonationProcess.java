@@ -37,7 +37,9 @@ public class DonationProcess {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "donateId", referencedColumnName = "donateId", nullable = false)
-            @JsonIgnore
+    @JsonIgnore
     BloodDonateForm bloodDonateForm;
 
+    @OneToOne(mappedBy = "donationProcess", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    BloodUnit bloodUnit;
 }

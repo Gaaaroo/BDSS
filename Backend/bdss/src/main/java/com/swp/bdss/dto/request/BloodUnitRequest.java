@@ -1,0 +1,17 @@
+package com.swp.bdss.dto.request;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+public class BloodUnitRequest {
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public class CommentCreationRequest {
+        String content;
+        Long postId;
+    }
+
+}
