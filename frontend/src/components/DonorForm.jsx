@@ -24,27 +24,39 @@ export default function DonorForm() {
     bloodType: '',
     gender: '',
     email: '',
-    address: 'abc',
+    address: '',
     disease: '',
   });
-
+  function isProfileIncomplete(profile) {
+    return (
+      !profile.fullName ||
+      !profile.phone ||
+      !profile.address ||
+      !profile.dob ||
+      !profile.gender ||
+      !profile.email ||
+      !profile.bloodType
+    );
+  }
   useEffect(() => {
-    console.log('data from profile:', profile);
     if (profile) {
-      setFormData({
-        ...formData,
-        fullName: profile.fullName,
-        dob: profile.dob,
-        phone: profile.phone,
-        bloodType: profile.bloodType,
-        gender: profile.gender,
-        email: profile.email,
-        address: profile.address,
-      });
-    } else {
-      console.log(profile);
-      alert('You need update your profile');
-      navigate('/profile', { state: { flag: 'update' } });
+      if (isProfileIncomplete(profile)) {
+        alert('Please update your profile before filling out the form.');
+        navigate('/profile', {
+          state: { flag: 'update', redirectTo: '/become-a-donor' },
+        });
+      } else {
+        setFormData({
+          ...formData,
+          fullName: profile.fullName,
+          dob: profile.dob,
+          phone: profile.phone,
+          bloodType: profile.bloodType,
+          gender: profile.gender,
+          email: profile.email,
+          address: profile.address,
+        });
+      }
     }
   }, [profile]);
 

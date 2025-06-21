@@ -19,21 +19,33 @@ export default function SeekerForm() {
     quantity: '',
     hospitalAddress: '',
   });
-
+  function isProfileIncomplete(profile) {
+    return (
+      !profile.fullName ||
+      !profile.phone ||
+      !profile.dob ||
+      !profile.gender ||
+      !profile.email ||
+      !profile.bloodType
+    );
+  }
   useEffect(() => {
-    console.log('data from profile:', profile);
     if (profile) {
-      setFormData({
-        ...formData,
-        fullName: profile.fullName,
-        dob: profile.dob,
-        phone: profile.phone,
-        gender: profile.gender,
-        email: profile.email,
-      });
-    } else {
-      alert('You need update your profile');
-      navigate('/profile', { state: { flag: 'update' } });
+      if (isProfileIncomplete(profile)) {
+        alert('Please update your profile before filling out the form.');
+        navigate('/profile', {
+          state: { flag: 'update', redirectTo: '/become-a-donor' },
+        });
+      } else {
+        setFormData({
+          ...formData,
+          fullName: profile.fullName,
+          dob: profile.dob,
+          phone: profile.phone,
+          gender: profile.gender,
+          email: profile.email,
+        });
+      }
     }
   }, [profile]);
 
