@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -30,20 +30,21 @@ public class BloodUnit {
     String status;
 
     @Column(name = "donatedDate", nullable = false)
-    LocalDate donatedDate;
+    LocalDateTime donatedDate;
 
     @Column(name = "expiryDate", nullable = false)
-    LocalDate expiryDate;
+    LocalDateTime expiryDate;
 
     @Column(name = "note", columnDefinition = "TEXT")
     String note;
 
+
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "donationProcessId", referencedColumnName = "donationProcessId")
-    DonationProcess donationProcess;
+    @JoinColumn(name = "donateId", referencedColumnName = "donateId")
+    BloodDonateForm bloodDonateForm;
 
     @OneToMany(mappedBy = "bloodUnit", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<BloodComponentUnit> bloodComponentUnits;
+    List<BloodComponentUnit> bloodComponentUnits;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "receiveId", referencedColumnName = "receiveId")

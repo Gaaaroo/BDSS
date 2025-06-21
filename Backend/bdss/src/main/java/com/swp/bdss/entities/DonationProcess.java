@@ -39,7 +39,4 @@ public class DonationProcess {
     @JoinColumn(name = "donateId", referencedColumnName = "donateId", nullable = false)
     @JsonIgnore
     BloodDonateForm bloodDonateForm;
-
-    @OneToOne(mappedBy = "donationProcess", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    BloodUnit bloodUnit;
 }

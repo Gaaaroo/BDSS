@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -32,10 +32,10 @@ public class BloodComponentUnit {
     String status;
 
     @Column(name = "donatedDate", nullable = false)
-    LocalDate createdDate;
+    LocalDateTime createdDate;
 
     @Column(name = "expiryDate", nullable = false)
-    LocalDate expiryDate;
+    LocalDateTime expiryDate;
 
     @Column(name = "note", columnDefinition = "TEXT")
     String note;
