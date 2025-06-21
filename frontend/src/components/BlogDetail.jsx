@@ -6,7 +6,7 @@ export default function BlogDetail({ blog, onBack }) {
     <div className="p-6 max-w-4xl mx-auto">
       <button
         onClick={onBack}
-        className="px-3 py-1 border bg-gradient-to-r from-red-600 to-rose-600 text-white py-2 rounded-lg text-lg shadow hover:from-red-700 hover:to-rose-700 transition mb-4"
+        className="px-3 py-2 border bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-lg text-lg shadow hover:from-red-700 hover:to-rose-700 transition mb-4"
       >
         ← Back to Blogs
       </button>

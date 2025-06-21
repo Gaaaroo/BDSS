@@ -29,6 +29,9 @@ public enum ErrorCode {
     NO_BLOOD_DONATE_FORM(1019, "No blood donate form found", HttpStatus.BAD_REQUEST),
     PREVIOUS_STEP_NOT_DONE(1020, "Previous step is not done", HttpStatus.BAD_REQUEST),
     INVALID_STEP_NUMBER(1021, "Step number must between 1 and 5", HttpStatus.BAD_REQUEST),
+    STEP_NOT_FINISHED(1022, "Step 5 has not been completed yet", HttpStatus.BAD_REQUEST),
+    STEP_NOT_DONE(1023, "Step 5 has not been done yet", HttpStatus.BAD_REQUEST),
+    BLOODUNIT_NOT_EXIST(1024, "Blood unit not exist", HttpStatus.BAD_REQUEST)
     ;
 
     private final int code;
