@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { BiNote } from 'react-icons/bi';
-import StepProgress from './DonateStepProgress';
-import { getDonateRequestById } from '../services/api/bloodRequestService';
+import { getReceiveRequestById } from '../services/api/bloodRequestService';
+import ReceiveStepProgress from './ReceiveStepProgress';
 
-export default function DonateRequestProcessModal({ request, onReloadTable }) {
+export default function ReceiveRequestProcessModal({ request, onReloadTable }) {
   const [openProcessModal, setOpenProcessModal] = useState(false);
   const [currentRequest, setCurrentRequest] = useState(request);
 
   const reloadRequest = async () => {
-    const res = await getDonateRequestById(request.donateId);
+    const res = await getReceiveRequestById(request.receiveId);
     setCurrentRequest(res);
     console.log('Reloaded request:', res);
   };
@@ -16,7 +16,7 @@ export default function DonateRequestProcessModal({ request, onReloadTable }) {
   // Fetch lại dữ liệu mới nhất khi mở modal
   const handleOpenModal = async () => {
     try {
-      const res = await getDonateRequestById(request.donateId);
+      const res = await getReceiveRequestById(request.receiveId);
       setCurrentRequest(res);
       setOpenProcessModal(true);
     } catch (error) {
@@ -29,12 +29,8 @@ export default function DonateRequestProcessModal({ request, onReloadTable }) {
     <div>
       {/* Icon note */}
       <div className="flex items-center justify-center gap-2">
-        <button
-          title="View & update process"
-          onClick={handleOpenModal}
-          className="text-yellow-500 hover:text-yellow-700 text-2xl"
-        >
-          <BiNote />
+        <button title="View & update process" onClick={handleOpenModal}>
+          <BiNote className="text-2xl text-blue-500 hover:text-blue-700 transition" />
         </button>
       </div>
 
@@ -68,7 +64,7 @@ export default function DonateRequestProcessModal({ request, onReloadTable }) {
                         Donor name:
                       </span>
                       <span className="text-gray-900">
-                        {currentRequest.userResponse.fullName}
+                        {currentRequest.user.fullName}
                       </span>
                     </div>
                     {/* Phone box */}
@@ -77,16 +73,16 @@ export default function DonateRequestProcessModal({ request, onReloadTable }) {
                         Phone:
                       </span>
                       <span className="text-gray-900">
-                        {currentRequest.userResponse.phone}
+                        {currentRequest.user.phone}
                       </span>
                     </div>
                   </div>
 
                   {/* Các bước quá trình */}
-                  <StepProgress
+                  <ReceiveStepProgress
                     steps={currentRequest.steps}
                     onReload={reloadRequest}
-                    donateId={currentRequest.donateId}
+                    receiveId={currentRequest.receiveId}
                     onReloadTable={onReloadTable}
                   />
                 </div>
