@@ -1,5 +1,5 @@
 import React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   getAllBloodDonateRequests,
   searchBloodDonateRequests,
@@ -10,132 +10,171 @@ import DonateRequestProcessPanel from './DonateRequestProcessModal';
 
 function getStatusColor(status) {
   switch (status) {
-    case 'Approved':
+    case 'APPROVED':
       return 'bg-green-400 text-white';
-    case 'Process':
+    case 'PROCESSING':
       return 'bg-cyan-400 text-white';
-    case 'Rejected':
+    case 'REJECTED':
       return 'bg-red-400 text-white';
     default:
       return 'bg-gray-300 text-black';
   }
 }
 
-export default function BloodRequestTable() {
+export default function BloodRequestTable({
+  selectedStatus,
+  triggerReloadCount,
+  onClearStatus,
+}) {
   const [keyword, setKeyword] = useState('');
   const [donateRequests, setDonateRequests] = useState([]);
-  
 
   // view all donate request and search posts by keyword
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        console.log('Search keyword:', keyword);
-        let data;
-        if (keyword.trim() === '') {
-          data = await getAllBloodDonateRequests();
-          console.log('Fetching all posts:', data);
-        } else {
-          data = await searchBloodDonateRequests(keyword);
-        }
-        // setPosts(data);
-        setDonateRequests(
-          data.map((request) => ({
-            ...request,
-            id: request.donateId,
-          }))
-        );
-        console.log('Posts fetched successfully', data);
-      } catch (error) {
-        if (error.response.data.code === 1015) setError('Not found posts');
+  const fetchRequests = useCallback(async () => {
+    try {
+      console.log('Search keyword:', keyword);
+      let data;
+      if (keyword.trim() === '') {
+        data = await getAllBloodDonateRequests();
+        console.log('Fetching all posts:', data);
+      } else {
+        data = await searchBloodDonateRequests(keyword.trim());
       }
-    };
+      setDonateRequests(
+        data.map((request) => ({
+          ...request,
+          id: request.donateId,
+        }))
+      );
+      console.log('Posts fetched successfully', data);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      setDonateRequests([]);
+    }
+  }, [keyword]);
 
-    fetchPosts();
-  }, []);
+  useEffect(() => {
+    fetchRequests();
+  }, [fetchRequests, triggerReloadCount]);
+
+  const filteredRequests = selectedStatus
+    ? donateRequests.filter((req) => req.status === selectedStatus)
+    : donateRequests;
 
   return (
-    <div className="overflow-x-auto bg-pink-300 rounded-xl p-4 mt-4">
-      {/* Search and filter */}
-      <div className="flex items-center justify-between mb-2">
-        <input
-          type="text"
-          placeholder="Search"
-          className="border rounded-full px-3 py-1 outline-none"
-          value={keyword}
-          onChange={(e) => setKeyword(e.target.value)}
-        />
-        <div className="flex items-center gap-2">
-          <span className="font-semibold">Filler</span>
-          <button className="border rounded-full px-3 py-1 text-xs">
-            Priority
-          </button>
-          <button className="border rounded-full px-3 py-1 text-xs">
-            Priority
-          </button>
+    <div className="w-full flex justify-center">
+      <div className="overflow-hidden bg-white rounded-xl pt-5 p-3 shadow border border-gray-200 mt-10 m-5">
+        {/* Search and filter */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="relative w-80">
+            <input
+              type="text"
+              placeholder="Search by fullname, phone"
+              className="border border-[#F9B3B3] rounded-full pl-4 pr-9 py-2 outline-none
+      text-gray-700 w-full text-sm h-8
+      bg-pink-50 focus:ring-2 focus:ring-[#F9B3B3] transition"
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+            />
+            <div className="absolute right-2 top-1 text-[#F9B3B3] text-lg pointer-events-none">
+              🔍
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mr-2">
+            <button
+              className="rounded-full px-3 text-sm h-7 flex items-center justify-center
+            transition-colors duration-200 hover:text-white hover:font-bold 
+            hover:transform hover:scale-105 hover:bg-red-500
+            bg-[#F9B3B3] text-black font-semibold"
+              onClick={() => {
+                setKeyword('');
+                if (onClearStatus) onClearStatus();
+              }}
+            >
+              All Requests
+            </button>
+          </div>
         </div>
-      </div>
 
-      <div className="">
-        <table className="min-w-full bg-[#F9B3B3] rounded-lg">
-          <thead className="bg-[#F76C6C]">
-            <tr className="text-white text-center font-semibold h-8 text-[16px]">
-              <th className="px-3 w-12 text-center">RequestId</th>
-              <th className="px-3 w-48 text-left">Fullname</th>
-              <th className="px-3 w-10 text-center">Gender</th>
-              <th className="px-3 w-30 text-center">Blood type</th>
-              <th className="px-3 w-12 text-center">Volume</th>
-              <th className="px-3 w-12 text-left">Phone</th>
-              <th className="px-3 w-40 text-center">Request date</th>
-              <th className="px-3 w-10 text-center">Status</th>
-              <th className="px-3 w-15 text-center">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {donateRequests.map((request, idx) => (
-              <tr key={idx} className="border-b border-[#f9b3b3] ">
-                <td className="px-3 py-2 w-12 text-center">
-                  {request.donateId}
-                </td>
-                <td className="px-3 w-48 text-left">
-                  {request.userResponse.fullName}
-                </td>
-                <td className="px-3 w-10 text-center">
-                  {request.userResponse.gender}
-                </td>
-                <td className="px-3 w-30 text-center">
-                  {request.userResponse.bloodType}
-                </td>
-                <td className="px-3 w-12 text-center">
-                  {request.volume ? request.volume : 'Updating...'}
-                </td>
-                <td className="px-3 w-12 text-left">
-                  {request.userResponse.phone}
-                </td>
-                <td className="px-3 text-center ">
-                  {dayjs(request.requestDate).format('HH:mm DD/MM/YYYY')}
-                </td>
-                <td className="px-3 text-center">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold text-center ${getStatusColor(
-                      request.status
-                    )}`}
-                  >
-                    {request.status}
-                  </span>
-                </td>
-                <td className="px-3 text-center">
-                  <span className="flex items-center justify-center gap-2">
-                    {/* Open profile modal */}
-                    <ProfileModal user={request.userResponse}/>
-                      {/* Open process modal */}
-                    <DonateRequestProcessPanel request={request}/>
-                  </span>
-                </td>
+        <div className="">
+          <table className="min-w-full rounded-lg bg-[#F9B3B3]">
+            <thead className="bg-[#F76C6C]">
+              <tr className="text-white text-center font-semibold h-8 text-[16px]">
+                <th className="px-3 w-12 text-center">RequestId</th>
+                <th className="px-3 w-48 text-left">Fullname</th>
+                <th className="px-3 w-10 text-center">Gender</th>
+                <th className="px-3 w-30 text-center">Blood type</th>
+                <th className="px-3 w-12 text-center">Volume</th>
+                <th className="px-3 w-12 text-left">Phone</th>
+                <th className="px-3 w-40 text-center">Request date</th>
+                <th className="px-3 w-10 text-center">Status</th>
+                <th className="px-3 w-15 text-center">Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="">
+              {filteredRequests.length === 0 ? (
+                <tr>
+                  <td colSpan={9} className="text-center text-gray-500 py-4">
+                    There's no donation request at this status.
+                  </td>
+                </tr>
+              ) : (
+                filteredRequests.map((request, idx) => (
+                  <tr key={idx} className=" border-[#f9b3b3] ">
+                    <td className="px-3 py-2 w-12 text-center">
+                      {request.donateId}
+                    </td>
+                    <td className="px-3 w-48 text-left">
+                      {request.userResponse.fullName}
+                    </td>
+                    <td className="px-3 w-10 text-center">
+                      {request.userResponse.gender}
+                    </td>
+                    <td className="px-3 w-30 text-center">
+                      {request.userResponse.bloodType}
+                    </td>
+                    <td className="px-3 w-12 text-center">
+                      {request.volume ? request.volume : 'Updating...'}
+                    </td>
+                    <td className="px-3 w-12 text-left">
+                      {request.userResponse.phone}
+                    </td>
+                    <td className="px-3 text-center ">
+                      {dayjs(request.requestDate).format('HH:mm DD/MM/YYYY')}
+                    </td>
+                    <td className="px-3 text-center w-[95px]">
+                      <span
+                        className={`
+                                w-[95px] 
+                                inline-block 
+                                px-0 py-1 
+                                rounded-full 
+                                text-xs 
+                                font-semibold 
+                                text-center 
+                                ${getStatusColor(request.status)}
+                              `}
+                      >
+                        {request.status}
+                      </span>
+                    </td>
+                    <td className="px-3 text-center">
+                      <span className="flex items-center justify-center gap-2">
+                        {/* Open profile modal */}
+                        <ProfileModal user={request} />
+                        {/* Open process modal */}
+                        <DonateRequestProcessPanel
+                          request={request}
+                          onReloadTable={triggerReloadCount}
+                        />
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

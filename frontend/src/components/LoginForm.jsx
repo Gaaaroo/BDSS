@@ -81,7 +81,7 @@ const LoginForm = () => {
               placeholder="Enter your username"
               value={form.username}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition"
+              className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition text-black"
               required
             />
           </div>
@@ -96,7 +96,7 @@ const LoginForm = () => {
               placeholder="Enter your password"
               value={form.password}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition"
+              className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition text-black"
               required
             />
           </div>

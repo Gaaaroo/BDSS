@@ -3,7 +3,7 @@ import React from 'react';
 
 export const donorForm = async (donorFormData) => {
   try {
-    const res = await axiosClient.post('/donateForm', donorFormData);
+    const res = await axiosClient.post('/donate-form', donorFormData);
     console.log('Donor >>>', res);
     return res;
   } catch (error) {

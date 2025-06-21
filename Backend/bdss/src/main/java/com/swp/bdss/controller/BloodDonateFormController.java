@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -76,6 +77,25 @@ public class BloodDonateFormController {
                 .code(1000)
                 .data(bloodDonateFormService.searchBloodDonateFormByKeyWord(keyword))
                 .message("Search blood donate form by keyword successfully")
+                .build();
+    }
+
+    @GetMapping("/count-by-status")
+    ApiResponse<Map<String, Long>> countDonateRequestsByStatus(){
+        return ApiResponse.<Map<String, Long>>builder()
+                .code(1000)
+                .data(bloodDonateFormService.countDonateRequestsByStatus())
+                .message("Count donate requests by status successfully")
+                .build();
+    }
+
+    // Get all blood donate forms by status
+    @GetMapping("/by-status")
+    ApiResponse<List<BloodDonateFormResponse>> getBloodDonateFormsByStatus(@RequestParam String status) {
+        return ApiResponse.<List<BloodDonateFormResponse>>builder()
+                .code(1000)
+                .data(bloodDonateFormService.getBloodDonateFormByStatus(status))
+                .message("Get blood donate forms by status successfully")
                 .build();
     }
 }
