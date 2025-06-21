@@ -39,8 +39,8 @@ public class BloodReceiveFormController {
                 .build();
     }
 
-    @GetMapping("/{id}")
-    ApiResponse<BloodReceiveFormResponse> getBloodReceiveFormById(@PathVariable("id") int id) {
+    @GetMapping("/detail")
+    ApiResponse<BloodReceiveFormResponse> getBloodReceiveFormById(@RequestParam int id) {
         return ApiResponse.<BloodReceiveFormResponse>builder()
                 .code(1000)
                 .data(bloodReceiveFormService.getBloodReceiveFormById(id))

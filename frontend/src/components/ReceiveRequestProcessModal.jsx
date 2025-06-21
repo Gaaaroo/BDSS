@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BiNote } from 'react-icons/bi';
-import { getDonateRequestById } from '../services/api/bloodRequestService';
+import { getReceiveRequestById } from '../services/api/bloodRequestService';
 import ReceiveStepProgress from './ReceiveStepProgress';
 
 export default function ReceiveRequestProcessModal({ request, onReloadTable }) {
@@ -8,7 +8,7 @@ export default function ReceiveRequestProcessModal({ request, onReloadTable }) {
   const [currentRequest, setCurrentRequest] = useState(request);
 
   const reloadRequest = async () => {
-    const res = await getDonateRequestById(request.donateId);
+    const res = await getReceiveRequestById(request.receiveId);
     setCurrentRequest(res);
     console.log('Reloaded request:', res);
   };
@@ -16,7 +16,7 @@ export default function ReceiveRequestProcessModal({ request, onReloadTable }) {
   // Fetch lại dữ liệu mới nhất khi mở modal
   const handleOpenModal = async () => {
     try {
-      const res = await getDonateRequestById(request.donateId);
+      const res = await getReceiveRequestById(request.receiveId);
       setCurrentRequest(res);
       setOpenProcessModal(true);
     } catch (error) {
@@ -82,7 +82,7 @@ export default function ReceiveRequestProcessModal({ request, onReloadTable }) {
                   <ReceiveStepProgress
                     steps={currentRequest.steps}
                     onReload={reloadRequest}
-                    donateId={currentRequest.donateId}
+                    receiveId={currentRequest.receiveId}
                     onReloadTable={onReloadTable}
                   />
                 </div>

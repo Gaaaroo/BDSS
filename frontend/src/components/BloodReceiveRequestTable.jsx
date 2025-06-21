@@ -11,11 +11,11 @@ import ReceiveRequestProcessModal from './ReceiveRequestProcessModal';
 
 function getStatusColor(status) {
   switch (status) {
-    case 'Approve':
+    case 'APPROVED':
       return 'bg-green-400 text-white';
-    case 'Process':
+    case 'PROCESSING':
       return 'bg-cyan-400 text-white';
-    case 'Cancel':
+    case 'REJECTED':
       return 'bg-red-400 text-white';
     default:
       return 'bg-gray-300 text-black';

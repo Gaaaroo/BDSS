@@ -102,7 +102,7 @@ public class ReceivingProcessService {
         boolean anyStepFailed = steps.stream()
                 .anyMatch(step -> "FAILED".equalsIgnoreCase(step.getStatus()));
         if(anyStepFailed) {
-            bloodReceiveForm.setStatus("CANCELLED");
+            bloodReceiveForm.setStatus("REJECTED");
             bloodReceiveFormRepository.save(bloodReceiveForm);
         }
 

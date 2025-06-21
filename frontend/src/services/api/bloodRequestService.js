@@ -34,11 +34,18 @@ export const searchBloodDonateRequests = async (keyword) => {
 
 //update step of donation process
 export const updateDonationProcessStep = async (stepData) => {
-  const response = await axiosClient.put(
-    '/donation-process/update-step',
-    stepData
-  );
-  return response;
+  try {
+    const response = await axiosClient.put(
+      '/donation-process/update-step',
+      stepData
+    );
+    return response;
+  } catch (error) {
+    console.error(
+      error?.response?.message || 'Error updating donation process step'
+    );
+    throw error;
+  }
 };
 
 //get donate request by id
@@ -94,6 +101,7 @@ export const countReceiveRequestByStatus = async () => {
   }
 };
 
+//get donate request by status
 export const getReceiveRequestByStatus = async (status) => {
   try {
     const response = await axiosClient.get('/receive-form/by-status', {
@@ -108,6 +116,7 @@ export const getReceiveRequestByStatus = async (status) => {
   }
 };
 
+//search blood receive requests by
 export const searchBloodReceiveRequests = async (keyword) => {
   try {
     const response = await axiosClient.get('/receive-form/search', {
@@ -120,6 +129,30 @@ export const searchBloodReceiveRequests = async (keyword) => {
     );
     throw error;
   }
+};
+
+//update step of receiving process
+export const updateReceivingProcessStep = async (stepData) => {
+  try {
+    const response = await axiosClient.put(
+      '/receiving-process/update-step',
+      stepData
+    );
+    return response;
+  } catch (error) {
+    console.error(
+      error?.response?.message || 'Error updating receiving process step'
+    );
+    throw error;
+  }
+};
+
+//get donate request by id
+export const getReceiveRequestById = async (receiveId) => {
+  const response = await axiosClient.get('/receive-form/detail', {
+    params: { id: receiveId },
+  });
+  return response;
 };
 
 // export const createPost = async (postData) => {

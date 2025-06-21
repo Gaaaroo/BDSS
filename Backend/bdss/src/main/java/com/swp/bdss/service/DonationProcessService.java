@@ -107,7 +107,7 @@ public class DonationProcessService {
         boolean anyStepFailed = steps.stream()
                 .anyMatch(step -> "FAILED".equalsIgnoreCase(step.getStatus()));
         if(anyStepFailed) {
-            bloodDonateForm.setStatus("CANCELLED");
+            bloodDonateForm.setStatus("REJECTED");
             bloodDonateFormRepository.save(bloodDonateForm);
         }
 

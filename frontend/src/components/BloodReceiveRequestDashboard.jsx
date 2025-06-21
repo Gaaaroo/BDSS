@@ -22,7 +22,7 @@ export default function BloodReceiveRequestDashboard() {
   return (
     <>
       <div className="text-center text-3xl font-bold text-red-500">
-        Receive Blood Request Content
+        Receive Blood Request
       </div>
       <StatusCard
         key="receive"

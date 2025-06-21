@@ -75,17 +75,17 @@ export default function StatusCard({
         className={`bg-[#F9B3B3] rounded-lg px-8 py-4 flex flex-col items-center shadow cursor-pointer
           hover:transform hover:scale-105 transition-transform duration-300
           ${
-            selectedStatus === 'CANCELLED'
+            selectedStatus === 'REJECTED'
               ? 'ring-2 ring-red-400 border-1 border-red-400'
               : ''
           }
         `}
-        onClick={() => setSelectedStatus('CANCELLED')}
+        onClick={() => setSelectedStatus('REJECTED')}
       >
         <span className="text-2xl font-bold text-red-600">
-          {statusCount.CANCELLED || 0}
+          {statusCount.REJECTED || 0}
         </span>
-        <span className="text-white font-medium">Cancelled Request</span>
+        <span className="text-white font-medium">Rejected Request</span>
       </div>
     </div>
   );

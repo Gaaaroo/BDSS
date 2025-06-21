@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { updateDonationProcessStep } from '../services/api/bloodRequestService';
+import { updateReceivingProcessStep } from '../services/api/bloodRequestService';
 
 const stepNames = [
   'Confirm information',
@@ -16,7 +16,7 @@ const statusColor = {
 export default function StepProgress({
   steps,
   onReload,
-  donateId,
+  receiveId,
   onReloadTable,
 }) {
   const [openStepIdx, setOpenStepIdx] = useState(null);
@@ -78,8 +78,9 @@ export default function StepProgress({
 
     // If all conditions are met, allow update
     try {
-      await updateDonationProcessStep({
-        donateId,
+      setLoading(true);
+      await updateReceivingProcessStep({
+        receiveId,
         stepNumber: openStepIdx + 1,
         status: selectedStatus,
         note,
