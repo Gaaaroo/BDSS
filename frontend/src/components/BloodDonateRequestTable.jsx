@@ -1,5 +1,5 @@
 import React from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import {
   getAllBloodDonateRequests,
   searchBloodDonateRequests,
@@ -10,49 +10,52 @@ import DonateRequestProcessPanel from './DonateRequestProcessModal';
 
 function getStatusColor(status) {
   switch (status) {
-    case 'Approved':
+    case 'APPROVED':
       return 'bg-green-400 text-white';
-    case 'Process':
+    case 'PROCESSING':
       return 'bg-cyan-400 text-white';
-    case 'Rejected':
+    case 'REJECTED':
       return 'bg-red-400 text-white';
     default:
       return 'bg-gray-300 text-black';
   }
 }
 
-export default function BloodRequestTable() {
+export default function BloodRequestTable({ selectedStatus, triggerReloadCount }) {
   const [keyword, setKeyword] = useState('');
   const [donateRequests, setDonateRequests] = useState([]);
-  
 
   // view all donate request and search posts by keyword
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        console.log('Search keyword:', keyword);
-        let data;
-        if (keyword.trim() === '') {
-          data = await getAllBloodDonateRequests();
-          console.log('Fetching all posts:', data);
-        } else {
-          data = await searchBloodDonateRequests(keyword);
-        }
-        // setPosts(data);
-        setDonateRequests(
-          data.map((request) => ({
-            ...request,
-            id: request.donateId,
-          }))
-        );
-        console.log('Posts fetched successfully', data);
-      } catch (error) {
-        if (error.response.data.code === 1015) setError('Not found posts');
+  const fetchRequests = useCallback(async () => {
+    try {
+      console.log('Search keyword:', keyword);
+      let data;
+      if (keyword.trim() === '') {
+        data = await getAllBloodDonateRequests();
+        console.log('Fetching all posts:', data);
+      } else {
+        data = await searchBloodDonateRequests(keyword);
       }
-    };
+      setDonateRequests(
+        data.map((request) => ({
+          ...request,
+          id: request.donateId,
+        }))
+      );
+      console.log('Posts fetched successfully', data);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      setDonateRequests([]);
+    }
+  }, [keyword]);
 
-    fetchPosts();
-  }, []);
+  useEffect(() => {
+    fetchRequests();
+  }, [fetchRequests, triggerReloadCount]);
+
+  const filteredRequests = selectedStatus
+    ? donateRequests.filter((req) => req.status === selectedStatus)
+    : donateRequests;
 
   return (
     <div className="overflow-x-auto bg-pink-300 rounded-xl p-4 mt-4">
@@ -92,48 +95,66 @@ export default function BloodRequestTable() {
             </tr>
           </thead>
           <tbody>
-            {donateRequests.map((request, idx) => (
-              <tr key={idx} className="border-b border-[#f9b3b3] ">
-                <td className="px-3 py-2 w-12 text-center">
-                  {request.donateId}
-                </td>
-                <td className="px-3 w-48 text-left">
-                  {request.userResponse.fullName}
-                </td>
-                <td className="px-3 w-10 text-center">
-                  {request.userResponse.gender}
-                </td>
-                <td className="px-3 w-30 text-center">
-                  {request.userResponse.bloodType}
-                </td>
-                <td className="px-3 w-12 text-center">
-                  {request.volume ? request.volume : 'Updating...'}
-                </td>
-                <td className="px-3 w-12 text-left">
-                  {request.userResponse.phone}
-                </td>
-                <td className="px-3 text-center ">
-                  {dayjs(request.requestDate).format('HH:mm DD/MM/YYYY')}
-                </td>
-                <td className="px-3 text-center">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs font-semibold text-center ${getStatusColor(
-                      request.status
-                    )}`}
-                  >
-                    {request.status}
-                  </span>
-                </td>
-                <td className="px-3 text-center">
-                  <span className="flex items-center justify-center gap-2">
-                    {/* Open profile modal */}
-                    <ProfileModal user={request.userResponse}/>
-                      {/* Open process modal */}
-                    <DonateRequestProcessPanel request={request}/>
-                  </span>
+            {filteredRequests.length === 0 ? (
+              <tr>
+                <td colSpan={9} className="text-center text-gray-500 py-4">
+                  There's no donation request at this status.
                 </td>
               </tr>
-            ))}
+            ) : (
+              filteredRequests.map((request, idx) => (
+                <tr key={idx} className="border-b border-[#f9b3b3] ">
+                  <td className="px-3 py-2 w-12 text-center">
+                    {request.donateId}
+                  </td>
+                  <td className="px-3 w-48 text-left">
+                    {request.userResponse.fullName}
+                  </td>
+                  <td className="px-3 w-10 text-center">
+                    {request.userResponse.gender}
+                  </td>
+                  <td className="px-3 w-30 text-center">
+                    {request.userResponse.bloodType}
+                  </td>
+                  <td className="px-3 w-12 text-center">
+                    {request.volume ? request.volume : 'Updating...'}
+                  </td>
+                  <td className="px-3 w-12 text-left">
+                    {request.userResponse.phone}
+                  </td>
+                  <td className="px-3 text-center ">
+                    {dayjs(request.requestDate).format('HH:mm DD/MM/YYYY')}
+                  </td>
+                  <td className="px-3 text-center w-[95px]">
+                    <span
+                      className={`
+      w-[95px] 
+      inline-block 
+      px-0 py-1 
+      rounded-full 
+      text-xs 
+      font-semibold 
+      text-center 
+      ${getStatusColor(request.status)}
+    `}
+                    >
+                      {request.status}
+                    </span>
+                  </td>
+                  <td className="px-3 text-center">
+                    <span className="flex items-center justify-center gap-2">
+                      {/* Open profile modal */}
+                      <ProfileModal user={request} />
+                      {/* Open process modal */}
+                      <DonateRequestProcessPanel
+                        request={request}
+                        onReloadTable={triggerReloadCount}
+                      />
+                    </span>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
