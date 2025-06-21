@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { countDonateRequestByStatus } from '../services/api/bloodRequestService';
 
 export default function StatusCard({
   setSelectedStatus,
   selectedStatus,
   reloadCount,
+  fetchStatusCount,
 }) {
   const [statusCount, setStatusCount] = useState();
 
   useEffect(() => {
     const fetchCount = async () => {
-      const data = await countDonateRequestByStatus();
+      const data = await fetchStatusCount();
       setStatusCount(data);
+      console.log('Status Count:', data);
     };
     fetchCount().catch((error) => {
       console.error('Error fetching status count:', error);

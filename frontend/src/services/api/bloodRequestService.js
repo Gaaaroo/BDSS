@@ -6,10 +6,18 @@ export const getAllBloodDonateRequests = async () => {
 };
 
 export const getAllBloodReceiveRequests = async () => {
-  const response = await axiosClient.get('/receive-form');
-  return response.reverse();
+  try {
+    const response = await axiosClient.get('/receive-form');
+    return response;
+  } catch (error) {
+    console.error(
+      error?.response?.message || 'Error fetching all blood receive requests'
+    );
+    throw error;
+  }
 };
 
+//search blood donate requests
 export const searchBloodDonateRequests = async (keyword) => {
   const response = await axiosClient.get('/donate-form/search', {
     params: { keyword },
@@ -58,6 +66,22 @@ export const getDonateRequestByStatus = async (status) => {
   } catch (error) {
     console.error(
       error?.response?.message || 'Error fetching donate request by status'
+    );
+    throw error;
+  }
+};
+
+/////////////////////////////--RECEIVE--/////////////////////////////////////
+
+// count receive request by status
+export const countReceiveRequestByStatus = async () => {
+  try {
+    const response = await axiosClient.get('/receive-form/count-by-status');
+    return response;
+  } catch (error) {
+    console.error(
+      error?.response?.message ||
+        'Error fetching donate request count by status'
     );
     throw error;
   }

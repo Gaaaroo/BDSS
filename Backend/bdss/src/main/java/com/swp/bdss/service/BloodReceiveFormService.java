@@ -4,6 +4,7 @@ import com.swp.bdss.dto.request.BloodReceiveFormCreationRequest;
 import com.swp.bdss.dto.request.BloodReceiveFormUpdateStatusRequest;
 import com.swp.bdss.dto.response.BloodReceiveFormResponse;
 import com.swp.bdss.dto.response.UserResponse;
+import com.swp.bdss.entities.BloodDonateForm;
 import com.swp.bdss.entities.BloodReceiveForm;
 import com.swp.bdss.entities.User;
 import com.swp.bdss.exception.AppException;
@@ -22,6 +23,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -108,5 +111,14 @@ public class BloodReceiveFormService {
 
     public void deleteBloodReceiveForm(String id) {
         bloodReceiveFormRepository.deleteById(Integer.parseInt(id));
+    }
+
+    public Map<String, Long> countReceiveRequestsByStatus() {
+        List<BloodReceiveForm> forms = bloodReceiveFormRepository.findAll();
+        return forms.stream()
+                .collect(Collectors.groupingBy(
+                        BloodReceiveForm::getStatus,
+                        Collectors.counting()
+                ));
     }
 }

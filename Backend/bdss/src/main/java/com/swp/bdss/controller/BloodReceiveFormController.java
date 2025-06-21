@@ -12,9 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
-@RequestMapping("/receiveForm")
+@RequestMapping("/receive-form")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RestController
@@ -67,5 +68,14 @@ public class BloodReceiveFormController {
     String deleteBloodReceiveForm (@RequestParam String id){
         bloodReceiveFormService.deleteBloodReceiveForm(id);
         return "Delete successfully";
+    }
+
+    @GetMapping("/count-by-status")
+    ApiResponse<Map<String, Long>> countDonateRequestsByStatus(){
+        return ApiResponse.<Map<String, Long>>builder()
+                .code(1000)
+                .data(bloodReceiveFormService.countReceiveRequestsByStatus())
+                .message("Count donate requests by status successfully")
+                .build();
     }
 }
