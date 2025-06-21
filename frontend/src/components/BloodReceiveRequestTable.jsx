@@ -7,6 +7,7 @@ import {
 } from '../services/api/bloodRequestService';
 import { BiNote, BiUserCircle } from 'react-icons/bi';
 import ProfileModal2 from './ProfileModal2';
+import ReceiveRequestProcessModal from './ReceiveRequestProcessModal';
 
 function getStatusColor(status) {
   switch (status) {
@@ -220,10 +221,11 @@ export default function BloodReceiveRequestTable({
                     </td>
                     <td className="px-3 text-center w-20">
                       <span className="flex items-center justify-center gap-2">
-                        <ProfileModal2 request={request}/>
-                        <button title="Note">
-                          <BiNote className="text-2xl text-blue-500 hover:text-blue-700 transition" />
-                        </button>
+                        <ProfileModal2 request={request} />
+                        <ReceiveRequestProcessModal
+                          request={request}
+                          onReloadTable={triggerReloadCount}
+                        />
                       </span>
                     </td>
                   </tr>

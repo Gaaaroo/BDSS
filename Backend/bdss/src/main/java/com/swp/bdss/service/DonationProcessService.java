@@ -36,7 +36,7 @@ public class DonationProcessService {
     // updateDonationProcessStep
     public UpdateDonationProcessStepResponse updateDonationStep(UpdateDonationProcessStepRequest request){
         if(request.getStepNumber() >= 6 || request.getStepNumber() <= 0) {
-            throw new AppException(ErrorCode.INVALID_STEP_NUMBER);
+            throw new AppException(ErrorCode.INVALID_STEP_NUMBER1);
         }
 
         int userId = Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -69,7 +69,7 @@ public class DonationProcessService {
         if (request.getStepNumber() > 1) {
             DonationProcess prevStep = donationProcessRepository
                     .findByBloodDonateFormDonateIdAndStepNumber(request.getDonateId(), request.getStepNumber() - 1)
-                    .orElseThrow(() -> new RuntimeException("Previous step not found"));
+                    .orElseThrow(() -> new AppException(ErrorCode.STEP_NOT_FOUND));
             if (!"DONE".equalsIgnoreCase(prevStep.getStatus())) {
                 throw new AppException(ErrorCode.PREVIOUS_STEP_NOT_DONE);
             }
@@ -78,7 +78,7 @@ public class DonationProcessService {
 
         // tìm bước cần cập nhật
         DonationProcess stepToUpdate = donationProcessRepository.findByBloodDonateFormDonateIdAndStepNumber(request.getDonateId(), request.getStepNumber())
-                .orElseThrow(() -> new RuntimeException("Step not found for donation ID: " + request.getDonateId() + " and step number: " + request.getStepNumber()));
+                .orElseThrow(() -> new AppException(ErrorCode.STEP_NOT_FOUND));
 
         System.out.println(stepToUpdate.getStatus());
         System.out.println(request.getStatus());
@@ -103,7 +103,13 @@ public class DonationProcessService {
             bloodDonateFormRepository.save(bloodDonateForm);
         }
 
-//        return donationProcessMapper.toUpdateDonationProcessStepResponse(stepToUpdate);
+        //nếu có bước nào là FAILED thì cập nhật trạng thái của đơn hiến máu
+        boolean anyStepFailed = steps.stream()
+                .anyMatch(step -> "FAILED".equalsIgnoreCase(step.getStatus()));
+        if(anyStepFailed) {
+            bloodDonateForm.setStatus("CANCELLED");
+            bloodDonateFormRepository.save(bloodDonateForm);
+        }
 
         UpdateDonationProcessStepResponse response = donationProcessMapper.toUpdateDonationProcessStepResponse(stepToUpdate);
         response.setUpdatedBy(staff.getFullName());

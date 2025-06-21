@@ -50,7 +50,7 @@ public class BloodReceiveFormService {
         bloodReceiveForm.setBloodType(request.getBloodType());
         bloodReceiveForm.setUser(user);
         bloodReceiveForm.setRequestDate(LocalDate.now());
-        bloodReceiveForm.setStatus("pending");
+        bloodReceiveForm.setStatus("PENDING");
         UserResponse userResponse =userMapper.toUserResponse(user);
 
         BloodReceiveFormResponse bloodReceiveFormResponse = bloodReceiveFormMapper

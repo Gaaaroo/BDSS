@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { BiUserCircle } from 'react-icons/bi';
+import dayjs from 'dayjs';
 
 export default function ExampleProfileModal({ request }) {
   const [openProfile, setOpenProfile] = useState(false);
@@ -44,17 +45,24 @@ export default function ExampleProfileModal({ request }) {
                   className="w-28 h-28 rounded-full object-cover mb-5 border-4 border-[#F9B3B3] shadow"
                 />
               )}
+              <div className="text-xl font-semibold text-gray-800 mb-4 flex items-center justify-center gap-2">
+                {request.user.fullName}
+              </div>
+              {/* Line */}
+              <div className="w-full border-t border-[#F9B3B3] mb-4"></div>
               {/* Thông tin profile */}
               <div className="space-y-4 text-[16px] w-full">
-                <ProfileRow label="Fullname" value={request.user.fullName} />
                 <ProfileRow label="Gender" value={request.user.gender} />
                 <ProfileRow label="Phone" value={request.user.phone} />
                 <ProfileRow label="Email" value={request.user.email} />
-                <ProfileRow label="Request Date" value={request.requestDate} />
+                <ProfileRow
+                  label="Request Date"
+                  value={dayjs(request.requestDate).format('DD-MM-YYYY')}
+                />
                 <ProfileRow
                   label="Address"
                   value={request.user.address}
-                  valueClass="break-words max-w-[220px]"
+                  valueClass="break-words max-w-full"
                 />
               </div>
             </div>
@@ -66,11 +74,17 @@ export default function ExampleProfileModal({ request }) {
 }
 
 // Component cho từng dòng thông tin
-function ProfileRow({ label, value, valueClass = "" }) {
+function ProfileRow({ label, value, valueClass = '' }) {
   return (
     <div className="flex items-start mb-2 w-full">
-      <span className="font-semibold w-36 min-w-[120px] text-gray-600 text-left pr-4 ml-16 flex-shrink-0">{label}:</span>
-      <span className={`text-gray-900 text-left min-w-[120px] break-words flex-1 ${valueClass}`}>{value}</span>
+      <span className="font-semibold w-36 min-w-[120px] text-gray-600 text-left pr-4 ml-10 flex-shrink-0">
+        {label}
+      </span>
+      <span
+        className={`text-gray-900 min-w-[120px] text-right break-words flex-1 mr-10 ${valueClass}`}
+      >
+        {value}
+      </span>
     </div>
   );
 }
