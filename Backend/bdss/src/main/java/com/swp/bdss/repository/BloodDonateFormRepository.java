@@ -10,7 +10,7 @@ import java.util.List;
 public interface BloodDonateFormRepository extends JpaRepository<BloodDonateForm, Integer> {
     List<BloodDonateForm> findAllBloodDonateFormByUserUsername(String username);
 
-    List<BloodDonateForm> findByUserFullNameContainingOrUserPhoneContainingOrUserEmailContaining(String fullName, String phone, String email);
+    List<BloodDonateForm> findByUserFullNameContainingOrUserPhoneContaining(String fullName, String phone);
 
     List<BloodDonateForm> findAllByStatus(String status);
 }
