@@ -15,12 +15,14 @@ export default function BloodRequestDashboard() {
         Donate Blood Request Content
       </div>
       <StatusCard
+        selectedStatus={selectedStatus}
         setSelectedStatus={setSelectedStatus}
         reloadCount={reloadCount}
       />
       <BloodDonateRequestTable
         selectedStatus={selectedStatus}
         triggerReloadCount={triggerReloadCount}
+        onClearStatus={() => setSelectedStatus(null)}
       />
     </>
   );
