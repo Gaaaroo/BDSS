@@ -39,7 +39,7 @@ export const AppProvider = ({ children }) => {
       switch (data.role) {
         case 'MEMBER':
           console.log('Đây là member');
-          // navigate('/');
+          navigate('/');
           break;
         case 'STAFF':
           console.log('Đây là Staff');
