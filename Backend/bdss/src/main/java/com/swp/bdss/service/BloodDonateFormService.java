@@ -24,6 +24,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -51,7 +53,7 @@ public class BloodDonateFormService {
         UserResponse userResponse = userMapper.toUserResponse(user);
         bloodDonateForm.setUser(user);
         bloodDonateForm.setRequestDate(LocalDateTime.now());
-        bloodDonateForm.setStatus("pending");
+        bloodDonateForm.setStatus("PENDING");
 
         BloodDonateFormResponse bloodDonateFormResponse = bloodDonateFormMapper
                 .toBloodDonateFormResponse(bloodDonateFormRepository.save(bloodDonateForm));
@@ -130,7 +132,7 @@ public class BloodDonateFormService {
     }
 
     public List<BloodDonateFormResponse> searchBloodDonateFormByKeyWord(String keyword) {
-        List<BloodDonateFormResponse> list = bloodDonateFormRepository.findByUserFullNameContainingOrUserPhoneContainingOrUserEmailContaining(keyword, keyword, keyword)
+        List<BloodDonateFormResponse> list = bloodDonateFormRepository.findByUserFullNameContainingOrUserPhoneContaining(keyword, keyword)
                 .stream().map(bloodDonateFormMapper::toBloodDonateFormResponse)
                 .toList();
 
@@ -138,6 +140,22 @@ public class BloodDonateFormService {
             throw new AppException(ErrorCode.NO_BLOOD_DONATE_FORM);
         }
 
+        return list;
+    }
+
+    public Map<String, Long> countDonateRequestsByStatus() {
+        List<BloodDonateForm> forms = bloodDonateFormRepository.findAll();
+        return forms.stream()
+                .collect(Collectors.groupingBy(
+                        BloodDonateForm::getStatus,
+                        Collectors.counting()
+                ));
+    }
+
+    public List<BloodDonateFormResponse> getBloodDonateFormByStatus(String status){
+        List<BloodDonateFormResponse> list = bloodDonateFormRepository.findAllByStatus(status)
+                .stream().map(bloodDonateFormMapper::toBloodDonateFormResponse)
+                .toList();
         return list;
     }
 

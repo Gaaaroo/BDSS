@@ -92,9 +92,13 @@ export default function BlogManagement() {
     if (window.confirm('Are you sure you want to delete this blog?')) {
       try {
         await deleteBlog(blogId);
-        setBlogs((prevBlogs) =>
-          prevBlogs.filter((blog) => blog.blogId !== blogId)
-        );
+        // Nếu trang hiện tại có 1 blog duy nhất, sau khi xóa thì chuyển về trang trước
+        if (blogs.length === 1 && page > 0) {
+          setPage((prev) => prev - 1); // sẽ tự trigger useEffect
+        } else {
+          // GỌI trực tiếp luôn fetchData
+          fetchData(); // KHÔNG dùng await ở đây vì không cần đợi
+        }
       } catch (error) {
         console.error('Error deleting blog:', error);
       }
@@ -211,14 +215,14 @@ export default function BlogManagement() {
                         : ''}
                     </div>
                   </td>
-                  <td className="border px-2 py-1 text-center">
-                    <td className="px-2 py-1 text-center space-x-2">
+                  <td className="border px-2 py-1">
+                    <div className="flex justify-center items-center space-x-2 whitespace-nowrap">
                       <button
                         onClick={() => handleUpdateClick(blog)}
                         className="text-red-500 hover:text-red-700"
                         title="Update"
                       >
-                        <Pencil size={20} />
+                        <Pencil size={15} />
                       </button>
 
                       <button
@@ -226,7 +230,7 @@ export default function BlogManagement() {
                         className="text-green-500 hover:text-green-700"
                         title="View"
                       >
-                        <Eye size={20} />
+                        <Eye size={15} />
                       </button>
 
                       <button
@@ -234,9 +238,9 @@ export default function BlogManagement() {
                         className="text-red-700 hover:text-red-900"
                         title="Delete"
                       >
-                        <Trash2 size={20} />
+                        <Trash2 size={15} />
                       </button>
-                    </td>
+                    </div>
                   </td>
                 </tr>
               ))}
