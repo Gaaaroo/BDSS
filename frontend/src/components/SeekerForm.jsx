@@ -4,6 +4,7 @@ import { useApp } from '../Contexts/AppContext';
 import { useNavigate } from 'react-router';
 import { receiveForm } from '../services/api/bloodFormService';
 import CustomModal from './CustomModal';
+import { toast } from 'react-toastify';
 export default function SeekerForm() {
   const { profile } = useApp(); //lấy profile từ context
   const navigate = useNavigate();
@@ -63,15 +64,20 @@ export default function SeekerForm() {
 
   const handleSeekerRegister = async (e) => {
     e.preventDefault();
-    await receiveForm({
-      volume: formData.volume,
-      bloodType: formData.bloodType,
-      priority: formData.priority,
-      componentType: formData.type,
-      quantity: formData.quantity,
-      hospitalAddress: formData.hospitalAddress,
-    });
-    console.log('Detail receive form:', formData);
+    try {
+      const res = await receiveForm({
+        volume: formData.volume,
+        bloodType: formData.bloodType,
+        priority: formData.priority,
+        componentType: formData.type,
+        quantity: formData.quantity,
+        hospitalAddress: formData.hospitalAddress,
+      });
+      console.log('Detail receive form:', res);
+      toast.success('Register successful!');
+    } catch (error) {
+      toast.error('Register failed');
+    }
   };
 
   return (
