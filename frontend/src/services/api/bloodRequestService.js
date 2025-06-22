@@ -147,12 +147,27 @@ export const updateReceivingProcessStep = async (stepData) => {
   }
 };
 
-//get donate request by id
+//get receive request by id
 export const getReceiveRequestById = async (receiveId) => {
   const response = await axiosClient.get('/receive-form/detail', {
     params: { id: receiveId },
   });
   return response;
+};
+
+//get receive request by priority
+export const getReceiveRequestByPriority = async (priority, status) => {
+  try {
+    const response = await axiosClient.get('/receive-form/by-priority', {
+      params: { priority, status },
+    });
+    return response;
+  } catch (error) {
+    console.error(
+      error?.response?.message || 'Error fetching receive request by priority'
+    );
+    throw error;
+  }
 };
 
 // export const createPost = async (postData) => {

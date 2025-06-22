@@ -64,7 +64,7 @@ export default function BloodRequestTable({
   return (
     <div className="w-full flex justify-center items-center">
       <div className="overflow-hidden bg-white rounded-xl pt-5 p-3 shadow border
-       max-w-7xl w-full border-gray-200 mt-10 m-5">
+       w-full border-gray-200 mt-10 m-5">
         {/* Search and filter */}
         <div className="flex items-center justify-between mb-4">
           <div className="relative w-80">
