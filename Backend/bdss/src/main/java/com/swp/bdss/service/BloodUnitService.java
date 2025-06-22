@@ -145,7 +145,7 @@ public class BloodUnitService {
 
     public String updateBloodUnitStatus(String status, int bloodId) {
         BloodUnit bloodUnit = bloodUnitRepository.findById(bloodId)
-                .orElseThrow(() -> new AppException(ErrorCode.BLOODUNIT_NOT_EXIST));
+                .orElseThrow(() -> new AppException(ErrorCode.BLOOD_UNIT_NOT_EXIST));
         bloodUnit.setStatus(status);
         bloodUnitRepository.save(bloodUnit);
         return "update status successful";

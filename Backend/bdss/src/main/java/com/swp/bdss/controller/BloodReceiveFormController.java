@@ -98,4 +98,14 @@ public class BloodReceiveFormController {
                 .message("Search blood receive form by keyword successfully")
                 .build();
     }
+
+    @GetMapping("/by-priority")
+    ApiResponse<List<BloodReceiveFormResponse>> getBloodReceiveFormWithPriority(@RequestParam String priority,
+                                                                                @RequestParam(required = false) String status) {
+        return ApiResponse.<List<BloodReceiveFormResponse>>builder()
+                .code(1000)
+                .data(bloodReceiveFormService.getBloodReceiveFormByPriorityAndOptionalStatus(priority, status))
+                .message("Get blood receive forms with priority successfully")
+                .build();
+    }
 }
