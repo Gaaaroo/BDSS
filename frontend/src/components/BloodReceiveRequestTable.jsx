@@ -28,9 +28,11 @@ export default function BloodReceiveRequestTable({
   onClearStatus,
 }) {
   const [keyword, setKeyword] = useState('');
-  const [donateRequests, setDonateRequests] = useState([]);
+  const [receiveRequests, setReceiveRequests] = useState([]);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [modalContent, setModalContent] = useState('');
+
+  const [showUrgent, setShowUrgent] = useState(false);
 
   // view all donate request and search posts by keyword
   const fetchRequests = useCallback(async () => {
@@ -43,16 +45,16 @@ export default function BloodReceiveRequestTable({
       } else {
         data = await searchBloodReceiveRequests(keyword.trim());
       }
-      setDonateRequests(
+      setReceiveRequests(
         data.map((request) => ({
           ...request,
-          id: request.donateId,
+          id: request.receiveId,
         }))
       );
       console.log('Posts fetched successfully', data);
     } catch (error) {
       console.error('Error fetching posts:', error);
-      setDonateRequests([]);
+      setReceiveRequests([]);
     }
   }, [keyword]);
 
@@ -60,9 +62,17 @@ export default function BloodReceiveRequestTable({
     fetchRequests();
   }, [fetchRequests, triggerReloadCount]);
 
-  const filteredRequests = selectedStatus
-    ? donateRequests.filter((req) => req.status === selectedStatus)
-    : donateRequests;
+  // const filteredRequests = selectedStatus
+  //   ? receiveRequests.filter((req) => req.status === selectedStatus)
+  //   : receiveRequests;
+
+  const filteredRequests = receiveRequests.filter((req) => {
+    const matchUrgent = showUrgent
+      ? req.priority?.toLowerCase() === 'urgent'
+      : true;
+    const matchStatus = selectedStatus ? req.status === selectedStatus : true;
+    return matchUrgent && matchStatus;
+  });
 
   // Modal handler for long hospital address
   const handleShowModal = (content) => {
@@ -87,14 +97,14 @@ export default function BloodReceiveRequestTable({
     <div className="w-full flex justify-center items-center">
       <div
         className="overflow-hidden bg-white rounded-xl pt-5 p-3 shadow border
-       max-w-7xl w-full border-gray-200 mt-10 m-5"
+        w-full border-gray-200 mt-10 m-5"
       >
         {/* Search and filter */}
         <div className="flex items-center justify-between mb-4">
           <div className="relative w-80">
             <input
               type="text"
-              placeholder="Search by fullname, phone"
+              placeholder="Search by fullname, phone, blood type..."
               className="border border-[#F9B3B3] rounded-full pl-4 pr-9 py-2 outline-none
       text-gray-700 w-full text-sm h-8
       bg-pink-50 focus:ring-2 focus:ring-[#F9B3B3] transition"
@@ -105,13 +115,34 @@ export default function BloodReceiveRequestTable({
               🔍
             </div>
           </div>
+
+          <div className="flex items-center gap-3">
+          {/*Urgent button*/}
+          <button
+            className={`rounded-full px-3 text-sm h-7 flex items-center justify-center
+    transition-colors duration-200 hover:text-white hover:font-bold 
+    hover:transform hover:scale-105 hover:bg-red-500 w-[105px]
+    ${
+      showUrgent
+        ? 'bg-red-500 text-white font-bold'
+        : 'bg-[#F9B3B3] text-black font-semibold'
+    }`}
+            onClick={() => {
+              setShowUrgent(true);
+              setKeyword('');
+            }}
+          >
+            Urgent
+          </button>
+
           <div className="flex items-center gap-2 mr-2">
             <button
               className="rounded-full px-3 text-sm h-7 flex items-center justify-center
             transition-colors duration-200 hover:text-white hover:font-bold 
             hover:transform hover:scale-105 hover:bg-red-500
-            bg-[#F9B3B3] text-black font-semibold"
+            bg-[#F9B3B3] text-black font-semibold w-[105px]"
               onClick={() => {
+                setShowUrgent(false);
                 setKeyword('');
                 if (onClearStatus) onClearStatus();
               }}
@@ -119,10 +150,11 @@ export default function BloodReceiveRequestTable({
               All Requests
             </button>
           </div>
+          </div>
         </div>
         {/* Table */}
-        <div className="overflow-x-auto">
-          <table className="min-w-full rounded-lg bg-[#F9B3B3]">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full max-w-full rounded-lg bg-[#F9B3B3]">
             <thead className="bg-[#F76C6C]">
               <tr className="text-white text-center font-semibold h-8 text-[16px]">
                 <th className="px-3 w-16 text-center whitespace-nowrap">

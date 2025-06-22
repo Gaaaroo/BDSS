@@ -133,14 +133,24 @@ public class BloodReceiveFormService {
     }
 
     public List<BloodReceiveFormResponse> searchBloodReceiveFormByKeyWord(String keyword) {
-        List<BloodReceiveFormResponse> list = bloodReceiveFormRepository.findByUserFullNameContainingOrUserPhoneContaining(keyword, keyword)
+        List<BloodReceiveFormResponse> list = bloodReceiveFormRepository.findByUserFullNameContainingOrUserPhoneContainingOrUserBloodTypeContaining(keyword, keyword, keyword)
                 .stream().map(bloodReceiveFormMapper::toBloodReceiveFormResponse)
                 .toList();
 
         if(list.isEmpty()){
-            throw new AppException(ErrorCode.NO_BLOOD_DONATE_FORM);
+            throw new AppException(ErrorCode.NO_BLOOD_RECEIVE_FORM);
         }
 
+        return list;
+    }
+
+    public List<BloodReceiveFormResponse> getBloodReceiveFormByPriorityAndOptionalStatus(String priority, String status){
+        List<BloodReceiveFormResponse> list = bloodReceiveFormRepository.findAllByPriorityAndOptionalStatus(priority, status).stream()
+                .map(bloodReceiveFormMapper::toBloodReceiveFormResponse)
+                .toList();
+        if(list.isEmpty()){
+            throw new AppException(ErrorCode.NO_BLOOD_RECEIVE_FORM_WITH_PRIORITY);
+        }
         return list;
     }
 }

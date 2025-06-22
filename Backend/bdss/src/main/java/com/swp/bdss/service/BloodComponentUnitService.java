@@ -36,7 +36,7 @@ public class BloodComponentUnitService {
         for (String componentType : request.getComponentTypes()) {
             BloodComponentUnit bloodComponentUnit = new BloodComponentUnit();
             BloodUnit bloodUnit = bloodUnitRepository.findById(request.getBloodId())
-                    .orElseThrow(() -> new AppException(ErrorCode.BLOODUNIT_NOT_EXIST));
+                    .orElseThrow(() -> new AppException(ErrorCode.BLOOD_UNIT_NOT_EXIST));
             bloodComponentUnit.setBloodType(bloodUnit.getBloodType());
             bloodComponentUnit.setComponentType(componentType);
             bloodComponentUnit.setVolume(bloodUnit.getVolume());
@@ -65,7 +65,7 @@ public class BloodComponentUnitService {
 
     public String updateBloodComponentUnitStatus(String status, int componentId) {
         BloodComponentUnit bloodComponentUnit = bloodComponentUnitRepository.findById(componentId)
-                .orElseThrow(() -> new AppException(ErrorCode.BLOODUNIT_NOT_EXIST));
+                .orElseThrow(() -> new AppException(ErrorCode.BLOOD_UNIT_NOT_EXIST));
         bloodComponentUnit.setStatus(status);
         bloodComponentUnitRepository.save(bloodComponentUnit);
         return "update status successful";
