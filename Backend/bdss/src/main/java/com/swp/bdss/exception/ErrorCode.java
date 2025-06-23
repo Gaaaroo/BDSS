@@ -28,7 +28,14 @@ public enum ErrorCode {
     INVALID_TOKEN_TYPE(1018, "Invalid token type, token type must be refresh", HttpStatus.BAD_REQUEST),
     NO_BLOOD_DONATE_FORM(1019, "No blood donate form found", HttpStatus.BAD_REQUEST),
     PREVIOUS_STEP_NOT_DONE(1020, "Previous step is not done", HttpStatus.BAD_REQUEST),
-    INVALID_STEP_NUMBER(1021, "Step number must between 1 and 5", HttpStatus.BAD_REQUEST),
+    NO_BLOOD_RECEIVE_FORM_WITH_PRIORITY(1021, "There's no blood receive form with this priority", HttpStatus.BAD_REQUEST),
+    STEP_NOT_FINISHED(1022, "Step 5 has not been completed yet", HttpStatus.BAD_REQUEST),
+    STEP_NOT_DONE(1023, "Step 5 has not been done yet", HttpStatus.BAD_REQUEST),
+    BLOOD_UNIT_NOT_EXIST(1024, "Blood unit not exist", HttpStatus.BAD_REQUEST),
+    INVALID_STEP_NUMBER1(1025, "Step number must between 1 and 5", HttpStatus.BAD_REQUEST),
+    INVALID_STEP_NUMBER2(1026, "Step number must between 1 and 3", HttpStatus.BAD_REQUEST),
+    NO_BLOOD_RECEIVE_FORM(1027, "There's no blood receive form", HttpStatus.BAD_REQUEST),
+    STEP_NOT_FOUND(1028, "Step not found for donation ID and step number", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;

@@ -2,12 +2,15 @@ package com.swp.bdss.service;
 
 import com.swp.bdss.dto.request.BloodReceiveFormCreationRequest;
 import com.swp.bdss.dto.request.BloodReceiveFormUpdateStatusRequest;
+import com.swp.bdss.dto.response.BloodDonateFormResponse;
 import com.swp.bdss.dto.response.BloodReceiveFormResponse;
 import com.swp.bdss.dto.response.UserResponse;
+import com.swp.bdss.entities.BloodDonateForm;
 import com.swp.bdss.entities.BloodReceiveForm;
 import com.swp.bdss.entities.User;
 import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
+import com.swp.bdss.mapper.BloodDonateFormMapper;
 import com.swp.bdss.mapper.BloodReceiveFormMapper;
 import com.swp.bdss.mapper.UserMapper;
 import com.swp.bdss.repository.BloodReceiveFormRepository;
@@ -22,6 +25,8 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -29,6 +34,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BloodReceiveFormService {
+    private final BloodDonateFormMapper bloodDonateFormMapper;
     UserRepository userRepository;
     BloodReceiveFormRepository bloodReceiveFormRepository;
     BloodReceiveFormMapper bloodReceiveFormMapper;
@@ -44,7 +50,7 @@ public class BloodReceiveFormService {
         bloodReceiveForm.setBloodType(request.getBloodType());
         bloodReceiveForm.setUser(user);
         bloodReceiveForm.setRequestDate(LocalDate.now());
-        bloodReceiveForm.setStatus("pending");
+        bloodReceiveForm.setStatus("PENDING");
         UserResponse userResponse =userMapper.toUserResponse(user);
 
         BloodReceiveFormResponse bloodReceiveFormResponse = bloodReceiveFormMapper
@@ -108,5 +114,43 @@ public class BloodReceiveFormService {
 
     public void deleteBloodReceiveForm(String id) {
         bloodReceiveFormRepository.deleteById(Integer.parseInt(id));
+    }
+
+    public Map<String, Long> countReceiveRequestsByStatus() {
+        List<BloodReceiveForm> forms = bloodReceiveFormRepository.findAll();
+        return forms.stream()
+                .collect(Collectors.groupingBy(
+                        BloodReceiveForm::getStatus,
+                        Collectors.counting()
+                ));
+    }
+
+    public List<BloodReceiveFormResponse> getBloodReceiveFormByStatus(String status){
+        List<BloodReceiveFormResponse> list = bloodReceiveFormRepository.findAllByStatus(status)
+                .stream().map(bloodReceiveFormMapper::toBloodReceiveFormResponse)
+                .toList();
+        return list;
+    }
+
+    public List<BloodReceiveFormResponse> searchBloodReceiveFormByKeyWord(String keyword) {
+        List<BloodReceiveFormResponse> list = bloodReceiveFormRepository.findByUserFullNameContainingOrUserPhoneContainingOrUserBloodTypeContaining(keyword, keyword, keyword)
+                .stream().map(bloodReceiveFormMapper::toBloodReceiveFormResponse)
+                .toList();
+
+        if(list.isEmpty()){
+            throw new AppException(ErrorCode.NO_BLOOD_RECEIVE_FORM);
+        }
+
+        return list;
+    }
+
+    public List<BloodReceiveFormResponse> getBloodReceiveFormByPriorityAndOptionalStatus(String priority, String status){
+        List<BloodReceiveFormResponse> list = bloodReceiveFormRepository.findAllByPriorityAndOptionalStatus(priority, status).stream()
+                .map(bloodReceiveFormMapper::toBloodReceiveFormResponse)
+                .toList();
+        if(list.isEmpty()){
+            throw new AppException(ErrorCode.NO_BLOOD_RECEIVE_FORM_WITH_PRIORITY);
+        }
+        return list;
     }
 }

@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
-import { BiUser } from 'react-icons/bi';
+import { BiUserCircle } from 'react-icons/bi';
+import dayjs from 'dayjs';
 
-export default function ProfileModal({ user }) {
+export default function ExampleProfileModal({ request }) {
   const [openProfile, setOpenProfile] = useState(false);
 
   return (
     <div>
       {/* Nút mở modal */}
       <div className="flex items-center justify-center gap-2">
-        <button
-          title="View profile"
-          className="text-cyan-500 hover:text-cyan-700 text-2xl"
-          onClick={() => setOpenProfile(true)}
-        >
-          <BiUser />
+        <button title="Profile">
+          <BiUserCircle
+            className="text-2xl text-gray-600 hover:text-gray-900 transition"
+            onClick={() => setOpenProfile(true)}
+          />
         </button>
       </div>
 
@@ -37,38 +37,32 @@ export default function ProfileModal({ user }) {
               <h2 className="text-2xl font-bold mb-6 text-center text-[#F76C6C] tracking-wide">
                 User Profile
               </h2>
-              {/* Avatar nếu có */}
-              {user.userResponse.imageLink && (
+              {/* Avatar */}
+              {request.user.imageLink && (
                 <img
-                  src={user.userResponse.imageLink}
+                  src={request.user.imageLink}
                   alt="User Avatar"
                   className="w-28 h-28 rounded-full object-cover mb-5 border-4 border-[#F9B3B3] shadow"
                 />
               )}
               <div className="text-xl font-semibold text-gray-800 mb-4 flex items-center justify-center gap-2">
-                {user.userResponse.fullName}
+                {request.user.fullName}
               </div>
               {/* Line */}
               <div className="w-full border-t border-[#F9B3B3] mb-4"></div>
               {/* Thông tin profile */}
               <div className="space-y-4 text-[16px] w-full">
-                <ProfileRow label="Gender" value={user.userResponse.gender} />
-                <ProfileRow label="Date of birth" value={user.userResponse.dob} />
-                <ProfileRow label="Blood type" value={user.userResponse.bloodType} />
-                <ProfileRow label="Phone" value={user.userResponse.phone} />
-                <ProfileRow label="Email" value={user.userResponse.email} />
+                <ProfileRow label="Gender" value={request.user.gender} />
+                <ProfileRow label="Phone" value={request.user.phone} />
+                <ProfileRow label="Email" value={request.user.email} />
                 <ProfileRow
-                  label="Address"
-                  value={user.userResponse.address}
-                  valueClass="break-words max-w-full"
+                  label="Request Date"
+                  value={dayjs(request.requestDate).format('DD-MM-YYYY')}
                 />
                 <ProfileRow
-                  label="Health note"
-                  value={
-                    user.healthNotes !== null && user.healthNotes !== undefined
-                      ? user.healthNotes
-                      : 'Normal'
-                  }
+                  label="Address"
+                  value={request.user.address}
+                  valueClass="break-words max-w-full"
                 />
               </div>
             </div>
