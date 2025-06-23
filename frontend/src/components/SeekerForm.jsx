@@ -170,8 +170,8 @@ export default function SeekerForm() {
               className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
             >
               <option value="">Select priority</option>
-              <option value="urgent">Urgent</option>
-              <option value="high">Medium</option>
+              <option value="Urgent">Urgent</option>
+              <option value="Medium">Medium</option>
             </select>
           </div>
         </div>
