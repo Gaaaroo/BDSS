@@ -22,3 +22,22 @@ export const receiveForm = async (receiveFormData) => {
     throw error;
   }
 };
+// View history --------donateAdd commentMore actions
+export const donateHistory = async () => {
+  try {
+    const res = await axiosClient.get('/donate-form/myDonateForm');
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// View history --------receive
+export const receiveHistory = async () => {
+  try {
+    const res = await axiosClient.get('/receive-form/myReceiveForm');
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -4,6 +4,7 @@ import { useApp } from '../Contexts/AppContext';
 import { useNavigate } from 'react-router';
 import { receiveForm } from '../services/api/bloodFormService';
 import CustomModal from './CustomModal';
+import { toast } from 'react-toastify';
 export default function SeekerForm() {
   const { profile } = useApp(); //lấy profile từ context
   const navigate = useNavigate();
@@ -63,15 +64,20 @@ export default function SeekerForm() {
 
   const handleSeekerRegister = async (e) => {
     e.preventDefault();
-    await receiveForm({
-      volume: formData.volume,
-      bloodType: formData.bloodType,
-      priority: formData.priority,
-      componentType: formData.type,
-      quantity: formData.quantity,
-      hospitalAddress: formData.hospitalAddress,
-    });
-    console.log('Detail receive form:', formData);
+    try {
+      const res = await receiveForm({
+        volume: formData.volume,
+        bloodType: formData.bloodType,
+        priority: formData.priority,
+        componentType: formData.type,
+        quantity: formData.quantity,
+        hospitalAddress: formData.hospitalAddress,
+      });
+      console.log('Detail receive form:', res);
+      toast.success('Register successful!');
+    } catch (error) {
+      toast.error('Register failed');
+    }
   };
 
   return (
@@ -164,8 +170,8 @@ export default function SeekerForm() {
               className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
             >
               <option value="">Select priority</option>
-              <option value="urgent">Urgent</option>
-              <option value="high">Medium</option>
+              <option value="Urgent">Urgent</option>
+              <option value="Medium">Medium</option>
             </select>
           </div>
         </div>

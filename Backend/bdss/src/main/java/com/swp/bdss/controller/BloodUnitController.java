@@ -135,6 +135,7 @@ public class BloodUnitController {
                 .build();
     }
 
+    @GetMapping("/countBloodUnit")
     public ApiResponse<Long> countBloodUnitsByType(@RequestParam String bloodType) {
         long count = bloodUnitService.countBloodUnitsByType(bloodType);
         return ApiResponse.<Long>builder()

@@ -5,6 +5,7 @@ import React from 'react';
 import { useNavigate } from 'react-router';
 import { donorForm } from '../services/api/bloodFormService';
 import CustomModal from './CustomModal';
+import { toast } from 'react-toastify';
 
 export function Title({ title, decription }) {
   return (
@@ -77,8 +78,10 @@ export default function DonorForm() {
     try {
       const res = await donorForm({ healthNotes: formData.disease });
       console.log('Detail donor form:', res);
+      toast.success('Register successful!');
     } catch (error) {
       console.log(error);
+      toast.error('Register failed');
     }
   };
 
