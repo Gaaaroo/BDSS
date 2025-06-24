@@ -6,11 +6,16 @@ import { BannerMyActivity } from '../pages/MyActivity';
 import { ChevronLeft } from 'lucide-react';
 import ReceiveStepFlow from './ReceiveStepFlow';
 import TextInput from './TextInput';
+import StaffNote from './StaffNote';
+import Footer from './Footer';
 
 export default function ReceiveDetail() {
   const navigate = useNavigate();
   const { id } = useParams();
   const [step, setStep] = useState(0);
+  const [note, setNote] = useState();
+  const [nameStaff, setNameStaff] = useState();
+  const [date, setDate] = useState();
   const [detail, setDetail] = useState();
   const [loading, setLoading] = useState(true);
 
@@ -18,13 +23,23 @@ export default function ReceiveDetail() {
     try {
       const res = await myReceiveDetail(id);
       let count = 0;
+      let currentNote = '';
+      let nameStaff = '';
+      let date = '';
       for (const item of res.steps) {
         if (item.status === 'DONE') {
           count += 1;
+          if (item.note && item.updatedBy && item.updatedAt) {
+            currentNote = item.note || '';
+            nameStaff = item.updatedBy;
+            date = item.updatedAt;
+          }
         }
       }
-      console.log('oh no', count);
       setStep(count);
+      setNote(currentNote);
+      setNameStaff(nameStaff);
+      setDate(date);
       setDetail(res);
     } catch (error) {
       console.log(error);
@@ -49,7 +64,9 @@ export default function ReceiveDetail() {
       <BannerMyActivity />
       <div
         className="flex p-5 pb-0 pl-20 text-gray-600 font-bold cursor-pointer hover:underline"
-        onClick={() => navigate(-1, { state: { refresh: true } })}
+        onClick={() => {
+          navigate('/my-activity', { state: { status: detail.status } });
+        }}
       >
         <ChevronLeft />
         BACK
@@ -71,7 +88,7 @@ export default function ReceiveDetail() {
           <ReceiveStepFlow completedStepIndex={step} />
         </section>
         <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-rose-500 to-red-400 my-5 text-center tracking-tight">
-          Details Blood Donation
+          Details Reception Blood #ID: {detail.receiveId}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-20 px-[150px]">
           {/* Left Column */}
@@ -136,6 +153,12 @@ export default function ReceiveDetail() {
             />
           </div>
         </div>
+        <StaffNote
+          noteStaff={note}
+          dateUpdate={date.slice(0, 10)}
+          nameStaff={nameStaff}
+        />
+        <Footer />
       </div>
     </>
   );

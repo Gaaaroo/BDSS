@@ -22,22 +22,18 @@ export default function DonationDetail() {
   const fetchDetail = async () => {
     try {
       const res = await myDonateDetail(id);
-      console.log('Donor myForm:', res.steps);
-      let count = 1;
+      let count = 0;
       let currentNote = '';
       let nameStaff = '';
       let date = '';
       for (const item of res.steps) {
-        if (
-          item.status === 'DONE' &&
-          item.note &&
-          item.updatedBy &&
-          item.updatedAt
-        ) {
+        if (item.status === 'DONE') {
           count += 1;
-          currentNote = item.note || '';
-          nameStaff = item.updatedBy;
-          date = item.updatedAt;
+          if (item.note && item.updatedBy && item.updatedAt) {
+            currentNote = item.note || '';
+            nameStaff = item.updatedBy;
+            date = item.updatedAt;
+          }
         }
       }
       setStep(count);
@@ -68,7 +64,9 @@ export default function DonationDetail() {
       <BannerMyActivity />
       <div
         className="flex p-5 pb-0 pl-20 text-gray-600 font-bold cursor-pointer hover:underline"
-        onClick={() => navigate(-1, { state: { refresh: true } })}
+        onClick={() => {
+          navigate('/my-activity', { state: { status: detail.status } });
+        }}
       >
         <ChevronLeft />
         BACK
@@ -140,7 +138,11 @@ export default function DonationDetail() {
             />
           </div>
         </div>
-        <StaffNote noteStaff={note} dateUpdate={date} nameStaff={nameStaff} />
+        <StaffNote
+          noteStaff={note}
+          dateUpdate={date.slice(0, 10)}
+          nameStaff={nameStaff}
+        />
         <Footer />
       </div>
     </>

@@ -10,7 +10,6 @@ export default function ProgressRequests({ activeTab }) {
   const [listReceiveByActiveTab, setListReceiveByActiveTab] = useState([]);
 
   const navigate = useNavigate();
-  const location = useLocation();
 
   const fetchDetail = async () => {
     try {
@@ -19,26 +18,20 @@ export default function ProgressRequests({ activeTab }) {
         myReceive(),
       ]);
       setListDonate(donateRes);
-      console.log('D:', donateRes);
       setListReceive(receiveRes);
-      console.log('R:', receiveRes);
     } catch (error) {
       console.log(error);
     } finally {
       setLoading(false);
-      if (location.state?.refresh) {
-        navigate('.', { replace: true }); // xóa state sau khi dùng
-      }
     }
   };
 
   useEffect(() => {
     fetchDetail();
-  }, [location.state]);
+  }, []);
 
   useEffect(() => {
     if (!activeTab) return;
-    console.log('name Tab:', activeTab);
     setListDonateByActiveTab(
       listDonate.filter((item) => item.status === activeTab)
     );

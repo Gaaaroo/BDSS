@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import img from '../assets/images/cover-photo.jpg';
 import ProgressRequests from './ProgressRequests';
+import { useLocation } from 'react-router';
 
 export function BannerMyActivity() {
   return (
@@ -15,14 +16,21 @@ export default function MyActivity() {
   // History ===>> Blood Donation / Blood Reception
   // Donation Request Blood Progress
   // Reception Request Blood Progress
-
-  const [activeTab, setActiveTab] = React.useState('');
+  const location = useLocation();
+  const [activeTab, setActiveTab] = React.useState('PENDING');
   const STATUS = {
     pending: 'PENDING',
     progressing: 'PROCESSING',
     approve: 'APPROVED',
     rejected: 'REJECTED',
   };
+  useEffect(() => {
+    const status = location.state?.status;
+    if (status) {
+      setActiveTab(status);
+    }
+  }, []);
+
   return (
     <div>
       <Navbar mode="" />
