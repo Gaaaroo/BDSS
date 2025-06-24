@@ -121,7 +121,7 @@ export default function SeekerForm() {
           />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Blood Type
+              Blood Type request
             </label>
             <select
               name="bloodType"
@@ -150,7 +150,7 @@ export default function SeekerForm() {
               value={formData.volume || ''}
               onChange={handleChange}
               required
-              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
+              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
             >
               <option value="">Select volume (ml)</option>
               <option value="350">350</option>
@@ -167,7 +167,7 @@ export default function SeekerForm() {
               value={formData.priority || ''}
               onChange={handleChange}
               required
-              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
+              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
             >
               <option value="">Select priority</option>
               <option value="Urgent">Urgent</option>
@@ -187,7 +187,7 @@ export default function SeekerForm() {
               onChange={() => {}}
               disabled
               required
-              className="w-full px-3 text-lg py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
+              className="w-full px-3 text-lg py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
             >
               <option value="">Select gender</option>
               <option value="male">Male</option>
@@ -215,7 +215,7 @@ export default function SeekerForm() {
           />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Type
+              Component Type request
             </label>
             <select
               label="Type"
@@ -223,7 +223,7 @@ export default function SeekerForm() {
               value={formData.type || ''}
               onChange={handleChange}
               required
-              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
+              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
             >
               <option value="">Select blood component type</option>
               <option value="Whole">Whole</option>

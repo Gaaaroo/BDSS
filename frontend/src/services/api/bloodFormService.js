@@ -23,7 +23,7 @@ export const receiveForm = async (receiveFormData) => {
   }
 };
 // View history --------donateAdd commentMore actions
-export const donateHistory = async () => {
+export const myDonate = async () => {
   try {
     const res = await axiosClient.get('/donate-form/myDonateForm');
     return res;
@@ -32,10 +32,32 @@ export const donateHistory = async () => {
   }
 };
 
+export const myDonateDetail = async (id) => {
+  try {
+    const res = await axiosClient.get('/donate-form/detail', {
+      params: { id },
+    });
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
 // View history --------receive
-export const receiveHistory = async () => {
+export const myReceive = async () => {
   try {
     const res = await axiosClient.get('/receive-form/myReceiveForm');
+    return res;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const myReceiveDetail = async (id) => {
+  try {
+    const res = await axiosClient.get('/receive-form/detail', {
+      params: { id },
+    });
     return res;
   } catch (error) {
     throw error;
