@@ -17,7 +17,7 @@ const ReceiveStepFlow = ({ completedStepIndex }) => {
   return (
     <div className="flex flex-col items-center w-full max-w-3xl mx-auto bg-white">
       <h2 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-rose-500 to-red-400 mb-5 text-center tracking-tight">
-        Blood Donation Journey
+        Blood Reception Journey
       </h2>
       <ol className="w-full space-y-0">
         {steps.map((step, idx) => {

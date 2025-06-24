@@ -47,7 +47,7 @@ export default function ProgressRequests({ activeTab }) {
     );
   }, [activeTab, listDonate, listReceive]);
 
-  if (loading) return <div className="p-4">Loading data...</div>;
+  if (loading) return <div className="p-4 text-center">Loading data...</div>;
   if (
     !listDonate ||
     listDonate.length === 0 ||

@@ -1,10 +1,6 @@
 import React from 'react';
 import Navbar from '../components/Navbar';
-// import History from '../components/History';
-// import DonationProgress from '../components/DonationProgress';
-// import ReceptionProgress from '../components/ReceptionProgress';
 import img from '../assets/images/cover-photo.jpg';
-import { useNavigate } from 'react-router';
 import ProgressRequests from './ProgressRequests';
 
 export function BannerMyActivity() {
