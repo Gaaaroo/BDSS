@@ -22,6 +22,8 @@ import MemberManagement from '../pages/MemberManagement';
 import ProtectedRoute from './ProtectedRoute';
 import { useApp } from '../Contexts/AppContext';
 import BlogManagement from '../pages/BlogManagement';
+import ReceiveDetail from '../components/ReceiveDetail';
+import DonationDetail from '../components/DonationDetail';
 
 export default function AppRoutes() {
   const { role } = useApp();
@@ -58,6 +60,14 @@ export default function AppRoutes() {
         <Route path="/become-a-seeker" element={<Seeker />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/my-activity" element={<MyActivity />} />
+        <Route
+          path="/my-activity/donation-detail/:id"
+          element={<DonationDetail />}
+        />
+        <Route
+          path="/my-activity/receive-detail/:id"
+          element={<ReceiveDetail />}
+        />
       </Route>
     </Routes>
   );
