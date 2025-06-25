@@ -11,3 +11,11 @@ export const countBloodUnit = async (type) => {
     console.error(`Error fetching ${type}:`, error);
   }
 };
+
+// Whole: List all in 1 type : Click card -> change page ->
+// Blood Type ----Type -----Volmue ----Owner ------Date Store -------Expiry date ------Status( can update) ----Detail( can view )
+// After update status + Separate ...........Component page change, status change
+
+// Updtate Status
+
+//

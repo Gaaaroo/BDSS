@@ -94,8 +94,8 @@ export default function ProfileUpdate({
               onChange={handleChange}
               className="input"
             >
-              <option value="male">Nam</option>
-              <option value="female">Nữ</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
             </select>
           </div>
           <div>

@@ -79,6 +79,7 @@ export default function DonorForm() {
       const res = await donorForm({ healthNotes: formData.disease });
       console.log('Detail donor form:', res);
       toast.success('Register successful!');
+      navigate('/');
     } catch (error) {
       console.log(error);
       toast.error('Register failed');
@@ -99,71 +100,37 @@ export default function DonorForm() {
           <TextInput
             label="Full Name"
             name="fullName"
-            placeholder="Enter your full name"
             value={formData.fullName}
             onChange={() => {}}
-            required
           />
           <TextInput
             label="Date of Birth"
             name="dob"
-            type="date"
             value={formData.dob}
             onChange={() => {}}
-            required
           />
           <TextInput
             label="Phone"
             name="phone"
-            type="tel"
             placeholder="Enter your phone number"
             value={formData.phone}
             onChange={() => {}}
-            required
           />
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Blood Type
-            </label>
-            <select
-              name="bloodType"
-              value={formData.bloodType}
-              onChange={() => {}}
-              required
-              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
-            >
-              <option value="">Select blood type</option>
-              <option value="A+">A+</option>
-              <option value="A-">A-</option>
-              <option value="B+">B+</option>
-              <option value="B-">B-</option>
-              <option value="AB+">AB+</option>
-              <option value="AB-">AB-</option>
-              <option value="O+">O+</option>
-              <option value="O-">O-</option>
-            </select>
-          </div>
+          <TextInput
+            label="Blood Type"
+            name="bloodType"
+            value={formData.bloodType}
+            onChange={() => {}}
+          />
         </div>
         {/* Right Column */}
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Gender
-            </label>
-            <select
-              name="gender"
-              value={formData.gender}
-              onChange={() => {}}
-              disabled
-              required
-              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
-            >
-              <option value="">Select gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
+          <TextInput
+            label="Gender"
+            name="gender"
+            value={formData.gender}
+            onChange={() => {}}
+          />
           <TextInput
             label="Email"
             name="email"
@@ -171,8 +138,6 @@ export default function DonorForm() {
             placeholder="Enter your email"
             value={formData.email}
             onChange={() => {}}
-            disabled
-            required
           />
           <TextInput
             label="Address"
@@ -180,8 +145,6 @@ export default function DonorForm() {
             placeholder="Enter your address"
             value={formData.address}
             onChange={() => {}}
-            disabled
-            required
           />
           <TextInput
             label="Any blood related disease"
@@ -189,6 +152,7 @@ export default function DonorForm() {
             placeholder="Specify if any"
             value={formData.disease}
             onChange={handleChange}
+            required
           />
         </div>
       </div>
