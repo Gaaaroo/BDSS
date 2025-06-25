@@ -21,7 +21,7 @@ export default function Inventory() {
     fetchAll();
   }, []);
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen bg-gray-100">
       <div className="w-64 bg-gray-800 text-white fixed h-full">
         <SideBar />
       </div>
