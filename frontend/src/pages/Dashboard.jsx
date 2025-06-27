@@ -1,11 +1,11 @@
 import React from 'react';
-import SideBar from '../Layouts/Sidebar';
+import Sidebar from '../Layouts/Sidebar';
 
 export default function Dashboard() {
   return (
     <div className="flex h-screen">
       <div className="w-64 bg-gray-800 text-white fixed h-full">
-        <SideBar />
+        <Sidebar />
       </div>
       <div className="ml-64 flex-1 p-4">This is dashboard</div>
     </div>

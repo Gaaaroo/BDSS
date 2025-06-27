@@ -1,6 +1,9 @@
-export default function BloodCard({ bloodType, units }) {
+export default function BloodCard({ bloodType, units, onClick }) {
   return (
-    <div className="bg-white rounded-lg w-[250px] h-[130px] p-4 pt-1 hover:border-1 border-red-700 transition-all">
+    <div
+      className="bg-white rounded-lg w-[250px] h-[130px] p-4 pt-1 hover:border-1 border-red-700 transition-all"
+      onClick={onClick}
+    >
       <div className="text-3xl font-bold text-red-700 text-left p-2">
         {bloodType}
       </div>

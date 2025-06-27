@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import SideBar from '../Layouts/Sidebar';
+import Sidebar from '../Layouts/Sidebar';
 import { getAllUserProfile } from '../services/api/userService';
 import { Funnel, Search } from 'lucide-react';
 
@@ -37,7 +37,7 @@ export default function MemberManagement() {
   return (
     <div className="flex h-screen">
       <div className="w-64 bg-gray-800 text-white fixed h-full">
-        <SideBar />
+        <Sidebar />
       </div>
       <div className="flex-1 ml-64">
         <div className="max-w-8xl mx-auto p-4">

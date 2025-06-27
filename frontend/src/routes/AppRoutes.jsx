@@ -17,13 +17,14 @@ import MyPosts from '../pages/MyPosts';
 import Blog from '../pages/Blog';
 import RequestManagement from '../pages/RequestManagement';
 import Dashboard from '../pages/Dashboard';
-import Inventory from '../pages/Inventory';
+import Whole from '../pages/Whole';
 import MemberManagement from '../pages/MemberManagement';
 import ProtectedRoute from './ProtectedRoute';
 import { useApp } from '../Contexts/AppContext';
 import BlogManagement from '../pages/BlogManagement';
 import ReceiveDetail from '../components/ReceiveDetail';
 import DonationDetail from '../components/DonationDetail';
+import Components from '../pages/Components';
 
 export default function AppRoutes() {
   const { role } = useApp();
@@ -49,7 +50,8 @@ export default function AppRoutes() {
       >
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/request-management" element={<RequestManagement />} />
-        <Route path="/inventory" element={<Inventory />} />
+        <Route path="/inventory/whole" element={<Whole />} />
+        <Route path="/inventory/components" element={<Components />} />
         <Route path="/member-management" element={<MemberManagement />} />
         <Route path="/blog-management" element={<BlogManagement />} />
       </Route>

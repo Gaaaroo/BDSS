@@ -24,24 +24,19 @@ export const AppProvider = ({ children }) => {
   const getUserRole = async () => {
     try {
       const data = await getUserProfile();
-      console.log(data);
+      // console.log(data);
       setRole(data.role);
-      console.log('role nè:', data.role);
       switch (data.role) {
         case 'MEMBER':
-          console.log('Đây là member');
           navigate('/');
           break;
         case 'STAFF':
-          console.log('Đây là Staff');
           navigate('/dashboard');
           break;
         case 'ADMIN':
-          console.log('Đây là Admin');
           navigate('/');
           break;
         default:
-          console.log('Welcome to my website');
           navigate('/');
           break;
       }
@@ -61,7 +56,6 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     if (isLogged) {
-      console.log('call api profile');
       getUserRole();
       saveProfile();
     }
@@ -71,7 +65,6 @@ export const AppProvider = ({ children }) => {
     setIsLogged(false);
     setProfile(null);
     localStorage.clear();
-    console.log('Logout successful!');
   }
 
   return (

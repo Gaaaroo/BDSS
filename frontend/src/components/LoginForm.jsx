@@ -21,7 +21,6 @@ const LoginForm = () => {
   //Handle login form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Data to sent: ', form);
     if (!form.username || !form.password) {
       setError('Please enter both email and password.');
       return;

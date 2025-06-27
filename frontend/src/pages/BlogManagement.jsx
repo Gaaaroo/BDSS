@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import SideBar from '../Layouts/Sidebar';
+import Sidebar from '../Layouts/Sidebar';
 import logo from '../assets/images/logo2.png';
 import {
   getAllBlogs,
@@ -108,7 +108,7 @@ export default function BlogManagement() {
     <div className="flex">
       {/* Sidebar bên trái */}
       <div className="w-64 fixed h-screen bg-pink-300">
-        <SideBar />
+        <Sidebar />
       </div>
 
       {/* Nội dung bên phải */}
