@@ -27,11 +27,7 @@ export default function History() {
     fetchHistory();
   }, []);
   if (loading) {
-    return (
-      <div className="px-8 py-10 text-center text-gray-600 text-lg animate-pulse">
-        Loading Data History ...
-      </div>
-    );
+    return <LoadingPage />;
   }
   return (
     <div className="px-8">

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import LoadingPage from './LoadingPage';
 
 export default function StatusCard({
   setSelectedStatus,
@@ -19,7 +20,7 @@ export default function StatusCard({
     });
   }, [reloadCount]);
 
-  if (!statusCount) return <div>Loading...</div>;
+  if (!statusCount) return <LoadingPage />;
 
   return (
     <div className="flex gap-8 mt-8 justify-center items-center">

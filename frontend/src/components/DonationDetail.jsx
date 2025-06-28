@@ -8,6 +8,7 @@ import DonationStepFlow from './DonationStepFlow';
 import { ChevronLeft } from 'lucide-react';
 import TextInput from './TextInput';
 import StaffNote from './StaffNote';
+import LoadingPage from './LoadingPage';
 
 export default function DonationDetail() {
   const navigate = useNavigate();
@@ -52,7 +53,7 @@ export default function DonationDetail() {
     fetchDetail();
   }, [id]);
 
-  if (loading) return <div className="p-4 text-center">Loading data...</div>;
+  if (loading) return <LoadingPage />;
   if (!detail || detail.length === 0)
     return (
       <div className="p-4 text-red-600">No blood form requests found.</div>
