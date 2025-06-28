@@ -75,6 +75,7 @@ export default function SeekerForm() {
       });
       console.log('Detail receive form:', res);
       toast.success('Register successful!');
+      navigate('/');
     } catch (error) {
       toast.error('Register failed');
     }
@@ -94,30 +95,21 @@ export default function SeekerForm() {
           <TextInput
             label="Full Name"
             name="fullName"
-            placeholder="Enter your full name"
             value={formData.fullName || ''}
             onChange={() => {}}
-            disabled
-            required
           />
           <TextInput
             label="Date of Birth"
             name="dob"
-            type="date"
             value={formData.dob || ''}
             onChange={() => {}}
-            disabled
-            required
           />
           <TextInput
             label="Phone"
             name="phone"
-            type="tel"
             placeholder="Enter your phone number"
             value={formData.phone || ''}
             onChange={() => {}}
-            disabled
-            required
           />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -128,7 +120,7 @@ export default function SeekerForm() {
               value={formData.bloodType || ''}
               onChange={handleChange}
               required
-              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
+              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
             >
               <option value="">Select blood type</option>
               <option value="A+">A+</option>
@@ -177,33 +169,19 @@ export default function SeekerForm() {
         </div>
         {/* Left Column */}
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Gender
-            </label>
-            <select
-              name="gender"
-              value={formData.gender || ''}
-              onChange={() => {}}
-              disabled
-              required
-              className="w-full px-3 text-lg py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
-            >
-              <option value="">Select gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
           <TextInput
-            label="Email"
-            name="email"
-            type="email"
-            placeholder="Enter your email"
-            value={formData.email || ''}
+            label="Gender"
+            name="gender"
+            value={formData.gender || ''}
             onChange={() => {}}
             disabled
             required
+          />
+          <TextInput
+            label="Email"
+            name="email"
+            value={formData.email || ''}
+            onChange={() => {}}
           />
           <TextInput
             label="Hospital Address"
@@ -227,9 +205,10 @@ export default function SeekerForm() {
             >
               <option value="">Select blood component type</option>
               <option value="Whole">Whole</option>
-              <option value="RBC">RBC</option>
+              <option value="RBC">RBCs</option>
               <option value="Plasma">Plasma</option>
               <option value="Platelets">Platelets</option>
+              <option value="Platelets">WBCs</option>
             </select>
           </div>
           <TextInput

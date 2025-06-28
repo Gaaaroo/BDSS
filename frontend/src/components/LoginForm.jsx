@@ -6,7 +6,7 @@ import { useApp } from '../Contexts/AppContext';
 
 const LoginForm = () => {
   const navigate = useNavigate();
-  const { setIsLogged } = useApp();
+  const { setIsLogged, getUserRoleAndNavigate } = useApp();
   const [form, setForm] = useState({
     username: '',
     password: '',
@@ -21,7 +21,6 @@ const LoginForm = () => {
   //Handle login form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Data to sent: ', form);
     if (!form.username || !form.password) {
       setError('Please enter both email and password.');
       return;
@@ -30,6 +29,7 @@ const LoginForm = () => {
     try {
       await login(form);
       setIsLogged(true);
+      await getUserRoleAndNavigate();
       setError('');
     } catch (error) {
       setError('Login failed. Please try again.');
@@ -44,7 +44,7 @@ const LoginForm = () => {
     try {
       await loginWithTokenGoogle();
       setIsLogged(true);
-      navigate('/');
+      await getUserRoleAndNavigate();
     } catch (error) {
       console.error('Login error:', error);
       alert('Đăng nhập thất bại.');

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 import { myDonate, myReceive } from '../services/api/bloodFormService';
+import LoadingPage from '../components/LoadingPage';
 
 export default function ProgressRequests({ activeTab }) {
   const [listDonate, setListDonate] = useState([]);
@@ -40,14 +41,16 @@ export default function ProgressRequests({ activeTab }) {
     );
   }, [activeTab, listDonate, listReceive]);
 
-  if (loading) return <div className="p-4 text-center">Loading data...</div>;
+  if (loading) return <LoadingPage />;
   if (
-    !listDonate ||
-    listDonate.length === 0 ||
-    !listReceive ||
-    listReceive.length === 0
+    (!listDonate || listDonate.length === 0) &&
+    (!listReceive || listReceive.length === 0)
   )
-    return <div className="p-4 text-red-600">No pending requests found.</div>;
+    return (
+      <div className="p-4 text-red-600 text-center">
+        No blood donation or reception requests found.
+      </div>
+    );
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-7 p-10 pt-5">

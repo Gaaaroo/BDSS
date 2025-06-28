@@ -8,6 +8,7 @@ import ReceiveStepFlow from './ReceiveStepFlow';
 import TextInput from './TextInput';
 import StaffNote from './StaffNote';
 import Footer from './Footer';
+import LoadingPage from './LoadingPage';
 
 export default function ReceiveDetail() {
   const navigate = useNavigate();
@@ -52,7 +53,7 @@ export default function ReceiveDetail() {
     fetchDetail();
   }, [id]);
 
-  if (loading) return <div className="p-4">Loading data...</div>;
+  if (loading) return <LoadingPage />;
   if (!detail || detail.length === 0)
     return (
       <div className="p-4 text-red-600">No blood form requests found.</div>

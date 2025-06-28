@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
-import CommentSection from "../components/CommentSection";
-import dayjs from "dayjs";
+import React, { useEffect, useState } from 'react';
+import Navbar from '../components/Navbar';
+import CommentSection from '../components/CommentSection';
+import dayjs from 'dayjs';
 import {
   getMyPosts,
   deletePost,
   updatePost,
-} from "../services/api/forumService";
-import { Link } from "react-router-dom";
-import { BiTrash, BiEdit } from "react-icons/bi";
-import { deleteComment, createComment } from "../services/api/commentService";
-import Footer from "../components/Footer";
+} from '../services/api/forumService';
+import { Link } from 'react-router-dom';
+import { BiTrash, BiEdit } from 'react-icons/bi';
+import { deleteComment, createComment } from '../services/api/commentService';
+import Footer from '../components/Footer';
+import LoadingPage from '../components/LoadingPage';
 
 function MyPosts() {
   const [posts, setPosts] = useState([]);
@@ -18,8 +19,7 @@ function MyPosts() {
 
   const [open, setOpen] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
-  const [editData, setEditData] = useState({ title: "", content: "" });
-
+  const [editData, setEditData] = useState({ title: '', content: '' });
 
   // Get posts of current user
   useEffect(() => {
@@ -44,12 +44,12 @@ function MyPosts() {
 
   // Handle delete post
   const handleDeletePost = async (postId) => {
-    if (window.confirm("Are you sure you want to delete this post?")) {
+    if (window.confirm('Are you sure you want to delete this post?')) {
       try {
         await deletePost(postId);
         setPosts(posts.filter((post) => post.id !== postId));
       } catch (err) {
-        console.error("Failed to delete post:", err);
+        console.error('Failed to delete post:', err);
       }
     }
   };
@@ -65,12 +65,12 @@ function MyPosts() {
   // Handle add comment
   const handleAddComment = async (postId, content) => {
     if (!content) {
-      alert("Please enter content.");
+      alert('Please enter content.');
       return;
     }
 
     if (content.length > 100) {
-      alert("Comment must be less than 100 characters.");
+      alert('Comment must be less than 100 characters.');
       return;
     }
     try {
@@ -85,8 +85,8 @@ function MyPosts() {
         )
       );
     } catch (error) {
-      console.error("Failed to add comment:", error?.response?.data?.code);
-      alert("Failed to add comment!");
+      console.error('Failed to add comment:', error?.response?.data?.code);
+      alert('Failed to add comment!');
     }
   };
 
@@ -114,14 +114,14 @@ function MyPosts() {
     } catch (err) {
       console.log(editData);
       console.log(editingPost.id);
-      alert("Cập nhật bài viết thất bại!");
+      alert('Cập nhật bài viết thất bại!');
     }
   };
 
   //Handle delete comment
   const handleDeleteComment = async (postId, commentId) => {
-    if (window.confirm("Are you sure you want to delete this post?")) {
-      console.log("Deleting comment with ID:", commentId);
+    if (window.confirm('Are you sure you want to delete this post?')) {
+      console.log('Deleting comment with ID:', commentId);
       try {
         await deleteComment(commentId);
         //Remove the comment from the comments array
@@ -138,15 +138,15 @@ function MyPosts() {
           )
         );
       } catch (err) {
-        console.error("Failed to delete post:", err);
+        console.error('Failed to delete post:', err);
       }
     }
   };
 
   //Function to wrap text at a specified length
   function wrapText(str, n) {
-    if (!str) return "";
-    return str.replace(new RegExp(`(.{1,${n}})`, "g"), "$1\n");
+    if (!str) return '';
+    return str.replace(new RegExp(`(.{1,${n}})`, 'g'), '$1\n');
   }
 
   return (
@@ -158,12 +158,12 @@ function MyPosts() {
             My Posts
           </h2>
           {loading ? (
-            <div className="text-center text-gray-400">Loading...</div>
+            <LoadingPage />
           ) : posts.length === 0 ? (
             <div className="text-center text-gray-400">
               You have no posts yet. Start sharing your thoughts&nbsp;
               <Link
-                to={"/forum"}
+                to={'/forum'}
                 className="text-cyan-500 hover:underline font-semibold"
                 state={{ openCreatePost: true }}
               >
@@ -194,7 +194,7 @@ function MyPosts() {
                 </button>
                 <div className="flex items-center mb-3">
                   <div className="w-10 h-10 rounded-full bg-cyan-400 flex items-center justify-center text-white font-bold text-lg mr-3 shadow">
-                    {post.username?.charAt(0) || "U"}
+                    {post.username?.charAt(0) || 'U'}
                   </div>
                   <div>
                     <span className="font-semibold text-cyan-300">
@@ -204,11 +204,11 @@ function MyPosts() {
                       {post.updated_at &&
                       post.updated_at !== post.created_at ? (
                         <>
-                          Update at:{" "}
-                          {dayjs(post.updated_at).format("HH:mm - DD/MM/YYYY")}
+                          Update at:{' '}
+                          {dayjs(post.updated_at).format('HH:mm - DD/MM/YYYY')}
                         </>
                       ) : (
-                        dayjs(post.created_at).format("HH:mm - DD/MM/YYYY")
+                        dayjs(post.created_at).format('HH:mm - DD/MM/YYYY')
                       )}
                     </span>
                   </div>

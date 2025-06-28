@@ -5,6 +5,7 @@ import ProfileUpdate from '../components/ProfileUpdate';
 import { getUserProfile } from '../services/api/userService';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { useApp } from '../Contexts/AppContext';
+import LoadingPage from '../components/LoadingPage';
 
 export default function ProfilePage() {
   const [userData, setUserData] = useState(null);
@@ -25,7 +26,7 @@ export default function ProfilePage() {
     fetchUserData();
   }, []);
 
-  if (!userData) return <div className="text-center mt-10">Loading...</div>;
+  if (!userData) return <LoadingPage />;
 
   return (
     <div>

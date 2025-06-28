@@ -6,42 +6,59 @@ import { useNavigate } from 'react-router';
 const AppContext = createContext();
 
 export const AppProvider = ({ children }) => {
+  //kiểm tra trạng thái đã đăng nhập hay chưa
   const [isLogged, setIsLogged] = useState(false);
+  //Để lấy giá trị profile cho 2 form donation & receive
   const [profile, setProfile] = useState();
-  const [role, setRole] = useState(null); //'Staff' 'Admin' 'Member'
+  //'Staff' 'Admin' 'Member'
+  const [role, setRole] = useState(null);
+  const [loadingRole, setLoadingRole] = useState(true);
   const navigate = useNavigate();
   useEffect(() => {
     const authToken = localStorage.getItem('authToken');
     if (authToken) {
+      const savedRole = localStorage.getItem('role');
       setIsLogged(true);
-      getUserRole();
+      if (savedRole) {
+        setRole(savedRole);
+      } else {
+        fetchUserRole();
+      }
     } else {
+      console.log('hihi');
       setIsLogged(false);
       setProfile(null);
     }
   }, []);
 
-  const getUserRole = async () => {
+  const fetchUserRole = async () => {
     try {
       const data = await getUserProfile();
-      console.log(data);
+      localStorage.setItem('role', data.role);
       setRole(data.role);
-      console.log('role nè:', data.role);
+    } catch (err) {
+      console.log('Error when fetching role:', err);
+    } finally {
+      setLoadingRole(false);
+    }
+  };
+
+  const getUserRoleAndNavigate = async () => {
+    try {
+      const data = await getUserProfile();
+      localStorage.setItem('role', data.role);
+      setRole(data.role);
       switch (data.role) {
         case 'MEMBER':
-          console.log('Đây là member');
           navigate('/');
           break;
         case 'STAFF':
-          console.log('Đây là Staff');
           navigate('/dashboard');
           break;
         case 'ADMIN':
-          console.log('Đây là Admin');
           navigate('/');
           break;
         default:
-          console.log('Welcome to my website');
           navigate('/');
           break;
       }
@@ -61,8 +78,7 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     if (isLogged) {
-      console.log('call api profile');
-      getUserRole();
+      fetchUserRole();
       saveProfile();
     }
   }, [isLogged]);
@@ -71,7 +87,6 @@ export const AppProvider = ({ children }) => {
     setIsLogged(false);
     setProfile(null);
     localStorage.clear();
-    console.log('Logout successful!');
   }
 
   return (
@@ -82,7 +97,8 @@ export const AppProvider = ({ children }) => {
         isLogged,
         setIsLogged,
         logout,
-        getUserRole,
+        loadingRole,
+        getUserRoleAndNavigate,
         role,
       }}
     >

@@ -3,9 +3,11 @@ import MapView from './MapView';
 
 export default function ProfileView({ userData, onEditClick }) {
   const formatField = (value) =>
-    value === null || value === undefined || value === ''
-      ? 'Please update your profile'
-      : value;
+    value === null || value === undefined || value === '' ? (
+      <div className="italic text-gray-500">please update your profile</div>
+    ) : (
+      value
+    );
 
   return (
     <div className="max-w-7xl mx-auto mt-10 p-8 bg-white rounded-2xl shadow-2xl font-sans">
@@ -78,7 +80,7 @@ export default function ProfileView({ userData, onEditClick }) {
               <div>{formatField(userData?.bloodType)}</div>
             </div>
             <div className="flex items-start">
-              <div className="min-w-[140px] font-semibold text-gray-600 mt-2">
+              <div className="min-w-[140px] font-semibold text-gray-600">
                 Address:
               </div>
               <div className="flex-1">
