@@ -27,31 +27,35 @@ export default function ListBloodType({ list }) {
   };
 
   return (
-    <div className="overflow-x-auto mt-4">
+    <div className="overflow-x-auto mt-4 px-4">
       <table className="min-w-full bg-white border border-gray-200 text-sm">
         <thead className="bg-red-100 text-red-700">
           <tr>
-            <th className="px-4 py-2 text-left">No.</th>
-            <th className="px-4 py-2 text-left">Blood Type</th>
-            <th className="px-4 py-2 text-left">Donated Date</th>
-            <th className="px-4 py-2 text-left">Expiry Date</th>
-            <th className="px-4 py-2 text-left">Status</th>
-            <th className="px-4 py-2 text-left">Volume (ml)</th>
-            <th className="px-4 py-2 text-left">Note</th>
-            <th className="px-4 py-2 text-left">Action</th>
+            <th className="py-2 text-center">No.</th>
+            <th className="py-2 text-center">Blood Type</th>
+            <th className="py-2 text-center">Donated Date</th>
+            <th className="py-2 text-center">Expiry Date</th>
+            <th className="py-2 text-center">Status</th>
+            <th className="py-2 text-center">Volume (ml)</th>
+            <th className="py-2 text-center">Note</th>
+            <th className="py-2 text-center">Action</th>
           </tr>
         </thead>
         <tbody>
           {list?.map((item, index) => (
             <tr key={item.bloodId} className="border-t">
-              <td className="px-4 py-2">{index + 1}</td>
-              <td className="px-4 py-2">{item.bloodType}</td>
-              <td className="px-4 py-2">{item.donatedDate?.slice(0, 10)}</td>
-              <td className="px-4 py-2">{item.expiryDate?.slice(0, 10)}</td>
-              <td className="px-4 py-2">{item.status}</td>
-              <td className="px-4 py-2">{item.volume}</td>
-              <td className="px-4 py-2">{item.note}</td>
-              <td className="px-4 py-2 space-x-1">
+              <td className="py-2 text-center">{index + 1}</td>
+              <td className="py-2 text-center">{item.bloodType}</td>
+              <td className="py-2 text-center">
+                {item.donatedDate?.slice(0, 10)}
+              </td>
+              <td className="py-2 text-center">
+                {item.expiryDate?.slice(0, 10)}
+              </td>
+              <td className="py-2 text-center">{item.status}</td>
+              <td className="py-2 text-center">{item.volume}</td>
+              <td className="py-2 text-center">{item.note}</td>
+              <td className="py-2 space-x-1 text-center">
                 <button
                   className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-500 text-xs"
                   onClick={() => alert(`View ${item.bloodId}`)}

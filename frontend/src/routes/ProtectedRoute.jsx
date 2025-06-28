@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Navigate, useNavigate, Outlet } from 'react-router-dom';
+import React, { children, useEffect } from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
 
 const ProtectedRoute = ({ allowedRoles, role }) => {
   if (!allowedRoles.includes(role)) {

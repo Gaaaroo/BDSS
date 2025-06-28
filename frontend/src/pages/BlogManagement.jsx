@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Sidebar from '../Layouts/Sidebar';
 import logo from '../assets/images/logo2.png';
 import {
   getAllBlogs,
@@ -106,13 +105,8 @@ export default function BlogManagement() {
   };
   return (
     <div className="flex">
-      {/* Sidebar bên trái */}
-      <div className="w-64 fixed h-screen bg-pink-300">
-        <Sidebar />
-      </div>
-
       {/* Nội dung bên phải */}
-      <div className="ml-64 flex-1 min-h-screen p-4 bg-white">
+      <div className="flex-1 min-h-screen p-4 bg-white">
         {/* Logo ở giữa đầu trang */}
         <div className="flex justify-center mb-6">
           <img src={logo} alt="Logo" className="h-40 w-auto" />

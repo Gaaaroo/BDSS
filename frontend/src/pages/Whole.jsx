@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Sidebar from '../Layouts/Sidebar';
 import BloodCard from '../components/BloodCard';
 import {
   bloodInventoryByType,
@@ -43,25 +42,18 @@ export default function Wh() {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
-      <div className="w-64 bg-gray-800 text-white fixed h-full">
-        <Sidebar />
+    <>
+      <div className="grid grid-cols-4 gap-x-0 gap-y-7 justify-items-center px-15 py-5">
+        {bloodGroups.map((item, index) => (
+          <BloodCard
+            key={index}
+            bloodType={item}
+            units={bloodData[item]}
+            onClick={() => handleClick(item)}
+          />
+        ))}
       </div>
-      <div className="flex-1 flex-col">
-        <div className="ml-64">
-          <div className="grid grid-cols-4 gap-x-0 gap-y-7 justify-items-center px-20 py-5">
-            {bloodGroups.map((item, index) => (
-              <BloodCard
-                key={index}
-                bloodType={item}
-                units={bloodData[item]}
-                onClick={() => handleClick(item)}
-              />
-            ))}
-          </div>
-          <ListBloodType list={list} />
-        </div>
-      </div>
-    </div>
+      <ListBloodType list={list} />
+    </>
   );
 }

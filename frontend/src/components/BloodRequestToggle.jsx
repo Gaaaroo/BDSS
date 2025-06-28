@@ -6,7 +6,6 @@ export default function BloodRequestToggle() {
   const [showReceive, setShowReceive] = useState(true);
 
   return (
-    <div className="ml-64">
       <div className="flex flex-col items-center gap-4">
         <div className="flex gap-4 justify-center items-center">
           <button
@@ -42,6 +41,5 @@ export default function BloodRequestToggle() {
           )}
         </div>
       </div>
-    </div>
   );
 }

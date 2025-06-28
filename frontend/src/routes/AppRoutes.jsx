@@ -25,6 +25,7 @@ import BlogManagement from '../pages/BlogManagement';
 import ReceiveDetail from '../components/ReceiveDetail';
 import DonationDetail from '../components/DonationDetail';
 import Components from '../pages/Components';
+import LayoutStaff from '../Layouts/LayoutStaff';
 
 export default function AppRoutes() {
   const { role } = useApp();
@@ -48,12 +49,14 @@ export default function AppRoutes() {
           <ProtectedRoute allowedRoles={['ADMIN', 'STAFF']} role={role} />
         }
       >
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/request-management" element={<RequestManagement />} />
-        <Route path="/inventory/whole" element={<Whole />} />
-        <Route path="/inventory/components" element={<Components />} />
-        <Route path="/member-management" element={<MemberManagement />} />
-        <Route path="/blog-management" element={<BlogManagement />} />
+        <Route path="/dashboard" element={<LayoutStaff />}>
+          <Route index element={<Dashboard />} />
+          <Route path="request-management" element={<RequestManagement />} />
+          <Route path="inventory/whole" element={<Whole />} />
+          <Route path="inventory/components" element={<Components />} />
+          <Route path="member-management" element={<MemberManagement />} />
+          <Route path="blog-management" element={<BlogManagement />} />
+        </Route>
       </Route>
 
       {/* Member */}

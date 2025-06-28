@@ -103,15 +103,15 @@ export default function Sidebar() {
           {showInventorySubmenu && (
             <div className="ml-6 mt-2 flex flex-col border-l border-white/30 pl-4 space-y-2 transition-all duration-300">
               <Link
-                to="/inventory/whole"
-                className="text-white flex justify-between text-base py-1 px-2 hover:bg-[#f76c6c] rounded-md transition-colors flex items-center gap-2"
+                to="/dashboard/inventory/whole"
+                className="text-white flex justify-between text-xl py-1 px-2 hover:bg-[#f76c6c] rounded-md transition-colors items-center gap-2"
               >
                 Whole
                 <ChevronRight className="w-5 h-5" />
               </Link>
               <Link
-                to="/inventory/components"
-                className="text-white flex justify-between text-base py-1 px-2 hover:bg-[#f76c6c] rounded-md transition-colors flex items-center gap-2"
+                to="/dashboard/inventory/components"
+                className="text-white flex justify-between text-xl py-1 px-2 hover:bg-[#f76c6c] rounded-md transition-colors items-center gap-2"
               >
                 Components
                 <ChevronRight className="w-5 h-5" />
@@ -120,7 +120,7 @@ export default function Sidebar() {
           )}
 
           <Link
-            to="/member-management"
+            to="/dashboard/member-management"
             className="w-59 h-11 p-2 text-white bg-transparent hover:bg-[#F76C6C] transition-all  hover:font-bold
             flex justify-start items-center text-2xl font-semibold hover:transform hover:scale-108 shadow rounded-sm gap-2"
           >
@@ -128,7 +128,7 @@ export default function Sidebar() {
             Member
           </Link>
           <Link
-            to="/request-management"
+            to="/dashboard/request-management"
             className="w-59 h-11 p-2 text-white bg-transparent hover:bg-[#F76C6C] transition-all  hover:font-bold
             flex justify-start items-center text-2xl font-semibold
             hover:transform hover:scale-108 shadow rounded-sm gap-2"
@@ -137,7 +137,7 @@ export default function Sidebar() {
             Request
           </Link>
           <Link
-            to="/blog-management"
+            to="/dashboard/blog-management"
             className="w-59 h-11 p-2 text-white bg-transparent hover:bg-[#F76C6C] transition-all hover:font-bold
             flex justify-start items-center
             text-2xl font-semibold
