@@ -6,7 +6,7 @@ import {
 } from '../services/api/inventoryService';
 import ListBloodType from '../components/ListBloodType';
 
-export default function Wh() {
+export default function Whole() {
   const bloodGroups = ['O+', 'A+', 'B+', 'AB+', 'O-', 'A-', 'B-', 'AB-'];
   const [bloodData, setBloodData] = useState({});
   const [list, setList] = useState([]);

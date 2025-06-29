@@ -55,4 +55,87 @@ export const updateBloodStatus = async (status, bloodId) => {
 };
 // After update status + Separate ...........Component page change, status change
 
-// Updtate Status
+//Components list => Filter by type of components
+//List all component A+
+export const listBloodComponentUnits = async (page = 0, size = 10) => {
+  try {
+    const res = await axiosClient.get('bloodComponentUnit', {
+      params: { page, size },
+    });
+    console.log('List blood components:', res);
+    return res;
+  } catch (error) {
+    console.log('error update after separate', error);
+  }
+};
+
+//List all component by type and status
+export const listByTypeAndStatus = async (bloodType, sta) => {
+  try {
+    const res = await axiosClient.get('bloodComponentUnit/type-status', {
+      params: { bloodType: bloodType, status: sta },
+    });
+    console.log('List blood components:', res);
+    return res;
+  } catch (error) {
+    console.log('error update after separate', error);
+  }
+};
+
+//Filter component by status + fullname (Không dùng)
+export const filterByStatusAndFullName = async (
+  statusList,
+  fullName,
+  page = 0,
+  size = 10
+) => {
+  try {
+    //Kiểm soát serialization, để không bị axios thêm [] vào key
+    const params = new URLSearchParams();
+    statusList.forEach((status) => {
+      params.append('status', status);
+    });
+    params.append('fullName', fullName);
+    params.append('page', page);
+    params.append('size', size);
+
+    const res = await axiosClient.get(
+      'bloodComponentUnit/status/searchByFullName',
+      { params }
+    );
+
+    return res;
+  } catch (error) {
+    console.error('Error when filtering:', error);
+    throw error;
+  }
+};
+
+//Filter component by status + blood type + fullname (dùng)
+export const filterByTypeStatusAndFullName = async (
+  bloodType,
+  statusList,
+  fullName,
+  page = 0,
+  size = 10
+) => {
+  try {
+    const params = new URLSearchParams();
+
+    statusList.forEach((status) => {
+      params.append('status', status);
+    });
+    params.append('bloodType', bloodType);
+    params.append('fullName', fullName);
+    params.append('page', page);
+    params.append('size', size);
+    const res = await axiosClient.get(
+      'bloodComponentUnit/type-status/searchByFullName',
+      { params }
+    );
+    return res;
+  } catch (error) {
+    console.error('Error fetching by type, status and name:', error);
+    throw error;
+  }
+};
