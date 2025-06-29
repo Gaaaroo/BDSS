@@ -10,6 +10,7 @@ import {
 import BlogForm from '../components/BlogForm';
 import BlogDetail from '../components/BlogDetail';
 import { Pencil, Eye, Trash2 } from 'lucide-react';
+import Pagination from '../components/Pagination';
 
 export default function BlogManagement() {
   const [blogs, setBlogs] = useState([]);
@@ -243,44 +244,14 @@ export default function BlogManagement() {
         </div>
 
         {/* Pagination */}
-        <div className="flex justify-center mt-4 gap-2">
-          <button
-            onClick={() => setPage((prev) => Math.max(prev - 1, 0))}
-            disabled={page === 0}
-            className="px-4 py-1 bg-red-500 text-white rounded disabled:opacity-50"
-          >
-            Prev
-          </button>
-          <span className="px-4 py-1 text-lg">
-            {page + 1} / {totalPages}
-          </span>
-          <button
-            onClick={() =>
-              setPage((prev) => Math.min(prev + 1, totalPages - 1))
-            }
-            disabled={page + 1 === totalPages}
-            className="px-4 py-1 bg-red-500 text-white rounded disabled:opacity-50"
-          >
-            Next
-          </button>
-          {/* Input để đi tới trang */}
-          <div className="flex items-center space-x-2 ml-4">
-            <input
-              type="number"
-              min="1"
-              max={totalPages}
-              value={inputPage}
-              onChange={(e) => setInputPage(e.target.value)}
-              placeholder="page"
-            />
-            <button
-              onClick={handleGoToPage}
-              className="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-800"
-            >
-              Go
-            </button>
-          </div>
-        </div>
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={setPage}
+          inputPage={inputPage}
+          setInputPage={setInputPage}
+          onGoToPage={handleGoToPage}
+        />
 
         {/* Hiển thị form thêm/sửa blog nếu showForm là true */}
         {showForm && (
