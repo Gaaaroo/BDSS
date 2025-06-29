@@ -90,8 +90,4 @@ public class UserController {
                 .data(userService.findUserNearby(lat, lng, radius))
                 .build();
     }
-
-
-
-
 }

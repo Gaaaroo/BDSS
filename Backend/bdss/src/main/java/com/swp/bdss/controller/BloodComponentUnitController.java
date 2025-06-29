@@ -25,7 +25,7 @@ public class BloodComponentUnitController {
 
     // hàm này sai khi nhấn tách whole blood
     @PostMapping
-    ApiResponse<String> addBloodUnit (@RequestBody BloodComponentUnitRequest request){
+    ApiResponse<String> addBloodComponentUnit (@RequestBody BloodComponentUnitRequest request){
         return ApiResponse.<String>builder()
                 .code(1000)
                 .data(bloodComponentUnitService.createComponentUnit(request))

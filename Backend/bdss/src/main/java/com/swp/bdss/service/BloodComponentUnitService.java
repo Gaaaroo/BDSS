@@ -37,14 +37,16 @@ public class BloodComponentUnitService {
             BloodComponentUnit bloodComponentUnit = new BloodComponentUnit();
             BloodUnit bloodUnit = bloodUnitRepository.findById(request.getBloodId())
                     .orElseThrow(() -> new AppException(ErrorCode.BLOOD_UNIT_NOT_EXIST));
-            bloodComponentUnit.setBloodType(bloodUnit.getBloodType());
-            bloodComponentUnit.setComponentType(componentType);
-            bloodComponentUnit.setVolume(bloodUnit.getVolume());
-            bloodComponentUnit.setStatus("Stored");
-            bloodComponentUnit.setCreatedDate(LocalDateTime.now());
-            bloodComponentUnit.setExpiryDate(bloodUnit.getExpiryDate());
-            bloodComponentUnit.setNote("");
-            bloodComponentUnit.setBloodUnit(bloodUnit);
+            if (bloodUnit.getStatus().equals("Stored")) {
+                bloodComponentUnit.setBloodType(bloodUnit.getBloodType());
+                bloodComponentUnit.setComponentType(componentType);
+                bloodComponentUnit.setVolume(bloodUnit.getVolume());
+                bloodComponentUnit.setStatus("Stored");
+                bloodComponentUnit.setCreatedDate(LocalDateTime.now());
+                bloodComponentUnit.setExpiryDate(bloodUnit.getExpiryDate());
+                bloodComponentUnit.setNote("");
+                bloodComponentUnit.setBloodUnit(bloodUnit);
+            }
             bloodComponentUnitRepository.save(bloodComponentUnit);
         }
         return "Separate successful";
