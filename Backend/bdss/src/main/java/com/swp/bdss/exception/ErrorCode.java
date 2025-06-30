@@ -36,6 +36,7 @@ public enum ErrorCode {
     INVALID_STEP_NUMBER2(1026, "Step number must between 1 and 3", HttpStatus.BAD_REQUEST),
     NO_BLOOD_RECEIVE_FORM(1027, "There's no blood receive form", HttpStatus.BAD_REQUEST),
     STEP_NOT_FOUND(1028, "Step not found for donation ID and step number", HttpStatus.BAD_REQUEST),
+    NOT_ELIGIBLE_TO_REGISTER_RECEIVE(1029, "User is not eligible to register blood receive form", HttpStatus.BAD_REQUEST)
     ;
 
     private final int code;

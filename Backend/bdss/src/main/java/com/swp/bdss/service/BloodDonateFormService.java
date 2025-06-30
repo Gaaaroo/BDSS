@@ -20,7 +20,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +51,29 @@ public class BloodDonateFormService {
         }
 
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        boolean canRegister = false;
+
+        if (user.getBloodDonateForms().isEmpty()) {
+            canRegister = true;
+        } else {
+            BloodDonateForm lastForm = user.getBloodDonateForms().getLast();
+
+            if (lastForm.getStatus().equalsIgnoreCase("REJECTED")) {
+                canRegister = true;
+            } else {
+                LocalDateTime lastDonateDate = lastForm.getBloodUnit().getDonatedDate();
+                long daysSinceLastDonate = ChronoUnit.DAYS.between(lastDonateDate.toLocalDate(), LocalDate.now());
+
+                if (daysSinceLastDonate > 20) {
+                    canRegister = true;
+                }
+            }
+        }
+
+        if (!canRegister) {
+            throw new AppException(ErrorCode.NOT_ELIGIBLE_TO_REGISTER_RECEIVE);
+        }
+
         UserResponse userResponse = userMapper.toUserResponse(user);
         bloodDonateForm.setUser(user);
         bloodDonateForm.setRequestDate(LocalDateTime.now());
