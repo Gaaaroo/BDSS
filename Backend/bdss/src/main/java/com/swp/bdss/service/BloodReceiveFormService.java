@@ -85,6 +85,24 @@ public class BloodReceiveFormService {
         int userId = Integer.parseInt(context.getAuthentication().getName());
 
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        boolean canRegister = false;
+
+        if (user.getBloodDonateForms().isEmpty()) {
+            canRegister = true;
+        } else {
+            BloodReceiveForm lastForm = user.getBloodReceiveForms().getLast();
+
+            if (lastForm.getStatus().equalsIgnoreCase("REJECTED") || lastForm.getStatus().equalsIgnoreCase("APPROVED")) {
+                canRegister = true;
+            }
+        }
+
+        if (!canRegister) {
+            throw new AppException(ErrorCode.NOT_ELIGIBLE_TO_REGISTER_RECEIVE);
+        }
+
+
         bloodReceiveForm.setBloodType(request.getBloodType());
         bloodReceiveForm.setUser(user);
         bloodReceiveForm.setRequestDate(LocalDate.now());

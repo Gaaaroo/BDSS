@@ -5,6 +5,7 @@ import com.swp.bdss.dto.request.BloodDonateFormUpdateStatusRequest;
 import com.swp.bdss.dto.response.BloodDonateFormResponse;
 import com.swp.bdss.dto.response.UserResponse;
 import com.swp.bdss.entities.BloodDonateForm;
+import com.swp.bdss.entities.BloodUnit;
 import com.swp.bdss.entities.User;
 import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
@@ -61,7 +62,11 @@ public class BloodDonateFormService {
             if (lastForm.getStatus().equalsIgnoreCase("REJECTED")) {
                 canRegister = true;
             } else {
-                LocalDateTime lastDonateDate = lastForm.getBloodUnit().getDonatedDate();
+                BloodUnit bloodUnit = lastForm.getBloodUnit();
+                if (bloodUnit == null || bloodUnit.getDonatedDate() == null) {
+                    throw new AppException(ErrorCode.BLOOD_UNIT_NOT_EXIST);
+                }
+                LocalDateTime lastDonateDate = bloodUnit.getDonatedDate();
                 long daysSinceLastDonate = ChronoUnit.DAYS.between(lastDonateDate.toLocalDate(), LocalDate.now());
 
                 if (daysSinceLastDonate > 20) {
