@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { updateDonationProcessStep } from '../services/api/bloodRequestService';
+import { addBloodUnit } from '../services/api/bloodUnitService';
 
 const stepNames = [
   'Register for blood donation',
@@ -28,6 +29,32 @@ export default function StepProgress({
 
   const [note, setNote] = useState(steps[openStepIdx]?.note || '');
   const [loading, setLoading] = useState(false);
+
+  const [showVolumeInput, setShowVolumeInput] = useState(false);
+  const [volume, setVolume] = useState('');
+
+  const handleAddBloodUnit = async () => {
+    if (!volume || isNaN(volume) || Number(volume) <= 0) {
+      alert('Please enter a valid volume!');
+      return;
+    }
+
+    try {
+      await addBloodUnit({
+        donateId,
+        volume: Number(volume),
+      });
+      console.log()
+      alert('Blood unit added successfully!');
+      await onReload();
+      if (onReloadTable) {
+        await onReloadTable();
+      }
+      setShowVolumeInput(false);
+    } catch (error) {
+      alert(error?.response?.data?.message || 'Error adding blood unit');
+    }
+  };
 
   useEffect(() => {
     if (openStepIdx !== null) {
@@ -99,7 +126,7 @@ export default function StepProgress({
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto bg-[#FDE4E4] rounded-xl shadow-lg px-4 pt-3 pb-6">
+    <div className="w-full max-w-xl mx-auto bg-[#FDE4E4] rounded-xl shadow-lg px-4 pt-3 pb-[18px]">
       <h2 className="text-xl font-bold mb-4 text-center text-black">
         Step Progress
       </h2>
@@ -168,6 +195,68 @@ export default function StepProgress({
           );
         })}
       </div>
+
+      {steps[3]?.status === 'DONE' && (
+        <>
+          <button
+            className="mt-4 px-3 py-2 hover:bg-text-red-600 bg-[#F76C6C] hover:scale-105 transition-transform duration-200 hover:text-white text-white rounded-[50px] font-semibold block mx-auto"
+            onClick={() => setShowVolumeInput(true)}
+          >
+            Add blood to inventory
+          </button>
+          {showVolumeInput && (
+            <div className="fixed inset-0 bg-black/30 z-40">
+              <div className="ml-64 fixed inset-0 flex items-center justify-center z-50">
+                <div className="bg-white rounded-xl shadow-lg p-4 w-full max-w-md relative mx-2">
+                  <button
+                    className="absolute top-2 right-4 text-gray-500 hover:text-red-500 text-2xl"
+                    onClick={() => setShowVolumeInput(false)}
+                  >
+                    ×
+                  </button>
+                  <h3 className="text-lg font-bold mb-3 text-black text-center">
+                    Select Blood Volume (ml)
+                  </h3>
+                  <div className="mt-8 flex gap-2 justify-center">
+                    {[250, 350, 450].map((v) => (
+                      <span
+                        key={v}
+                        className={`px-1 py-1 rounded-full font-semibold w-24 text-center inline-block cursor-pointer transition
+                ${
+                  Number(volume) === v
+                    ? 'bg-[#F76C6C] text-white'
+                    : 'bg-gray-200 text-gray-700'
+                }
+              `}
+                        onClick={() => setVolume(v)}
+                      >
+                        {v}
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="flex gap-2 mt-8 justify-center">
+                    <button
+                      className="px-4 py-1 text-white rounded font-semibold w-20 flex items-center justify-center
+                      bg-[#F76C6C] hover:scale-105 transition-transform duration-200 cursor-pointer"
+                      onClick={handleAddBloodUnit}
+                    >
+                      Confirm
+                    </button>
+                    <button
+                      className="px-4 py-1 bg-gray-300 text-black rounded font-semibold w-20 flex items-center justify-center
+                      hover:scale-105 transition-transform duration-200 cursor-pointer"
+                      onClick={() => setShowVolumeInput(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
+      )}
 
       {/* Modal chi tiết step */}
       {openStepIdx !== null && (

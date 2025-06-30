@@ -21,4 +21,5 @@ public class BloodDonateFormResponse {
     String status;
     LocalDateTime requestDate;
     List<UpdateDonationProcessStepResponse> steps;
+    BloodUnitResponse bloodUnitResponse;
 }
