@@ -49,7 +49,7 @@ export default function DonateRequestProcessModal({ request, onReloadTable }) {
             ></div>
             {/* Modal content */}
             <div className="ml-64 relative  inset-0 flex items-center justify-center z-10">
-              <div className="bg-white rounded-lg shadow-lg p-6 w-[650px] relative">
+              <div className="bg-white rounded-lg shadow-lg pt-4 p-6 w-[650px] relative">
                 <button
                   className="absolute top-1 right-4 text-gray-500 hover:text-red-500 text-4xl"
                   onClick={() => setOpenProcessModal(false)}
@@ -88,6 +88,7 @@ export default function DonateRequestProcessModal({ request, onReloadTable }) {
                     onReload={reloadRequest}
                     donateId={currentRequest.donateId}
                     onReloadTable={onReloadTable}
+                    bloodUnit={currentRequest.bloodUnitResponse}
                   />
                 </div>
               </div>

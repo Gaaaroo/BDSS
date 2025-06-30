@@ -1,5 +1,6 @@
 package com.swp.bdss.controller;
 
+import com.google.protobuf.Api;
 import com.swp.bdss.dto.request.BloodReceiveFormCreationRequest;
 import com.swp.bdss.dto.request.BloodReceiveFormUpdateStatusRequest;
 import com.swp.bdss.dto.response.ApiResponse;
@@ -108,4 +109,28 @@ public class BloodReceiveFormController {
                 .message("Get blood receive forms with priority successfully")
                 .build();
     }
+
+    @GetMapping("/whole-blood")
+    ApiResponse<List<BloodReceiveFormResponse>> getBloodReceiveFormByBloodTypeAndStatus(
+            @RequestParam String bloodType, @RequestParam String componentType) {
+        return ApiResponse.<List<BloodReceiveFormResponse>>builder()
+                .code(1000)
+                .data(bloodReceiveFormService.getBloodReceiveFormByBloodTypeAndComponentTypeAndStatus(bloodType, componentType))
+                .message("Get blood receive forms by blood type and status successfully")
+                .build();
+    }
+
+    @GetMapping("/count-request")
+    public ApiResponse<Long> countBloodReceiveForm(
+            @RequestParam String bloodType,
+            @RequestParam String componentType
+    ) {
+        long count = bloodReceiveFormService.countBloodReceiveFormByBloodTypeAndComponentTypeAndStatus(bloodType, componentType);
+        return ApiResponse.<Long>builder()
+                .code(1000)
+                .message("Count success")
+                .data(count)
+                .build();
+    }
+
 }

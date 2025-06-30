@@ -104,10 +104,10 @@ function WidgetChatAdmin() {
     <div className="flex w-full h-[100vh] max-h-[100vh] border-r overflow-y-auto bg-[#2e2e2e] ">
       {/* Sidebar: Danh sách các room */}
       <div
-        className="w-[320px] h-[94vh] p-3 bg-[#1f1f1f] mt-[20px] ml-[30px] mr-[20px]
+        className="w-[320px] h-[94vh] p-3 bg-[#1f1f1f] mt-[30px] ml-[30px] mr-[20px]
       rounded-[10px]"
       >
-        <h2 className="font-bold mb-2 text-3xl pl-3">Inbox</h2>
+        <h2 className="font-bold mb-2 text-3xl pl-3 text-white mt-2">Inbox</h2>
         {conversations.map((conversation) => (
           <div
             key={conversation.id}
@@ -206,7 +206,7 @@ function WidgetChatAdmin() {
       {/* Content: Chat của room đang chọn */}
       <div
         className="p-3 flex-1 flex flex-col justify-between max-h-[95vh] h-[94vh] 
-      mt-[20px] rounded-[10px] mr-[30px] bg-[#5c003f]"
+      mt-[30px] rounded-[10px] mr-[30px] bg-[#1f1f1f]"
       >
         <div className="flex-1 overflow-y-auto ">
           {selectedRoom ? (
@@ -252,7 +252,7 @@ function WidgetChatAdmin() {
           <div className="flex items-center mt-3">
             <input
               type="text"
-              className="bg-[#3a3b3c] p-2 pl-4 pr-4 rounded-[50px] w-full"
+              className="bg-[#3a3b3c] p-2 pl-4 pr-4 rounded-[50px] w-full text-white"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               placeholder="Nhập tin nhắn..."
