@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -209,4 +210,48 @@ public class BloodReceiveFormService {
         }
         return list;
     }
+
+    public List<BloodReceiveFormResponse> getBloodReceiveFormByBloodTypeAndComponentTypeAndStatus(String bloodType, String componentType) {
+        List<BloodReceiveFormResponse> list;
+        if(componentType.equalsIgnoreCase("Whole")) {
+            list = bloodReceiveFormRepository.findAllByBloodTypeAndComponentTypeAndStatus(bloodType, componentType, "PROCESSING")
+                    .stream().map(bloodReceiveFormMapper::toBloodReceiveFormResponse)
+                    .toList();
+            log.info(list.toString());
+        }else{
+            componentType = "Whole";
+            list = bloodReceiveFormRepository.findAllByBloodTypeAndComponentTypeNotAndStatus(bloodType, componentType, "PROCESSING")
+                    .stream().map(bloodReceiveFormMapper::toBloodReceiveFormResponse)
+                    .toList();
+            log.info(list.toString());
+
+        }
+
+        if(list.isEmpty()){
+            throw new AppException(ErrorCode.NO_BLOOD_RECEIVE_FORM);
+        }
+        return list;
+    }
+
+    public long countBloodReceiveFormByBloodTypeAndComponentTypeAndStatus(String bloodType, String componentType) {
+        long count;
+        if (componentType.equalsIgnoreCase("Whole")) {
+            count = bloodReceiveFormRepository.countByBloodTypeAndComponentTypeAndStatus(
+                    bloodType, componentType, "PROCESSING"
+            );
+            log.info("Whole count: " + count);
+        } else {
+            // Đếm những đơn có componentType khác "Whole"
+            count = bloodReceiveFormRepository.countByBloodTypeAndComponentTypeNotAndStatus(
+                    bloodType, "Whole", "PROCESSING"
+            );
+            log.info("Not Whole count: " + count);
+        }
+
+        if (count == 0) {
+            throw new AppException(ErrorCode.NO_BLOOD_RECEIVE_FORM);
+        }
+        return count;
+    }
+
 }

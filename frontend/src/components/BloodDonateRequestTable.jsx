@@ -135,7 +135,7 @@ export default function BloodRequestTable({
                       {request.userResponse.bloodType}
                     </td>
                     <td className="px-3 w-12 text-center">
-                      {request.volume ? request.volume : 'Updating...'}
+                      {request.bloodUnitResponse?.volume ? request.bloodUnitResponse.volume : 'Updating...'}
                     </td>
                     <td className="px-3 w-12 text-left">
                       {request.userResponse.phone}
