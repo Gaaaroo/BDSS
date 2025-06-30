@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BloodComponentUnitResponse {
+public class BloodComponentUnitResponse implements BloodResponse{
     int componentId;
     String bloodType;
     String componentType;

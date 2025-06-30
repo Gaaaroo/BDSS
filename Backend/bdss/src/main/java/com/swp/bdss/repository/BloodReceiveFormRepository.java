@@ -18,5 +18,4 @@ public interface BloodReceiveFormRepository extends JpaRepository<BloodReceiveFo
 
     @Query("SELECT b FROM BloodReceiveForm b WHERE b.priority = :priority AND (:status IS NULL OR b.status = :status)")
     List<BloodReceiveForm> findAllByPriorityAndOptionalStatus(String priority, String status);
-
 }
