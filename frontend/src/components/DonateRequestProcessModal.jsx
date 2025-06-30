@@ -88,6 +88,7 @@ export default function DonateRequestProcessModal({ request, onReloadTable }) {
                     onReload={reloadRequest}
                     donateId={currentRequest.donateId}
                     onReloadTable={onReloadTable}
+                    bloodUnit={currentRequest.bloodUnitResponse}
                   />
                 </div>
               </div>

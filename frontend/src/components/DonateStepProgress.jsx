@@ -21,6 +21,7 @@ export default function StepProgress({
   onReload,
   donateId,
   onReloadTable,
+  bloodUnit,
 }) {
   const [openStepIdx, setOpenStepIdx] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(
@@ -44,16 +45,17 @@ export default function StepProgress({
         donateId,
         volume: Number(volume),
       });
-      console.log()
+      console.log();
       alert('Blood unit added successfully!');
-      await onReload();
-      if (onReloadTable) {
-        await onReloadTable();
-      }
       setShowVolumeInput(false);
     } catch (error) {
       alert(error?.response?.data?.message || 'Error adding blood unit');
     }
+  };
+
+  const handleShowVolumeInput = () => {
+    setShowVolumeInput(true);
+    setVolume(bloodUnit?.volume || '');
   };
 
   useEffect(() => {
@@ -200,7 +202,7 @@ export default function StepProgress({
         <>
           <button
             className="mt-4 px-3 py-2 hover:bg-text-red-600 bg-[#F76C6C] hover:scale-105 transition-transform duration-200 hover:text-white text-white rounded-[50px] font-semibold block mx-auto"
-            onClick={() => setShowVolumeInput(true)}
+            onClick={handleShowVolumeInput}
           >
             Add blood to inventory
           </button>
