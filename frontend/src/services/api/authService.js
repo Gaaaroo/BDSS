@@ -9,7 +9,7 @@ export const login = async (form) => {
     const refreshToken = response.refreshToken;
     localStorage.setItem('authToken', token);
     localStorage.setItem('refreshToken', refreshToken);
-    console.log('Login successful:', response);
+    // console.log('Login successful:', response);
     return response;
   } catch (error) {
     console.error('Error fetching users:', error);

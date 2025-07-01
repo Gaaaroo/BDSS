@@ -4,6 +4,8 @@ import { useApp } from '../Contexts/AppContext';
 import React from 'react';
 import { useNavigate } from 'react-router';
 import { donorForm } from '../services/api/bloodFormService';
+import CustomModal from './CustomModal';
+import { toast } from 'react-toastify';
 
 export function Title({ title, decription }) {
   return (
@@ -17,6 +19,16 @@ export function Title({ title, decription }) {
 export default function DonorForm() {
   const { profile } = useApp(); //lấy profile từ context
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const handleCancel = () => {
+    setShowModal(false);
+    navigate('/');
+  };
+  const handleConfirm = () => {
+    navigate('/profile', {
+      state: { flag: 'update', redirectTo: '/become-a-donor' },
+    });
+  };
   const [formData, setFormData] = useState({
     fullName: '',
     dob: '',
@@ -24,27 +36,36 @@ export default function DonorForm() {
     bloodType: '',
     gender: '',
     email: '',
-    address: 'abc',
+    address: '',
     disease: '',
   });
-
+  function isProfileIncomplete(profile) {
+    return (
+      !profile.fullName ||
+      !profile.phone ||
+      !profile.address ||
+      !profile.dob ||
+      !profile.gender ||
+      !profile.email ||
+      !profile.bloodType
+    );
+  }
   useEffect(() => {
-    console.log('data from profile:', profile);
     if (profile) {
-      setFormData({
-        ...formData,
-        fullName: profile.fullName,
-        dob: profile.dob,
-        phone: profile.phone,
-        bloodType: profile.bloodType,
-        gender: profile.gender,
-        email: profile.email,
-        address: profile.address,
-      });
-    } else {
-      console.log(profile);
-      alert('You need update your profile');
-      navigate('/profile', { state: { flag: 'update' } });
+      if (isProfileIncomplete(profile)) {
+        setShowModal(true);
+      } else {
+        setFormData({
+          ...formData,
+          fullName: profile.fullName,
+          dob: profile.dob,
+          phone: profile.phone,
+          bloodType: profile.bloodType,
+          gender: profile.gender,
+          email: profile.email,
+          address: profile.address,
+        });
+      }
     }
   }, [profile]);
 
@@ -57,8 +78,11 @@ export default function DonorForm() {
     try {
       const res = await donorForm({ healthNotes: formData.disease });
       console.log('Detail donor form:', res);
+      toast.success('Register successful!');
+      navigate('/');
     } catch (error) {
       console.log(error);
+      toast.error('Register failed');
     }
   };
 
@@ -76,71 +100,37 @@ export default function DonorForm() {
           <TextInput
             label="Full Name"
             name="fullName"
-            placeholder="Enter your full name"
             value={formData.fullName}
             onChange={() => {}}
-            required
           />
           <TextInput
             label="Date of Birth"
             name="dob"
-            type="date"
             value={formData.dob}
             onChange={() => {}}
-            required
           />
           <TextInput
             label="Phone"
             name="phone"
-            type="tel"
             placeholder="Enter your phone number"
             value={formData.phone}
             onChange={() => {}}
-            required
           />
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Blood Type
-            </label>
-            <select
-              name="bloodType"
-              value={formData.bloodType}
-              onChange={() => {}}
-              required
-              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
-            >
-              <option value="">Select blood type</option>
-              <option value="A+">A+</option>
-              <option value="A-">A-</option>
-              <option value="B+">B+</option>
-              <option value="B-">B-</option>
-              <option value="AB+">AB+</option>
-              <option value="AB-">AB-</option>
-              <option value="O+">O+</option>
-              <option value="O-">O-</option>
-            </select>
-          </div>
+          <TextInput
+            label="Blood Type"
+            name="bloodType"
+            value={formData.bloodType}
+            onChange={() => {}}
+          />
         </div>
         {/* Right Column */}
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Gender
-            </label>
-            <select
-              name="gender"
-              value={formData.gender}
-              onChange={() => {}}
-              disabled
-              required
-              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
-            >
-              <option value="">Select gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
+          <TextInput
+            label="Gender"
+            name="gender"
+            value={formData.gender}
+            onChange={() => {}}
+          />
           <TextInput
             label="Email"
             name="email"
@@ -148,8 +138,6 @@ export default function DonorForm() {
             placeholder="Enter your email"
             value={formData.email}
             onChange={() => {}}
-            disabled
-            required
           />
           <TextInput
             label="Address"
@@ -157,8 +145,6 @@ export default function DonorForm() {
             placeholder="Enter your address"
             value={formData.address}
             onChange={() => {}}
-            disabled
-            required
           />
           <TextInput
             label="Any blood related disease"
@@ -166,6 +152,7 @@ export default function DonorForm() {
             placeholder="Specify if any"
             value={formData.disease}
             onChange={handleChange}
+            required
           />
         </div>
       </div>
@@ -177,6 +164,13 @@ export default function DonorForm() {
           Register
         </button>
       </div>
+      {showModal && (
+        <CustomModal onCancel={handleCancel} onOk={handleConfirm}>
+          <p className="text-gray-700 mb-6">
+            Please update your profile before filling out the form.
+          </p>
+        </CustomModal>
+      )}
     </form>
   );
 }

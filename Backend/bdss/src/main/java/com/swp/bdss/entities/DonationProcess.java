@@ -20,7 +20,7 @@ public class DonationProcess {
     Long donationProcessId;
 
     @Column(name = "step", nullable = false)
-    int stepNumber;
+    int stepNumber; //12345
 
     @Column(name = "status", nullable = false)
     String status;
@@ -37,7 +37,6 @@ public class DonationProcess {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "donateId", referencedColumnName = "donateId", nullable = false)
-            @JsonIgnore
+    @JsonIgnore
     BloodDonateForm bloodDonateForm;
-
 }

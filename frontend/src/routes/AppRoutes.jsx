@@ -17,11 +17,15 @@ import MyPosts from '../pages/MyPosts';
 import Blog from '../pages/Blog';
 import RequestManagement from '../pages/RequestManagement';
 import Dashboard from '../pages/Dashboard';
-import Inventory from '../pages/Inventory';
+import Whole from '../pages/Whole';
 import MemberManagement from '../pages/MemberManagement';
 import ProtectedRoute from './ProtectedRoute';
 import { useApp } from '../Contexts/AppContext';
 import BlogManagement from '../pages/BlogManagement';
+import ReceiveDetail from '../components/ReceiveDetail';
+import DonationDetail from '../components/DonationDetail';
+import Components from '../pages/Components';
+import LayoutStaff from '../Layouts/LayoutStaff';
 
 export default function AppRoutes() {
   const { role } = useApp();
@@ -45,11 +49,14 @@ export default function AppRoutes() {
           <ProtectedRoute allowedRoles={['ADMIN', 'STAFF']} role={role} />
         }
       >
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/request-management" element={<RequestManagement />} />
-        <Route path="/inventory" element={<Inventory />} />
-        <Route path="/member-management" element={<MemberManagement />} />
-        <Route path="/blog-management" element={<BlogManagement />} />
+        <Route path="/dashboard" element={<LayoutStaff />}>
+          <Route index element={<Dashboard />} />
+          <Route path="request-management" element={<RequestManagement />} />
+          <Route path="inventory/whole" element={<Whole />} />
+          <Route path="inventory/components" element={<Components />} />
+          <Route path="member-management" element={<MemberManagement />} />
+          <Route path="blog-management" element={<BlogManagement />} />
+        </Route>
       </Route>
 
       {/* Member */}
@@ -58,6 +65,14 @@ export default function AppRoutes() {
         <Route path="/become-a-seeker" element={<Seeker />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/my-activity" element={<MyActivity />} />
+        <Route
+          path="/my-activity/donation-detail/:id"
+          element={<DonationDetail />}
+        />
+        <Route
+          path="/my-activity/receive-detail/:id"
+          element={<ReceiveDetail />}
+        />
       </Route>
     </Routes>
   );

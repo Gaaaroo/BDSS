@@ -5,6 +5,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -47,4 +49,10 @@ public class BloodReceiveForm {
 
     @Column(name = "requestDate", nullable = false)
     LocalDate requestDate;
+
+    @OneToMany(mappedBy = "bloodReceiveForm", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<ReceivingProcess> steps = new ArrayList<>();
+
+    @OneToMany(mappedBy = "receiveForm", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<BloodUnit> bloodUnits;
 }

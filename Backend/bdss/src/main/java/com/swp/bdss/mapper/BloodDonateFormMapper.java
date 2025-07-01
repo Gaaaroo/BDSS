@@ -13,15 +13,14 @@ import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {DonationProcessMapper.class})
+@Mapper(componentModel = "spring", uses = {DonationProcessMapper.class} )
 public interface BloodDonateFormMapper {
 
     BloodDonateForm toBloodDonateForm(BloodDonateFormCreationRequest request);
 
     @Mapping(source = "user", target = "userResponse")
-            @Mapping(source = "steps", target = "steps")
-    //@Mapping(target = "user", ignore = true)
-
+    @Mapping(source = "steps", target = "steps")
+    @Mapping(source = "bloodUnit", target = "bloodUnitResponse")
     BloodDonateFormResponse toBloodDonateFormResponse(BloodDonateForm bloodDonateForm);
 
     List<UpdateDonationProcessStepResponse> toDonationProcessResponseList(List<DonationProcess> steps);

@@ -182,7 +182,7 @@ function MapSelector({ onLocationSelect, initialLocation }) {
                 onClick={handleClose}
                 className="px-4 py-2 text-sm text-white bg-red-500 rounded hover:bg-red-600"
               >
-                Xác nhận
+                Confirm
               </button>
             </div>
           </div>

@@ -3,9 +3,21 @@ import { useEffect, useState } from 'react';
 import { useApp } from '../Contexts/AppContext';
 import { useNavigate } from 'react-router';
 import { receiveForm } from '../services/api/bloodFormService';
+import CustomModal from './CustomModal';
+import { toast } from 'react-toastify';
 export default function SeekerForm() {
   const { profile } = useApp(); //lấy profile từ context
   const navigate = useNavigate();
+  const [showModal, setShowModal] = useState(false);
+  const handleCancel = () => {
+    setShowModal(false);
+    navigate('/');
+  };
+  const handleConfirm = () => {
+    navigate('/profile', {
+      state: { flag: 'update', redirectTo: '/become-a-seeker' },
+    });
+  };
   const [formData, setFormData] = useState({
     fullName: 'abc',
     dob: '',
@@ -19,21 +31,30 @@ export default function SeekerForm() {
     quantity: '',
     hospitalAddress: '',
   });
-
+  function isProfileIncomplete(profile) {
+    return (
+      !profile.fullName ||
+      !profile.phone ||
+      !profile.dob ||
+      !profile.gender ||
+      !profile.email ||
+      !profile.bloodType
+    );
+  }
   useEffect(() => {
-    console.log('data from profile:', profile);
     if (profile) {
-      setFormData({
-        ...formData,
-        fullName: profile.fullName,
-        dob: profile.dob,
-        phone: profile.phone,
-        gender: profile.gender,
-        email: profile.email,
-      });
-    } else {
-      alert('You need update your profile');
-      navigate('/profile', { state: { flag: 'update' } });
+      if (isProfileIncomplete(profile)) {
+        setShowModal(true);
+      } else {
+        setFormData({
+          ...formData,
+          fullName: profile.fullName,
+          dob: profile.dob,
+          phone: profile.phone,
+          gender: profile.gender,
+          email: profile.email,
+        });
+      }
     }
   }, [profile]);
 
@@ -43,15 +64,21 @@ export default function SeekerForm() {
 
   const handleSeekerRegister = async (e) => {
     e.preventDefault();
-    await receiveForm({
-      volume: formData.volume,
-      bloodType: formData.bloodType,
-      priority: formData.priority,
-      componentType: formData.type,
-      quantity: formData.quantity,
-      hospitalAddress: formData.hospitalAddress,
-    });
-    console.log('Detail receive form:', formData);
+    try {
+      const res = await receiveForm({
+        volume: formData.volume,
+        bloodType: formData.bloodType,
+        priority: formData.priority,
+        componentType: formData.type,
+        quantity: formData.quantity,
+        hospitalAddress: formData.hospitalAddress,
+      });
+      console.log('Detail receive form:', res);
+      toast.success('Register successful!');
+      navigate('/');
+    } catch (error) {
+      toast.error('Register failed');
+    }
   };
 
   return (
@@ -68,41 +95,32 @@ export default function SeekerForm() {
           <TextInput
             label="Full Name"
             name="fullName"
-            placeholder="Enter your full name"
             value={formData.fullName || ''}
             onChange={() => {}}
-            disabled
-            required
           />
           <TextInput
             label="Date of Birth"
             name="dob"
-            type="date"
             value={formData.dob || ''}
             onChange={() => {}}
-            disabled
-            required
           />
           <TextInput
             label="Phone"
             name="phone"
-            type="tel"
             placeholder="Enter your phone number"
             value={formData.phone || ''}
             onChange={() => {}}
-            disabled
-            required
           />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Blood Type
+              Blood Type request
             </label>
             <select
               name="bloodType"
               value={formData.bloodType || ''}
               onChange={handleChange}
               required
-              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
+              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
             >
               <option value="">Select blood type</option>
               <option value="A+">A+</option>
@@ -124,7 +142,7 @@ export default function SeekerForm() {
               value={formData.volume || ''}
               onChange={handleChange}
               required
-              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
+              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
             >
               <option value="">Select volume (ml)</option>
               <option value="350">350</option>
@@ -141,43 +159,29 @@ export default function SeekerForm() {
               value={formData.priority || ''}
               onChange={handleChange}
               required
-              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
+              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
             >
               <option value="">Select priority</option>
-              <option value="urgent">Urgent</option>
-              <option value="high">Medium</option>
+              <option value="Urgent">Urgent</option>
+              <option value="Medium">Medium</option>
             </select>
           </div>
         </div>
         {/* Left Column */}
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Gender
-            </label>
-            <select
-              name="gender"
-              value={formData.gender || ''}
-              onChange={() => {}}
-              disabled
-              required
-              className="w-full px-3 text-lg py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
-            >
-              <option value="">Select gender</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
           <TextInput
-            label="Email"
-            name="email"
-            type="email"
-            placeholder="Enter your email"
-            value={formData.email || ''}
+            label="Gender"
+            name="gender"
+            value={formData.gender || ''}
             onChange={() => {}}
             disabled
             required
+          />
+          <TextInput
+            label="Email"
+            name="email"
+            value={formData.email || ''}
+            onChange={() => {}}
           />
           <TextInput
             label="Hospital Address"
@@ -189,7 +193,7 @@ export default function SeekerForm() {
           />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Type
+              Component Type request
             </label>
             <select
               label="Type"
@@ -197,13 +201,14 @@ export default function SeekerForm() {
               value={formData.type || ''}
               onChange={handleChange}
               required
-              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-rose-200 transition"
+              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
             >
               <option value="">Select blood component type</option>
               <option value="Whole">Whole</option>
-              <option value="RBC">RBC</option>
+              <option value="RBC">RBCs</option>
               <option value="Plasma">Plasma</option>
               <option value="Platelets">Platelets</option>
+              <option value="Platelets">WBCs</option>
             </select>
           </div>
           <TextInput
@@ -225,6 +230,13 @@ export default function SeekerForm() {
           Register
         </button>
       </div>
+      {showModal && (
+        <CustomModal onCancel={handleCancel} onOk={handleConfirm}>
+          <p className="text-gray-700 mb-6">
+            Please update your profile before filling out the form.
+          </p>
+        </CustomModal>
+      )}
     </form>
   );
 }
