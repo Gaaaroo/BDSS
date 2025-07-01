@@ -6,6 +6,7 @@ import {
   bloodUnitByTFS,
   bloodUnitByTS,
   countBloodUnit,
+  countRequest,
   listBloodUnits,
 } from '../services/api/inventoryService';
 import ListBloodType from '../components/ListBloodType';
@@ -33,13 +34,25 @@ export default function Whole() {
     await Promise.all(
       bloodGroups.map(async (type) => {
         try {
-          const res = await countBloodUnit(type);
-          results[type] = res ?? 0;
+          const [unitRes, requestRes] = await Promise.all([
+            countBloodUnit(type),
+            countRequest(type, ''), // khác whole
+          ]);
+
+          results[type] = {
+            units: unitRes ?? 0,
+            requests: requestRes ?? 0,
+          };
         } catch (error) {
-          results[type] = 0;
+          console.error(`Error fetching data for ${type}:`, error);
+          results[type] = {
+            units: 0,
+            requests: 0,
+          };
         }
       })
     );
+    console.log('meo:', results);
     setBloodData(results);
   };
 

@@ -70,22 +70,27 @@ export default function ListBloodType({ list }) {
                 <td className="py-2 text-center">
                   {item.expiryDate?.slice(0, 10)}
                 </td>
-                <td className="py-2 text-center">{item.status}</td>
+                <td className="py-2 text-center">
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-semibold 
+      ${
+        item.status === 'Stored'
+          ? 'text-green-700 bg-green-100'
+          : 'text-yellow-700 bg-orange-200'
+      }
+    `}
+                  >
+                    {item.status}
+                  </span>
+                </td>
                 <td className="py-2 text-center">{item.volume}</td>
                 <td className="py-2 text-center">{item.note}</td>
-                <td className="py-2 space-x-1 text-center">
+                <td className="py-2 space-x-2 text-justify w-30">
                   <button
                     className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-500 text-xs"
                     onClick={() => setSelectedItem(item)}
                   >
                     View
-                  </button>
-
-                  <button
-                    className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-500 text-xs"
-                    onClick={() => alert(`Delete ${item.bloodId}`)}
-                  >
-                    Delete
                   </button>
 
                   {/*Button Separate */}

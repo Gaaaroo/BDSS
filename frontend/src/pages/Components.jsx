@@ -5,6 +5,7 @@ import {
   componentByTFS,
   componentByTS,
   countBloodUnit,
+  countRequest,
   listBloodComponentUnits,
 } from '../services/api/inventoryService';
 import Pagination from '../components/Pagination';
@@ -16,6 +17,7 @@ export default function Components() {
   // Card blood
   const bloodGroups = ['O+', 'A+', 'B+', 'AB+', 'O-', 'A-', 'B-', 'AB-'];
   const [bloodData, setBloodData] = useState({});
+  const [requestData, setRequestData] = useState({});
   //List component
   const [list, setList] = useState([]);
   //Page
@@ -35,13 +37,25 @@ export default function Components() {
     await Promise.all(
       bloodGroups.map(async (type) => {
         try {
-          const res = await countBloodUnit(type);
-          results[type] = res ?? 0;
+          const [unitRes, requestRes] = await Promise.all([
+            countBloodUnit(type),
+            countRequest(type, ''), // khác whole
+          ]);
+
+          results[type] = {
+            units: unitRes ?? 0,
+            requests: requestRes ?? 0,
+          };
         } catch (error) {
-          results[type] = 0;
+          console.error(`Error fetching data for ${type}:`, error);
+          results[type] = {
+            units: 0,
+            requests: 0,
+          };
         }
       })
     );
+    console.log('meo:', results);
     setBloodData(results);
   };
 
