@@ -4,7 +4,7 @@ import {
   updateBloodStatus,
 } from '../services/api/inventoryService';
 import { toast } from 'react-toastify';
-import ComponentBloodDetail from './ComponentBloodDetail';
+import InventoryDetail from './InventoryDetail';
 
 export default function ListBloodType({ list }) {
   const [selectedBloodId, setSelectedBloodId] = useState(null);
@@ -31,8 +31,8 @@ export default function ListBloodType({ list }) {
 
   return (
     <>
-      <table className="min-w-full bg-white border border-gray-200 text-sm">
-        <thead className="bg-red-100 text-red-700">
+      <table className="min-w-full bg-white border border-gray-200">
+        <thead className="bg-red-600 text-white">
           <tr>
             <th className="py-2 text-center">No.</th>
             <th className="py-2 text-center">Full name</th>
@@ -54,7 +54,10 @@ export default function ListBloodType({ list }) {
             </tr>
           ) : (
             list?.map((item, index) => (
-              <tr key={item.bloodId} className="border-t">
+              <tr
+                key={item.bloodId}
+                className={index % 2 === 0 ? 'bg-white' : 'bg-red-50'}
+              >
                 <td className="py-2 text-center">{index + 1}</td>
                 <td className="py-2 text-center">
                   {item.userResponse.fullName}
@@ -189,7 +192,7 @@ export default function ListBloodType({ list }) {
         </div>
       )}
       {selectedItem && (
-        <ComponentBloodDetail
+        <InventoryDetail
           data={selectedItem}
           onClose={() => setSelectedItem(null)}
         />

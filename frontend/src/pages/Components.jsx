@@ -8,7 +8,7 @@ import {
   listBloodComponentUnits,
 } from '../services/api/inventoryService';
 import Pagination from '../components/Pagination';
-import ComponentBloodDetail from '../components/ComponentBloodDetail';
+import InventoryDetail from '../components/InventoryDetail';
 import BloodCardGrid from '../components/BloodCardGrid';
 import FilterHeader from '../components/FilterHeader';
 
@@ -32,14 +32,16 @@ export default function Components() {
 
   const fetchBloodData = async () => {
     const results = {};
-    for (const type of bloodGroups) {
-      try {
-        const res = await countBloodUnit(type);
-        results[type] = res ?? 0;
-      } catch (error) {
-        results[type] = 0;
-      }
-    }
+    await Promise.all(
+      bloodGroups.map(async (type) => {
+        try {
+          const res = await countBloodUnit(type);
+          results[type] = res ?? 0;
+        } catch (error) {
+          results[type] = 0;
+        }
+      })
+    );
     setBloodData(results);
   };
 
@@ -99,6 +101,9 @@ export default function Components() {
 
   useEffect(() => {
     fetchBloodData();
+  }, []);
+
+  useEffect(() => {
     fetchAPI();
   }, [page, searchTerm, statusFilter, bloodType]);
 
@@ -127,7 +132,7 @@ export default function Components() {
         statusOptions={statusOptions}
       />
       <table className="min-w-full table-auto border border-gray-300">
-        <thead className="bg-red-600 text-white text-lg">
+        <thead className="bg-red-600 text-white">
           <tr>
             <th className="py-2 text-center">No.</th>
             <th className="py-2 text-center">Full Name</th>
@@ -152,7 +157,7 @@ export default function Components() {
             list.map((item, index) => (
               <tr
                 key={item.id || index}
-                className="even:bg-rose-100 odd:bg-white"
+                className="even:bg-red-50 odd:bg-white"
               >
                 <td className="py-2 text-center">{page * 10 + index + 1}</td>
                 <td className="py-2 text-center">
@@ -198,7 +203,7 @@ export default function Components() {
         onGoToPage={handleGoToPage}
       />
       {selectedItem && (
-        <ComponentBloodDetail
+        <InventoryDetail
           data={selectedItem}
           onClose={() => setSelectedItem(null)}
           showComponentType={true}

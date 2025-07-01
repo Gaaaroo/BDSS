@@ -26,13 +26,18 @@ export default function Whole() {
   const [statusFilter, setStatusFilter] = useState([]);
   const [bloodType, setBloodType] = useState('All');
   const statusOptions = ['Stored', 'Separated'];
+
   //Count -> set in bloodCart
   const fetchBloodData = async () => {
     const results = {};
     await Promise.all(
       bloodGroups.map(async (type) => {
-        const res = await countBloodUnit(type);
-        results[type] = res ?? 0;
+        try {
+          const res = await countBloodUnit(type);
+          results[type] = res ?? 0;
+        } catch (error) {
+          results[type] = 0;
+        }
       })
     );
     setBloodData(results);
@@ -96,6 +101,9 @@ export default function Whole() {
 
   useEffect(() => {
     fetchBloodData();
+  }, []);
+
+  useEffect(() => {
     fetchAPI();
   }, [page, searchTerm, statusFilter, bloodType]);
 
