@@ -1,14 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import {
-  filterByTypeStatusAndFullName,
+  componentByFS,
+  componentByS,
+  componentByTFS,
+  componentByTS,
+  countBloodUnit,
   listBloodComponentUnits,
 } from '../services/api/inventoryService';
 import Pagination from '../components/Pagination';
-import MySearch from '../components/MySearch';
-import { Funnel } from 'lucide-react';
 import ComponentBloodDetail from '../components/ComponentBloodDetail';
+import BloodCardGrid from '../components/BloodCardGrid';
+import FilterHeader from '../components/FilterHeader';
 
 export default function Components() {
+  // Card blood
+  const bloodGroups = ['O+', 'A+', 'B+', 'AB+', 'O-', 'A-', 'B-', 'AB-'];
+  const [bloodData, setBloodData] = useState({});
+  //List component
   const [list, setList] = useState([]);
   //Page
   const [page, setPage] = useState(0);
@@ -18,33 +26,63 @@ export default function Components() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState([]);
   const [bloodType, setBloodType] = useState('All');
+  const statusOptions = ['Stored', 'Used', 'Expired'];
   //Modal
   const [selectedItem, setSelectedItem] = useState(null);
+
+  const fetchBloodData = async () => {
+    const results = {};
+    for (const type of bloodGroups) {
+      try {
+        const res = await countBloodUnit(type);
+        results[type] = res ?? 0;
+      } catch (error) {
+        results[type] = 0;
+      }
+    }
+    setBloodData(results);
+  };
 
   const fetchAPI = async () => {
     try {
       let res = await listBloodComponentUnits(page, 10);
-
       // Nếu người dùng có filter, thì gọi API lọc
-      if (
-        searchTerm.trim() !== '' ||
-        statusFilter.length > 0 ||
-        bloodType !== 'All'
-      ) {
-        const effectiveStatusFilter =
-          statusFilter.length > 0
-            ? statusFilter
-            : ['Stored', 'Used', 'Expired'];
-        const effectiveBloodType = bloodType === 'All' ? '' : bloodType;
+      const hasSearch = searchTerm.trim() !== '';
+      const hasStatus = statusFilter.length > 0;
+      const hasType = bloodType !== 'All';
+      if (hasSearch || hasStatus || hasType) {
+        const effectiveStatusFilter = hasStatus
+          ? statusFilter
+          : ['Stored', 'Used', 'Expired'];
+        const effectiveBloodType = hasType ? bloodType : '';
+        const statusString = effectiveStatusFilter.join(',');
 
-        res = await filterByTypeStatusAndFullName(
-          effectiveBloodType,
-          effectiveStatusFilter,
-          searchTerm,
-          page,
-          10
-        );
+        if (hasSearch && !hasType) {
+          // Chỉ search theo fullName + status
+          res = await componentByFS(
+            effectiveStatusFilter,
+            searchTerm,
+            page,
+            10
+          );
+        } else if (!hasSearch && hasType && statusString) {
+          // Chỉ lọc theo type + status
+          res = await componentByTS(effectiveBloodType, statusString, page, 10);
+        } else if (hasSearch && hasType && hasStatus) {
+          // fullName + type + status
+          res = await componentByTFS(
+            effectiveBloodType,
+            effectiveStatusFilter,
+            searchTerm,
+            page,
+            10
+          );
+        } else {
+          //status
+          res = await componentByS(statusString, page, 10);
+        }
       }
+
       if (res?.content) {
         setList(res.content);
         setTotalPages(res.totalPages);
@@ -60,6 +98,7 @@ export default function Components() {
   };
 
   useEffect(() => {
+    fetchBloodData();
     fetchAPI();
   }, [page, searchTerm, statusFilter, bloodType]);
 
@@ -71,56 +110,22 @@ export default function Components() {
   };
 
   return (
-    <div className="p-6">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-        <h2 className="text-2xl font-bold text-rose-600">Blood Components</h2>
-        {/* Thanh search */}
-        <MySearch
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          placeholder="Search"
-        />
-
-        <div className="flex items-center gap-2">
-          <label className="text-gray-600 font-medium text-sm">
-            Blood Type:
-          </label>
-          <select
-            value={bloodType}
-            onChange={(e) => setBloodType(e.target.value)}
-            className="border border-red-300 rounded px-3 py-1 text-sm font-medium text-gray-800 focus:outline-none hover:bg-red-100"
-          >
-            <option value="All">All Types</option>
-            <option value="A+">A+</option>
-            <option value="A-">A-</option>
-            <option value="B+">B+</option>
-            <option value="B-">B-</option>
-            <option value="O+">O+</option>
-            <option value="O-">O-</option>
-            <option value="AB+">AB+</option>
-            <option value="AB-">AB-</option>
-          </select>
-        </div>
-
-        {/* Status Filter */}
-        <div className="flex items-center gap-2">
-          <label className="text-gray-600 font-medium text-sm">
-            <Funnel className="w-5 h-5 text-gray-500" />
-          </label>
-          <select
-            value={statusFilter[0] || 'All'}
-            onChange={(e) =>
-              setStatusFilter(e.target.value === 'All' ? [] : [e.target.value])
-            }
-            className="border border-red-300 rounded px-3 py-1 text-sm font-medium text-gray-800 focus:outline-none hover:bg-red-100"
-          >
-            <option value="All">All Status</option>
-            <option value="Stored">Stored</option>
-            <option value="Used">Used</option>
-            <option value="Expired">Expired</option>
-          </select>
-        </div>
-      </div>
+    <div className="p-5">
+      <BloodCardGrid
+        bloodGroups={bloodGroups}
+        bloodData={bloodData}
+        handleClick={(type) => setBloodType(type)}
+      />
+      <FilterHeader
+        title="Blood Components"
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        bloodType={bloodType}
+        setBloodType={setBloodType}
+        statusFilter={statusFilter}
+        setStatusFilter={setStatusFilter}
+        statusOptions={statusOptions}
+      />
       <table className="min-w-full table-auto border border-gray-300">
         <thead className="bg-red-600 text-white text-lg">
           <tr>
@@ -196,6 +201,7 @@ export default function Components() {
         <ComponentBloodDetail
           data={selectedItem}
           onClose={() => setSelectedItem(null)}
+          showComponentType={true}
         />
       )}
     </div>

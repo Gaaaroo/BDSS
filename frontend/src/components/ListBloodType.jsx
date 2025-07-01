@@ -4,11 +4,14 @@ import {
   updateBloodStatus,
 } from '../services/api/inventoryService';
 import { toast } from 'react-toastify';
+import ComponentBloodDetail from './ComponentBloodDetail';
 
 export default function ListBloodType({ list }) {
   const [selectedBloodId, setSelectedBloodId] = useState(null);
   const [selectedComponents, setSelectedComponents] = useState([]);
   const [showSeparateModal, setShowSeparateModal] = useState(false);
+  //Modal
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const handleSeparate = async (selectedBloodId, selectedComponents) => {
     try {
@@ -27,11 +30,12 @@ export default function ListBloodType({ list }) {
   };
 
   return (
-    <div className="overflow-x-auto mt-4 px-4">
+    <>
       <table className="min-w-full bg-white border border-gray-200 text-sm">
         <thead className="bg-red-100 text-red-700">
           <tr>
             <th className="py-2 text-center">No.</th>
+            <th className="py-2 text-center">Full name</th>
             <th className="py-2 text-center">Blood Type</th>
             <th className="py-2 text-center">Donated Date</th>
             <th className="py-2 text-center">Expiry Date</th>
@@ -42,49 +46,61 @@ export default function ListBloodType({ list }) {
           </tr>
         </thead>
         <tbody>
-          {list?.map((item, index) => (
-            <tr key={item.bloodId} className="border-t">
-              <td className="py-2 text-center">{index + 1}</td>
-              <td className="py-2 text-center">{item.bloodType}</td>
-              <td className="py-2 text-center">
-                {item.donatedDate?.slice(0, 10)}
-              </td>
-              <td className="py-2 text-center">
-                {item.expiryDate?.slice(0, 10)}
-              </td>
-              <td className="py-2 text-center">{item.status}</td>
-              <td className="py-2 text-center">{item.volume}</td>
-              <td className="py-2 text-center">{item.note}</td>
-              <td className="py-2 space-x-1 text-center">
-                <button
-                  className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-500 text-xs"
-                  onClick={() => alert(`View ${item.bloodId}`)}
-                >
-                  View
-                </button>
-
-                <button
-                  className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-500 text-xs"
-                  onClick={() => alert(`Delete ${item.bloodId}`)}
-                >
-                  Delete
-                </button>
-
-                {/* ✅ Button Separate */}
-                {item.status === 'Stored' && (
-                  <button
-                    className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-400 text-xs"
-                    onClick={() => {
-                      setSelectedBloodId(item.bloodId);
-                      setShowSeparateModal(true);
-                    }}
-                  >
-                    Separate
-                  </button>
-                )}
+          {list.length === 0 ? (
+            <tr>
+              <td colSpan={10} className="py-2 text-center text-red-500">
+                No information found.
               </td>
             </tr>
-          ))}
+          ) : (
+            list?.map((item, index) => (
+              <tr key={item.bloodId} className="border-t">
+                <td className="py-2 text-center">{index + 1}</td>
+                <td className="py-2 text-center">
+                  {item.userResponse.fullName}
+                </td>
+
+                <td className="py-2 text-center">{item.bloodType}</td>
+                <td className="py-2 text-center">
+                  {item.donatedDate?.slice(0, 10)}
+                </td>
+                <td className="py-2 text-center">
+                  {item.expiryDate?.slice(0, 10)}
+                </td>
+                <td className="py-2 text-center">{item.status}</td>
+                <td className="py-2 text-center">{item.volume}</td>
+                <td className="py-2 text-center">{item.note}</td>
+                <td className="py-2 space-x-1 text-center">
+                  <button
+                    className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-500 text-xs"
+                    onClick={() => setSelectedItem(item)}
+                  >
+                    View
+                  </button>
+
+                  <button
+                    className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-500 text-xs"
+                    onClick={() => alert(`Delete ${item.bloodId}`)}
+                  >
+                    Delete
+                  </button>
+
+                  {/*Button Separate */}
+                  {item.status === 'Stored' && (
+                    <button
+                      className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-400 text-xs"
+                      onClick={() => {
+                        setSelectedBloodId(item.bloodId);
+                        setShowSeparateModal(true);
+                      }}
+                    >
+                      Separate
+                    </button>
+                  )}
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
       {showSeparateModal && (
@@ -134,7 +150,7 @@ export default function ListBloodType({ list }) {
                       >
                         {isChecked && (
                           <div
-                            className={`w-2.5 h-2.5 rounded-full bg-${color}-500`}
+                            className={`w-2.5 h-2.5 rounded-full bg-${color}-400 bg-${color}-500 bg-${color}-600`}
                           />
                         )}
                       </div>
@@ -172,6 +188,12 @@ export default function ListBloodType({ list }) {
           </div>
         </div>
       )}
-    </div>
+      {selectedItem && (
+        <ComponentBloodDetail
+          data={selectedItem}
+          onClose={() => setSelectedItem(null)}
+        />
+      )}
+    </>
   );
 }

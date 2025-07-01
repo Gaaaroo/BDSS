@@ -1,6 +1,10 @@
 import React from 'react';
 
-export default function ComponentBloodDetail({ data, onClose }) {
+export default function ComponentBloodDetail({
+  data,
+  onClose,
+  showComponentType = false,
+}) {
   if (!data) return null;
 
   return (
@@ -11,10 +15,14 @@ export default function ComponentBloodDetail({ data, onClose }) {
           <tbody>
             {[
               ['Blood Type', data.bloodType],
-              ['Component Type', data.componentType],
+              ...(showComponentType
+                ? [['Component Type', data.componentType]]
+                : []),
               ['Volume', data.volume],
               ['Status', data.status],
-              ['Created Date', data.createdDate?.slice(0, 10)],
+              showComponentType
+                ? ['Created Date', data.createdDate?.slice(0, 10)]
+                : ['Donation Date', data.donatedDate?.slice(0, 10)],
               ['Expiry Date', data.expiryDate?.slice(0, 10)],
               ['Note', data.note],
             ].map(([label, value], idx) => (

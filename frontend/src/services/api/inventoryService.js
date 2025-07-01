@@ -25,6 +25,16 @@ export const bloodInventoryByType = async (type) => {
     console.log('error when list blood inventory by type', error);
   }
 };
+// Whole list
+export const listBloodUnits = async (page = 0, size = 10) => {
+  try {
+    const res = await axiosClient.get('bloodUnit', { params: { page, size } });
+    console.log('List bloodUnit', res);
+    return res;
+  } catch (error) {
+    console.error('Error fetching blood units by status:', error);
+  }
+};
 
 // Separate
 export const separateBloodUnit = async (bloodId, components) => {
@@ -55,6 +65,112 @@ export const updateBloodStatus = async (status, bloodId) => {
 };
 // After update status + Separate ...........Component page change, status change
 
+//Filter blood units by status + blood type + fullname (Dùng)
+export const bloodUnitByTFS = async (
+  bloodType,
+  statusList,
+  fullName,
+  page = 0,
+  size = 10
+) => {
+  try {
+    //Kiểm soát serialization, để không bị axios thêm [] vào key
+    const params = new URLSearchParams();
+    statusList.forEach((statuses) => {
+      params.append('statuses', statuses);
+    });
+    params.append('bloodType', bloodType);
+    params.append('fullName', fullName);
+    params.append('page', page);
+    params.append('size', size);
+
+    const res = await axiosClient.get(
+      'bloodUnit/status-type/searchByFullName',
+      { params }
+    );
+
+    return res;
+  } catch (error) {
+    console.error('Error when filtering:', error);
+    throw error;
+  }
+};
+
+//Filter blood unit by fullname + status (Dùng)
+export const bloodUnitByFS = async (
+  statusList,
+  fullName,
+  page = 0,
+  size = 10
+) => {
+  try {
+    //Kiểm soát serialization, để không bị axios thêm [] vào key
+    const params = new URLSearchParams();
+    statusList.forEach((statuses) => {
+      params.append('statuses', statuses);
+    });
+    params.append('fullName', fullName);
+    params.append('page', page);
+    params.append('size', size);
+
+    const res = await axiosClient.get('bloodUnit/status/searchByFullName', {
+      params,
+    });
+
+    return res;
+  } catch (error) {
+    console.error('Error when filter blood unit by fullname + status:', error);
+    throw error;
+  }
+};
+
+//Filter blood unit by bloodType + status (Dùng)
+export const bloodUnitByTS = async (
+  bloodType,
+  statusList,
+  page = 0,
+  size = 10
+) => {
+  try {
+    //Kiểm soát serialization, để không bị axios thêm [] vào key
+    const params = new URLSearchParams();
+    statusList.forEach((statuses) => {
+      params.append('statuses', statuses);
+    });
+    params.append('bloodType', bloodType);
+    params.append('page', page);
+    params.append('size', size);
+    const res = await axiosClient.get('bloodUnit/status-type', {
+      params,
+    });
+
+    return res;
+  } catch (error) {
+    console.error('Error when filter blood unit by fullname + status:', error);
+    throw error;
+  }
+};
+//Status
+export const bloodUnitByS = async (statusList, page = 0, size = 10) => {
+  try {
+    //Kiểm soát serialization, để không bị axios thêm [] vào key
+    const params = new URLSearchParams();
+    statusList.forEach((statuses) => {
+      params.append('statuses', statuses);
+    });
+    params.append('page', page);
+    params.append('size', size);
+    const res = await axiosClient.get('bloodUnit/status', {
+      params,
+    });
+
+    return res;
+  } catch (error) {
+    console.error('Error when filter blood unit by fullname + status:', error);
+    throw error;
+  }
+};
+
 //Components list => Filter by type of components
 //List all component A+
 export const listBloodComponentUnits = async (page = 0, size = 10) => {
@@ -69,11 +185,16 @@ export const listBloodComponentUnits = async (page = 0, size = 10) => {
   }
 };
 
-//List all component by type and status
-export const listByTypeAndStatus = async (bloodType, sta) => {
+//List all component by type and status (Dùng)
+export const componentByTS = async (
+  bloodType,
+  statusString,
+  page = 0,
+  size = 10
+) => {
   try {
     const res = await axiosClient.get('bloodComponentUnit/type-status', {
-      params: { bloodType: bloodType, status: sta },
+      params: { bloodType: bloodType, status: statusString, page, size },
     });
     console.log('List blood components:', res);
     return res;
@@ -82,8 +203,8 @@ export const listByTypeAndStatus = async (bloodType, sta) => {
   }
 };
 
-//Filter component by status + fullname (Không dùng)
-export const filterByStatusAndFullName = async (
+//Filter component by status + fullname (Dùng)
+export const componentByFS = async (
   statusList,
   fullName,
   page = 0,
@@ -111,8 +232,8 @@ export const filterByStatusAndFullName = async (
   }
 };
 
-//Filter component by status + blood type + fullname (dùng)
-export const filterByTypeStatusAndFullName = async (
+//Filter component by status + blood type + fullname (Dùng)
+export const componentByTFS = async (
   bloodType,
   statusList,
   fullName,
@@ -137,5 +258,17 @@ export const filterByTypeStatusAndFullName = async (
   } catch (error) {
     console.error('Error fetching by type, status and name:', error);
     throw error;
+  }
+};
+//List all component by status (Dùng)
+export const componentByS = async (statusString, page = 0, size = 10) => {
+  try {
+    const res = await axiosClient.get('bloodComponentUnit/status', {
+      params: { status: statusString, page, size },
+    });
+    console.log('List blood components:', res);
+    return res;
+  } catch (error) {
+    console.log('error update after separate', error);
   }
 };
