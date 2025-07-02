@@ -56,4 +56,7 @@ public interface BloodUnitRepository extends JpaRepository<BloodUnit, Integer> {
             Pageable pageable
     );
 
+    @Query("SELECT bu FROM BloodUnit bu WHERE bu.status = 'stored' AND bu.receiveForm IS NULL AND bu.bloodType = :bloodType")
+    Page<BloodUnit> findAllSuitableBloodUnitByType(@Param("bloodType") String bloodType, Pageable pageable);
+
 }

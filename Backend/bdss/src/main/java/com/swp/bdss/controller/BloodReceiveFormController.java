@@ -6,6 +6,7 @@ import com.swp.bdss.dto.request.BloodReceiveFormUpdateStatusRequest;
 import com.swp.bdss.dto.response.ApiResponse;
 import com.swp.bdss.dto.response.BloodDonateFormResponse;
 import com.swp.bdss.dto.response.BloodReceiveFormResponse;
+import com.swp.bdss.dto.response.BloodResponse;
 import com.swp.bdss.service.BloodReceiveFormService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,16 @@ public class BloodReceiveFormController {
         return ApiResponse.<List<BloodReceiveFormResponse>>builder()
                 .code(1000)
                 .data(bloodReceiveFormService.getAllBloodReceiveForm())
+                .build();
+    }
+
+    @GetMapping("suitable-blood")
+    ApiResponse<List<BloodResponse>> getAllSuitableBloodByReceiveId ( @RequestParam int receiveId,
+                                                                      @RequestParam(defaultValue = "0") int page,
+                                                                      @RequestParam(defaultValue = "10") int size) {
+        return ApiResponse.<List<BloodResponse>>builder()
+                .code(1000)
+                .data(bloodReceiveFormService.getAllSuitableBloodByReceiveId(receiveId, page, size))
                 .build();
     }
 
