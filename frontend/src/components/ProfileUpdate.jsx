@@ -4,6 +4,8 @@ import { updateUserProfile } from '../services/api/userService';
 import { storage } from '../services/api/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useApp } from '../Contexts/AppContext';
+import { toast } from 'react-toastify';
+import { updateProfileSchema } from '../Validations/profileValidation';
 export default function ProfileUpdate({
   initialData,
   onCancel,
@@ -12,6 +14,9 @@ export default function ProfileUpdate({
   const { setProfile } = useApp(); //setProfile từ context
   const [formData, setFormData] = useState({ ...initialData });
   const [uploading, setUploading] = useState(false);
+  //Specific input validation errors
+  const [formError, setFormError] = useState({});
+
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
@@ -35,7 +40,7 @@ export default function ProfileUpdate({
       const downloadUrl = await getDownloadURL(imageRef);
       setFormData((prev) => ({ ...prev, imageLink: downloadUrl }));
     } catch (error) {
-      console.error('Upload image failed:', error);
+      toast.error('Failed to upload image.');
     } finally {
       setUploading(false);
     }
@@ -44,18 +49,29 @@ export default function ProfileUpdate({
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      await updateProfileSchema.validate(formData, { abortEarly: false });
+      setFormError({});
       const res = await updateUserProfile(formData);
-      console.log(res);
+      toast.success('Profile updated successfully.');
       setProfile(res);
       onSaveSuccess();
     } catch (error) {
-      console.error('Cập nhật thất bại:', error);
+      const errors = {};
+      if (error.inner) {
+        error.inner.forEach((e) => {
+          errors[e.path] = e.message;
+        });
+        setFormError(errors);
+        toast.error('Please fix the highlighted fields.');
+      } else {
+        toast.error('Failed to update profile.');
+      }
     }
   };
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-8 bg-white rounded-2xl shadow-2xl font-sans">
-      <h2 className="text-2xl font-bold text-red-700 mb-6">Cập nhật hồ sơ</h2>
+      <h2 className="text-2xl font-bold text-red-700 mb-6">Update profile</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-2 gap-6">
           <div>
@@ -66,6 +82,9 @@ export default function ProfileUpdate({
               onChange={handleChange}
               className="input"
             />
+            {formError.username && (
+              <p className="text-red-500 text-sm">{formError.username}</p>
+            )}
           </div>
           <div>
             <label className="block font-medium mb-1">Password</label>
@@ -76,6 +95,9 @@ export default function ProfileUpdate({
               type="password"
               className="input"
             />
+            {formError.password && (
+              <p className="text-red-500 text-sm">{formError.password}</p>
+            )}
           </div>
           <div>
             <label className="block font-medium mb-1">Full Name</label>
@@ -85,6 +107,9 @@ export default function ProfileUpdate({
               onChange={handleChange}
               className="input"
             />
+            {formError.fullName && (
+              <p className="text-red-500 text-sm">{formError.fullName}</p>
+            )}
           </div>
           <div>
             <label className="block font-medium mb-1">Gender</label>
@@ -97,6 +122,9 @@ export default function ProfileUpdate({
               <option value="Male">Male</option>
               <option value="Female">Female</option>
             </select>
+            {formError.gender && (
+              <p className="text-red-500 text-sm">{formError.gender}</p>
+            )}
           </div>
           <div>
             <label className="block font-medium mb-1">Date of Birth</label>
@@ -107,6 +135,9 @@ export default function ProfileUpdate({
               onChange={handleChange}
               className="input"
             />
+            {formError.dob && (
+              <p className="text-red-500 text-sm">{formError.dob}</p>
+            )}
           </div>
           <div>
             <label className="block font-medium mb-1">Email</label>
@@ -116,6 +147,9 @@ export default function ProfileUpdate({
               onChange={handleChange}
               className="input"
             />
+            {formError.email && (
+              <p className="text-red-500 text-sm">{formError.email}</p>
+            )}
           </div>
           <div>
             <label className="block font-medium mb-1">Phone</label>
@@ -125,6 +159,9 @@ export default function ProfileUpdate({
               onChange={handleChange}
               className="input"
             />
+            {formError.phone && (
+              <p className="text-red-500 text-sm">{formError.phone}</p>
+            )}
           </div>
           <div>
             <label className="block font-medium mb-1">Blood Type</label>
@@ -145,6 +182,9 @@ export default function ProfileUpdate({
               <option value="O+">O+</option>
               <option value="O-">O-</option>
             </select>
+            {formError.bloodType && (
+              <p className="text-red-500 text-sm">{formError.bloodType}</p>
+            )}
           </div>
           <div>
             <label className="block font-medium mb-1">Image Upload</label>

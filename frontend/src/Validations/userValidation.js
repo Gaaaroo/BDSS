@@ -1,4 +1,3 @@
-// src/validators/userValidation.js
 import * as yup from 'yup';
 
 //Login validation schema
