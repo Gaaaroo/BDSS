@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { resendOTP, verifyOTP } from '../services/api/authService';
 import { useNavigate } from 'react-router';
+import { toast } from 'react-toastify';
 
 export default function OTPForm({ onSubmit }) {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
@@ -65,28 +66,17 @@ export default function OTPForm({ onSubmit }) {
   const handleVerify = async () => {
     const email = localStorage.getItem('otpEmail');
     const otpString = otp.join('');
-    console.log('lấy được email rồi nè: ', email);
-    console.log('Mã otp nè: ', otpString);
     if (!email) {
-      setError('Email Not Found!!');
+      setError('Email does not exist.');
       return;
     }
     try {
-      const res = await verifyOTP({ email, otp: otpString });
-      if (res) {
-        console.log('Verify successful');
-        setError('');
-        navigate('/login');
-      } else {
-        setError('Verify fail');
-      }
+      await verifyOTP({ email, otp: otpString });
+      toast.success('Account created successfully');
+      setError('');
+      navigate('/login');
     } catch (err) {
-      console.log('lỗi nè', err);
-      if (err.code) {
-        setError(err.message);
-      } else {
-        setError('An error occurred. Please try again.');
-      }
+      setError('Invalid OTP');
     }
   };
 
@@ -94,27 +84,19 @@ export default function OTPForm({ onSubmit }) {
     const email = localStorage.getItem('otpEmail');
     const otpString = otp.join('');
     if (!email) {
-      setError('Email Not Found!!');
+      setError('Email does not exist.');
       return;
     }
     try {
-      const res = await resendOTP({ email, otp: otpString });
-      if (res) {
-        console.log('Resend OTP successful');
-        setError('');
-        setOtp(['', '', '', '', '', '']);
-      } else {
-        setError('Failed to resend OTP: ', res.message);
-      }
+      await resendOTP({ email, otp: otpString });
+      toast.success('OTP Verification has been resent to your email');
+      setError('');
+      setOtp(['', '', '', '', '', '']);
     } catch (err) {
-      console.log('lỗi nè', err);
-      if (err.code) {
-        setError(err.message);
-      } else {
-        setError('An error occurred. Please try again.');
-      }
+      setError('Failed to resend OTP');
     }
   };
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <form
@@ -157,7 +139,7 @@ export default function OTPForm({ onSubmit }) {
           <span className="text-gray-500">Didn't receive the code?</span>
           <button
             type="button"
-            className="ml-2 text-red-500 font-semibold hover:underline"
+            className="ml-2 text-red-500 font-semibold hover:underline cursor-pointer "
             onClick={handleResentOTP}
           >
             Resend Code
