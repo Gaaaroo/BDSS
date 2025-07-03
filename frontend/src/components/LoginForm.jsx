@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import BackHome from './BackHome';
 import { login, loginWithTokenGoogle } from '../services/api/authService';
 import { useApp } from '../Contexts/AppContext';
+import { loginSchema } from '../Validations/userValidation';
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -12,27 +13,37 @@ const LoginForm = () => {
     password: '',
   });
 
+  //General error for the whole form
   const [error, setError] = useState('');
+  //Specific input validation errors
+  const [formError, setFormError] = useState({});
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setError('');
+    setFormError({});
   };
+
   //Handle login form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.username || !form.password) {
-      setError('Please enter both email and password.');
-      return;
-    }
-
     try {
+      await loginSchema.validate(form, { abortEarly: false });
+      setFormError({});
       await login(form);
       setIsLogged(true);
       await getUserRoleAndNavigate();
       setError('');
     } catch (error) {
-      setError('Login failed. Please try again.');
+      const errors = {};
+      if (error.inner) {
+        error.inner.forEach((e) => {
+          errors[e.path] = e.message;
+        });
+        setFormError(errors);
+      } else {
+        setError('Invalid username or password.');
+      }
     }
   };
 
@@ -46,8 +57,7 @@ const LoginForm = () => {
       setIsLogged(true);
       await getUserRoleAndNavigate();
     } catch (error) {
-      console.error('Login error:', error);
-      alert('Đăng nhập thất bại.');
+      setError('Google authentication failed');
     }
   };
 
@@ -70,7 +80,7 @@ const LoginForm = () => {
               {error}
             </div>
           )}
-          <div className="mb-6">
+          <div className="mb-3">
             <label className="block text-gray-700 mb-2 font-semibold">
               Username
             </label>
@@ -82,10 +92,10 @@ const LoginForm = () => {
               value={form.username}
               onChange={handleChange}
               className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition text-black"
-              required
             />
+            <p className="text-red-500 h-5">{formError.username || ' '}</p>
           </div>
-          <div className="mb-8">
+          <div className="mb-5">
             <label className="block text-gray-700 mb-2 font-semibold">
               Password
             </label>
@@ -97,12 +107,12 @@ const LoginForm = () => {
               value={form.password}
               onChange={handleChange}
               className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition text-black"
-              required
             />
+            <p className="text-red-500 h-5 ">{formError.password || ' '}</p>
           </div>
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-red-600 to-rose-600 text-white py-3 rounded-lg font-bold text-lg shadow hover:from-red-700 hover:to-rose-700 transition mb-4"
+            className="w-full bg-gradient-to-r from-red-600 to-rose-600 text-white py-3 rounded-lg font-bold text-lg shadow hover:from-red-700 hover:to-rose-700 transition mb-4 cursor-pointer"
           >
             Login
           </button>
@@ -110,23 +120,21 @@ const LoginForm = () => {
             <button
               type="button"
               onClick={handleRegisterClick}
-              className="text-red-600 hover:underline text-sm"
+              className="text-red-600 hover:underline text-sm cursor-pointer"
             >
               Forgot Password?
             </button>
             <button
               type="button"
               onClick={handleLoginWithGG}
-              className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-2 bg-white hover:bg-gray-50 transition"
+              className="flex items-center gap-2 border border-gray-200 rounded-lg p-2 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition cursor-pointer"
             >
-              <span className="flex gap-2 text-gray-700 text-sm font-medium">
-                <img
-                  src="https://cdn.pixabay.com/photo/2021/05/24/09/15/google-logo-6278331_960_720.png"
-                  alt=""
-                  className="w-6 h-6"
-                />
-                Login with Google
-              </span>
+              <img
+                src="https://cdn.pixabay.com/photo/2021/05/24/09/15/google-logo-6278331_960_720.png"
+                alt=""
+                className="w-4 h-4"
+              />
+              Login with Google
             </button>
           </div>
         </form>
@@ -140,7 +148,7 @@ const LoginForm = () => {
           <button
             type="button"
             onClick={handleRegisterClick}
-            className="bg-white text-red-600 font-semibold px-8 py-3 rounded-lg shadow hover:bg-red-50 transition"
+            className="bg-white text-red-600 font-semibold px-8 py-3 rounded-lg shadow hover:bg-red-50 transition cursor-pointer"
           >
             Register
           </button>

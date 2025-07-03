@@ -7,12 +7,13 @@ export default function BloodCardGrid({
   handleClick = () => {},
 }) {
   return (
-    <div className="grid grid-cols-4 gap-x-0 gap-y-7 justify-items-center px-15 py-5">
+    <div className="grid grid-cols-4 gap-x-0 gap-y-7 justify-items-center px-14 py-5">
       {bloodGroups.map((item, index) => (
         <BloodCard
           key={index}
           bloodType={item}
-          units={bloodData[item]}
+          units={bloodData[item]?.units ?? 0}
+          request={bloodData[item]?.requests ?? 0}
           onClick={() => handleClick(item)}
         />
       ))}
