@@ -6,6 +6,7 @@ import {
   bloodUnitByTFS,
   bloodUnitByTS,
   countBloodUnit,
+  countRequest,
   listBloodUnits,
 } from '../services/api/inventoryService';
 import ListBloodType from '../components/ListBloodType';
@@ -26,15 +27,32 @@ export default function Whole() {
   const [statusFilter, setStatusFilter] = useState([]);
   const [bloodType, setBloodType] = useState('All');
   const statusOptions = ['Stored', 'Separated'];
+
   //Count -> set in bloodCart
   const fetchBloodData = async () => {
     const results = {};
     await Promise.all(
       bloodGroups.map(async (type) => {
-        const res = await countBloodUnit(type);
-        results[type] = res ?? 0;
+        try {
+          const [unitRes, requestRes] = await Promise.all([
+            countBloodUnit(type),
+            countRequest(type, ''), // khác whole
+          ]);
+
+          results[type] = {
+            units: unitRes ?? 0,
+            requests: requestRes ?? 0,
+          };
+        } catch (error) {
+          console.error(`Error fetching data for ${type}:`, error);
+          results[type] = {
+            units: 0,
+            requests: 0,
+          };
+        }
       })
     );
+    console.log('meo:', results);
     setBloodData(results);
   };
 
@@ -96,6 +114,9 @@ export default function Whole() {
 
   useEffect(() => {
     fetchBloodData();
+  }, []);
+
+  useEffect(() => {
     fetchAPI();
   }, [page, searchTerm, statusFilter, bloodType]);
 

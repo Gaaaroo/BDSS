@@ -12,6 +12,22 @@ export const countBloodUnit = async (type) => {
   }
 };
 
+export const countRequest = async (type, componentType) => {
+  try {
+    const res = await axiosClient.get('/receive-form/count-request', {
+      params: {
+        bloodType: type,
+        componentType,
+      },
+    });
+    console.log('count request:', res);
+    return res;
+  } catch (error) {
+    console.error('Failed to count request:', error);
+    return 0;
+  }
+};
+
 // Whole: List all in 1 type : Click card -> change page ->
 // Blood Type ----Type -----Volmue ----Owner ------Date Store -------Expiry date ------Status( can update) ----Detail( can view )
 export const bloodInventoryByType = async (type) => {

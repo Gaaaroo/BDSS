@@ -87,7 +87,7 @@ export default function SeekerForm() {
       className="space-y-4 bg-gray-50 py-20 mx-[200px] my-20 rounded-2xl"
     >
       <h1 className="text-4xl font-extrabold text-center text-red-700 mb-10 tracking-wide">
-        Register to Receive Blood
+        Blood Seeking Request
       </h1>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-20 px-[200px]">
         {/* Right Column */}
