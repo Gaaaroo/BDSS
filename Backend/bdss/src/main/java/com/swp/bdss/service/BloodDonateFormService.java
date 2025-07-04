@@ -161,7 +161,12 @@ public class BloodDonateFormService {
     }
 
     public List<BloodDonateFormResponse> searchBloodDonateFormByKeyWord(String keyword) {
-        List<BloodDonateFormResponse> list = bloodDonateFormRepository.findByUserFullNameContainingOrUserPhoneContaining(keyword, keyword)
+
+        log.info(keyword);
+        if (keyword == null || keyword.trim().isEmpty()) {
+            log.info("Keyword is null or empty");
+        }
+        List<BloodDonateFormResponse> list = bloodDonateFormRepository.findByUserFullNameContainingIgnoreCaseOrUserPhoneContainingIgnoreCase(keyword, keyword)
                 .stream().map(bloodDonateFormMapper::toBloodDonateFormResponse)
                 .toList();
 

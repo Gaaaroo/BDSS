@@ -53,9 +53,13 @@ export default function BloodRequestTable({
     }
   }, [keyword]);
 
+  // Fetch all requests on initial load
   useEffect(() => {
-    fetchRequests();
-  }, [fetchRequests, triggerReloadCount]);
+    const timeout = setTimeout(() => {
+      fetchRequests();
+    }, 400); // Debounce search input by 400ms
+    return () => clearTimeout(timeout);
+  }, [selectedStatus, keyword, triggerReloadCount]);
 
   const filteredRequests = selectedStatus
     ? donateRequests.filter((req) => req.status === selectedStatus)

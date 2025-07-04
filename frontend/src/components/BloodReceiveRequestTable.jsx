@@ -209,7 +209,7 @@ export default function BloodReceiveRequestTable({
                       {request.user?.fullName}
                     </td>
                     <td className="px-3 w-24 text-center">
-                      {request.user?.bloodType}
+                      {request.bloodType}
                     </td>
                     <td className="px-3 w-32 text-center">
                       {request.componentType}

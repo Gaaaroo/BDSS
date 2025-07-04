@@ -15,7 +15,7 @@ public enum ErrorCode {
     INCORRECT_TOKEN(1005, "Your Token is INVALID", HttpStatus.UNAUTHORIZED),
     OTP_NOT_EXISTED(1006, "OTP code does not exist", HttpStatus.BAD_REQUEST),
     EMAIL_EXISTED(1007, "Email already existed", HttpStatus.BAD_REQUEST),
-    USER_IS_ACTIVE(1008, "User is active", HttpStatus.BAD_REQUEST),
+    USER_IS_NOT_ACTIVE(1008, "User is not active", HttpStatus.BAD_REQUEST),
     OTP_CODE_EXPIRED(1009, "OTP code has expired", HttpStatus.BAD_REQUEST),
     OTP_CODE_INVALID(1010, "OTP code is invalid", HttpStatus.BAD_REQUEST),
     BLOOD_DONATE_FORM_NOT_EXISTED(1011, "Blood donate form not existed", HttpStatus.BAD_REQUEST),
@@ -36,7 +36,8 @@ public enum ErrorCode {
     INVALID_STEP_NUMBER2(1026, "Step number must between 1 and 3", HttpStatus.BAD_REQUEST),
     NO_BLOOD_RECEIVE_FORM(1027, "There's no blood receive form", HttpStatus.BAD_REQUEST),
     STEP_NOT_FOUND(1028, "Step not found for donation ID and step number", HttpStatus.BAD_REQUEST),
-    NOT_ELIGIBLE_TO_REGISTER_RECEIVE(1029, "User is not eligible to register blood receive form", HttpStatus.BAD_REQUEST)
+    NOT_ELIGIBLE_TO_REGISTER_RECEIVE(1029, "User is not eligible to register blood receive form", HttpStatus.BAD_REQUEST),
+    USERNAME_EXISTED(1030, "Username already existed", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;
