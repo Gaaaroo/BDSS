@@ -119,7 +119,7 @@ const LoginForm = () => {
           <div className="flex justify-between items-center mt-2">
             <button
               type="button"
-              onClick={handleRegisterClick}
+              onClick={() => navigate('/forgot-password')}
               className="text-red-600 hover:underline text-sm cursor-pointer"
             >
               Forgot Password?
