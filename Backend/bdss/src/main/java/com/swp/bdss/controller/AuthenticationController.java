@@ -131,4 +131,21 @@ public class AuthenticationController {
                 .build();
     }
 
+    @PostMapping("/forgot-password")
+    ApiResponse<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        authenticationService.sendResetPasswordEmail(request);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .message("======================= Password reset link sent to your email =======================")
+                .build();
+    }
+
+    @PostMapping("/reset-password")
+    ApiResponse<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        authenticationService.resetPassword(request);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .message("Password reset successfully")
+                .build();
+    }
 }
