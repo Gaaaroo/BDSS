@@ -226,10 +226,6 @@ function WidgetChatAdmin() {
                       : 'bg-gray-100 text-left text-black'
                   } rounded-md`}
                 >
-                  <h5 className="font-semibold text-[10px] text-left text-red-500">
-                    {msg.name}
-                  </h5>
-
                   <p className="whitespace-pre-line font-mono">
                     {splitByLength(msg.content, 30)}
                   </p>
