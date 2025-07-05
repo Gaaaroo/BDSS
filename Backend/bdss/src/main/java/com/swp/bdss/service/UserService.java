@@ -8,8 +8,6 @@ import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
 import com.swp.bdss.mapper.UserMapper;
 import com.swp.bdss.repository.UserRepository;
-//import org.springframework.security.core.context.SecurityContextHolder;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -17,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,13 +25,14 @@ public class UserService {
     UserMapper userMapper;
     UserRepository userRepository;
 
-    public UserResponse createUserForLoginGoogle(String email, String username) {
+    public UserResponse createUserForLoginGoogle(String email, String username, String image_link) {
 
         User user = new User();
         user.setEmail(email);
         user.setUsername(username);
         user.setRole("MEMBER");
         user.setStatus("pending");
+        user.setImageLink(image_link);
 
         User savedUser = userRepository.save(user);
         return userMapper.toUserResponse(savedUser);
@@ -45,6 +43,8 @@ public class UserService {
 
         user.setRole("MEMBER");
         user.setStatus("pending");
+        user.setLat(null);
+        user.setLng(null);
 
         User savedUser = userRepository.save(user);
         return userMapper.toUserResponse(savedUser);
@@ -61,33 +61,30 @@ public class UserService {
 
     public UserResponse getUserProfile(){
         var context = SecurityContextHolder.getContext();
-        String username = context.getAuthentication().getName();
+        int userId = Integer.parseInt(context.getAuthentication().getName());
 
-        User user = userRepository.findByUsername(username)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         return userMapper.toUserResponse(user);
     }
 
     public UserResponse updateProfile(UserUpdateRequest request){
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        User user = userRepository.findByUsername(username)
+        var context = SecurityContextHolder.getContext();
+        int userId = Integer.parseInt(context.getAuthentication().getName());
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         userMapper.updateUser(user, request);
 
-        if (request.getBlood_type() == null) {
-            user.setBlood_type("Unknown");
+        if (request.getBloodType() == null) {
+            user.setBloodType("Unknown");
         } else {
-            user.setBlood_type(request.getBlood_type());
+            user.setBloodType(request.getBloodType());
         }
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
-        //an toàn hơn
-//        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-//        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
-
         User user = userRepository.findById(Integer.parseInt(userId))
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
@@ -95,10 +92,10 @@ public class UserService {
         var role = request.getRole();
         user.setRole(role);
 
-        if (request.getBlood_type() == null) {
-            request.setBlood_type("Unknown");
+        if (request.getBloodType() == null) {
+            request.setBloodType("Unknown");
         } else {
-            user.setBlood_type(request.getBlood_type());
+            user.setBloodType(request.getBloodType());
         }
 
         return userMapper.toUserResponse(userRepository.save(user));
@@ -106,6 +103,29 @@ public class UserService {
 
     public void deleteUser(String userId) {
         userRepository.deleteById(Integer.parseInt(userId));
+    }
+
+    public List<UserResponse> findUserNearby(double lat, double lng, double radiusKm) {
+        var context = SecurityContextHolder.getContext();
+        int userId = Integer.parseInt(context.getAuthentication().getName());
+
+        return userRepository.findAll().stream()
+                .filter(user -> user.getLat() != null && user.getLng() != null)
+                .filter(user -> user.getUserId() != userId)
+                .filter(user -> haversine(lat, lng, user.getLat(), user.getLng()) <= radiusKm)
+                .map(userMapper::toUserResponse)
+                .toList();
+    }
+
+    private double haversine(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; // đây là bán kính trái đất
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a =  Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
     }
 
 }

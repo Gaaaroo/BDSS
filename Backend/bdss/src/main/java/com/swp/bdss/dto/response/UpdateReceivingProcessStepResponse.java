@@ -1,0 +1,19 @@
+package com.swp.bdss.dto.response;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class UpdateReceivingProcessStepResponse {
+    Long receivingProcessId;
+    int receiveId;
+    int stepNumber;
+    String note;
+    String status;
+    String updatedBy;
+    String updatedAt;
+}

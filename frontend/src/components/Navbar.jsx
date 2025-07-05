@@ -1,14 +1,19 @@
-import React from "react";
-import logo from "../assets/images/logo.jpg";
-import { CircleUser, HeartHandshake, House } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { Link as ScrollLink } from "react-scroll";
-import { useState } from "react";
+import React, { useEffect } from 'react';
+import logo from '../assets/images/logo.jpg';
+import { CircleUser, HeartHandshake, House } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Link as ScrollLink } from 'react-scroll';
+import { useApp } from '../Contexts/AppContext';
+import CustomModal from './CustomModal';
 
 // LogoNavbar
 function LogoNavbar() {
+  const navigate = useNavigate();
   return (
-    <div className="flex items-center justify-center space-x-2 text-2xl">
+    <div
+      className="flex items-center justify-center space-x-2 text-2xl"
+      onClick={() => navigate('/')}
+    >
       <img src={logo} alt="Logo" className="h-16 w-auto" />
       <h1 className="text-red-700 font-bold">BDSS</h1>
     </div>
@@ -17,10 +22,10 @@ function LogoNavbar() {
 
 // Menu
 const menuItems = [
-  { to: "top", label: "Home" },
-  { to: "about", label: "About us" },
-  { to: "howitworks", label: "How it works" },
-  { to: "blogs", label: "Blog" },
+  { to: 'top', label: 'Home' },
+  { to: 'about', label: 'About us' },
+  { to: 'howitworks', label: 'How it works' },
+  { to: 'blogs', label: 'Blog' },
 ];
 
 function Menu() {
@@ -50,33 +55,46 @@ function Menu() {
 
 // UserIcon
 function UserIcon() {
+  const [open, setOpen] = React.useState(false);
+  const [showModal, setShowModal] = React.useState(false);
+  const { logout } = useApp();
+
+  const handleLogout = () => {
+    logout();
+    setShowModal(false);
+    navigate('/');
+  };
+
+  const handleCancel = () => {
+    setShowModal(false);
+  };
+
   const navigate = useNavigate();
   const handleNavigation = (item) => {
     switch (item) {
-      case "Profile":
-        navigate("/profile");
+      case 'Profile':
+        navigate('/profile');
         break;
-      case "My activity":
-        navigate("/my-activity");
+      case 'My activity':
+        navigate('/my-activity');
         break;
-      case "Logout":
-        // setShowModal(true);
-        navigate("/");
+      case 'Logout':
+        setShowModal(true);
         break;
       default:
         break;
     }
   };
-  const [open, setOpen] = React.useState(false);
-  // const [showModal, setShowModal] = useState(false);
 
-  React.useEffect(() => {
-    if (!open) return;
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
     const handleClickOutside = (e) => {
-      if (!e.target.closest(".user-icon-dropdown")) setOpen(false);
+      if (!e.target.closest('.user-icon-dropdown')) setOpen(false);
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [open]);
 
   return (
@@ -91,7 +109,7 @@ function UserIcon() {
       {open && (
         <div className="absolute right-0 w-48 bg-white border border-red-200 rounded-lg shadow-lg z-10">
           <ul className="py-2">
-            {["Profile", "My activity", "Logout"].map((item) => (
+            {['Profile', 'My activity', 'Logout'].map((item) => (
               <li
                 key={item}
                 className="px-4 py-2 hover:bg-red-100 cursor-pointer"
@@ -103,30 +121,16 @@ function UserIcon() {
           </ul>
         </div>
       )}
-      {/* {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-96 shadow-lg">
-            <h2 className="text-xl font-bold text-red-700 mb-4">Logout</h2>
-            <p className="text-gray-700 mb-6">
-              Are you sure you want to log out?
-            </p>
-            <div className="flex justify-end space-x-4">
-              <button
-                className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
-                onClick={handleCancelLogout}
-              >
-                Cancle
-              </button>
-              <button
-                className="px-4 py-2 bg-red-700 text-white rounded-lg hover:bg-red-600"
-                onClick={handleConfirmLogout}
-              >
-                Confirm
-              </button>
-            </div>
-          </div>
-        </div>
-      )} */}
+      {showModal && (
+        <CustomModal
+          onCancel={handleCancel}
+          onOk={handleLogout}
+          title={'Logout'}
+          okLable={'Yes, Logout'}
+        >
+          <p className="text-gray-700 mb-6">Are you sure you want to Logout?</p>
+        </CustomModal>
+      )}
     </div>
   );
 }
@@ -141,14 +145,14 @@ function Icon() {
         strokeWidth={3}
         absoluteStrokeWidth
         className="hover:text-red-700 cursor-pointer transition-colors"
-        onClick={() => navigate("/blood-compatibility")}
+        onClick={() => navigate('/blood-compatibility')}
       />
       <House
         size={52}
         strokeWidth={3}
         absoluteStrokeWidth
         className="hover:text-red-700 cursor-pointer transition-colors"
-        onClick={() => navigate("/")}
+        onClick={() => navigate('/')}
       />
       <UserIcon />
     </div>
@@ -159,11 +163,15 @@ function Icon() {
 export default function Navbar({ mode }) {
   const navigate = useNavigate();
 
-  const handleLoginClick = () => navigate("/login");
+  const handleLoginClick = () => navigate('/login');
+
+  const handleMyPostsClick = () => navigate('/forum/my-posts');
+
+  const handleForumClick = () => navigate('/forum');
 
   const renderContent = () => {
     switch (mode) {
-      case "member":
+      case 'member':
         return (
           <>
             <LogoNavbar />
@@ -171,7 +179,7 @@ export default function Navbar({ mode }) {
             <UserIcon />
           </>
         );
-      case "guest":
+      case 'guest':
         return (
           <>
             <LogoNavbar />
@@ -184,7 +192,7 @@ export default function Navbar({ mode }) {
             </button>
           </>
         );
-      case "blood":
+      case 'blood':
         return (
           <>
             <LogoNavbar />
@@ -193,8 +201,32 @@ export default function Navbar({ mode }) {
               strokeWidth={3}
               absoluteStrokeWidth
               className="hover:text-red-700 cursor-pointer transition-colors"
-              onClick={() => navigate("/")}
+              onClick={() => navigate('/')}
             />
+          </>
+        );
+      case 'forum':
+        return (
+          <>
+            <LogoNavbar />
+            <button
+              className="ml-4 px-5 py-1.5 text-white bg-red-700 font-bold rounded-lg border-2 border-red-700 hover:bg-red-500 hover:text-white transition"
+              onClick={handleMyPostsClick}
+            >
+              My Posts
+            </button>
+          </>
+        );
+      case 'my-posts':
+        return (
+          <>
+            <LogoNavbar />
+            <button
+              className="ml-4 px-5 py-1.5 text-white bg-red-700 font-bold rounded-lg border-2 border-red-700 hover:bg-red-500 hover:text-white transition"
+              onClick={handleForumClick}
+            >
+              Forum
+            </button>
           </>
         );
       default:

@@ -3,10 +3,9 @@ package com.swp.bdss.service;
 import com.swp.bdss.dto.request.BloodDonateFormCreationRequest;
 import com.swp.bdss.dto.request.BloodDonateFormUpdateStatusRequest;
 import com.swp.bdss.dto.response.BloodDonateFormResponse;
-import com.swp.bdss.dto.response.BloodReceiveFormResponse;
 import com.swp.bdss.dto.response.UserResponse;
 import com.swp.bdss.entities.BloodDonateForm;
-import com.swp.bdss.entities.BloodReceiveForm;
+import com.swp.bdss.entities.BloodUnit;
 import com.swp.bdss.entities.User;
 import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
@@ -23,8 +22,12 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -42,21 +45,50 @@ public class BloodDonateFormService {
         BloodDonateForm bloodDonateForm = bloodDonateFormMapper.toBloodDonateForm(request);
 
         //lấy user_id từ token
-        var authentication = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        int userId = Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
         //ktra xem authentication có phải là Jwt không để lấy userId
-        int userId = authentication instanceof Jwt ? Integer.parseInt(((Jwt) authentication).getClaimAsString("userId")) : -1;
+        if (!(SecurityContextHolder.getContext().getAuthentication().getPrincipal() instanceof Jwt)) {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
 
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        boolean canRegister = false;
+
+        if (user.getBloodDonateForms().isEmpty()) {
+            canRegister = true;
+        } else {
+            BloodDonateForm lastForm = user.getBloodDonateForms().getLast();
+
+            if (lastForm.getStatus().equalsIgnoreCase("REJECTED")) {
+                canRegister = true;
+            } else {
+                BloodUnit bloodUnit = lastForm.getBloodUnit();
+                if (bloodUnit == null || bloodUnit.getDonatedDate() == null) {
+                    throw new AppException(ErrorCode.BLOOD_UNIT_NOT_EXIST);
+                }
+                LocalDateTime lastDonateDate = bloodUnit.getDonatedDate();
+                long daysSinceLastDonate = ChronoUnit.DAYS.between(lastDonateDate.toLocalDate(), LocalDate.now());
+
+                if (daysSinceLastDonate > 20) {
+                    canRegister = true;
+                }
+            }
+        }
+
+        if (!canRegister) {
+            throw new AppException(ErrorCode.NOT_ELIGIBLE_TO_REGISTER_RECEIVE);
+        }
+
         UserResponse userResponse = userMapper.toUserResponse(user);
         bloodDonateForm.setUser(user);
-        bloodDonateForm.setRequest_date(LocalDate.now());
-        bloodDonateForm.setStatus("pending");
+        bloodDonateForm.setRequestDate(LocalDateTime.now());
+        bloodDonateForm.setStatus("PENDING");
 
         BloodDonateFormResponse bloodDonateFormResponse = bloodDonateFormMapper
                 .toBloodDonateFormResponse(bloodDonateFormRepository.save(bloodDonateForm));
 
 //        //set user cho response tại vì user nằm ở user và mapstruct ko lấy trường này -> null hoặc sai
-         bloodDonateFormResponse.setUser(userResponse);
+         bloodDonateFormResponse.setUserResponse(userResponse);
         return bloodDonateFormResponse;
     }
 
@@ -71,7 +103,7 @@ public class BloodDonateFormService {
 
                     User user = bloodDonateForm.getUser();
                     UserResponse userResponse = userMapper.toUserResponse(user);
-                    response.setUser(userResponse);
+                    response.setUserResponse(userResponse);
                     return response;
                 })
                 .toList();
@@ -80,18 +112,19 @@ public class BloodDonateFormService {
 
     //get all donate form of 1 user and form details (USER)
     public List<BloodDonateFormResponse> getUserBloodDonateForm(){
-        var context = SecurityContextHolder.getContext();
-        String username = context.getAuthentication().getName();
-
+        int userId = Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        String username = user.getUsername();
         List<BloodDonateForm> list = bloodDonateFormRepository.findAllBloodDonateFormByUserUsername(username);
 
         return list.stream().map(bloodDonateForm -> {
             BloodDonateFormResponse response = bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateForm);
 
-            User user = bloodDonateForm.getUser();
-            UserResponse userResponse = userMapper.toUserResponse(user);
+            User savedUser = bloodDonateForm.getUser();
+            UserResponse userResponse = userMapper.toUserResponse(savedUser);
 
-            response.setUser(userResponse);
+            response.setUserResponse(userResponse);
             return response;
         }).toList();
     }
@@ -105,27 +138,59 @@ public class BloodDonateFormService {
 
         User user = bloodDonateForm.getUser();
         UserResponse userResponse = userMapper.toUserResponse(user);
-        response.setUser(userResponse);
+        response.setUserResponse(userResponse);
         return response;
     }
 
     //delete blood donate form (ADMIN, USER)
     public void deleteBloodDonateForm(String donate_id){
         int id = Integer.parseInt(donate_id);
-        if(!bloodDonateFormRepository.existsById(id)){
-            throw new IllegalArgumentException("Blood donate form with id " + donate_id + " does not exist.");
-        }
+        BloodDonateForm bloodDonateForm = bloodDonateFormRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.BLOOD_DONATE_FORM_NOT_EXISTED));
         bloodDonateFormRepository.deleteById(id);
     }
 
     //update form status (ADMIN)
     public BloodDonateFormResponse updateBloodDonateFormStatus(int donate_id, BloodDonateFormUpdateStatusRequest request){
         BloodDonateForm bloodDonateForm = bloodDonateFormRepository.findById(donate_id)
-                .orElseThrow(() -> new AppException(ErrorCode.BLODD_DONATE_FORM_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.BLOOD_DONATE_FORM_NOT_EXISTED));
 
         //check status
         bloodDonateForm.setStatus(request.getStatus());
         return bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateFormRepository.save(bloodDonateForm));
+    }
+
+    public List<BloodDonateFormResponse> searchBloodDonateFormByKeyWord(String keyword) {
+
+        log.info(keyword);
+        if (keyword == null || keyword.trim().isEmpty()) {
+            log.info("Keyword is null or empty");
+        }
+        List<BloodDonateFormResponse> list = bloodDonateFormRepository.findByUserFullNameContainingIgnoreCaseOrUserPhoneContainingIgnoreCase(keyword, keyword)
+                .stream().map(bloodDonateFormMapper::toBloodDonateFormResponse)
+                .toList();
+
+        if(list.isEmpty()){
+            throw new AppException(ErrorCode.NO_BLOOD_DONATE_FORM);
+        }
+
+        return list;
+    }
+
+    public Map<String, Long> countDonateRequestsByStatus() {
+        List<BloodDonateForm> forms = bloodDonateFormRepository.findAll();
+        return forms.stream()
+                .collect(Collectors.groupingBy(
+                        BloodDonateForm::getStatus,
+                        Collectors.counting()
+                ));
+    }
+
+    public List<BloodDonateFormResponse> getBloodDonateFormByStatus(String status){
+        List<BloodDonateFormResponse> list = bloodDonateFormRepository.findAllByStatus(status)
+                .stream().map(bloodDonateFormMapper::toBloodDonateFormResponse)
+                .toList();
+        return list;
     }
 
 }

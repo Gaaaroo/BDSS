@@ -1,6 +1,5 @@
 package com.swp.bdss.repository;
 
-import com.swp.bdss.entities.InvalidatedToken;
 import com.swp.bdss.entities.OtpCode;
 import com.swp.bdss.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -5,6 +5,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -12,19 +14,45 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "receive_request")
+@Table(name = "receiveRequest") // dùng camelCase cho table name luôn nếu muốn nhất quán
 public class BloodReceiveForm {
+
     @Id
-    int receive_id;
-    @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "user_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "receiveId")
+    int receiveId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId", referencedColumnName = "userId", nullable = false)
     User user;
-    String blood_type;
-    String component_type;
+
+    @Column(name = "bloodType", nullable = false, length = 5)
+    String bloodType;
+
+    @Column(name = "componentType", nullable = false)
+    String componentType;
+
+    @Column(name = "quantity", nullable = false)
     int quantity;
+
+    @Column(name = "volume", nullable = false)
     int volume;
-    String hospital_address;
+
+    @Column(name = "hospitalAddress", nullable = false)
+    String hospitalAddress;
+
+    @Column(name = "priority", nullable = false)
     String priority;
+
+    @Column(name = "status", nullable = false)
     String status;
-    LocalDate request_date;
+
+    @Column(name = "requestDate", nullable = false)
+    LocalDate requestDate;
+
+    @OneToMany(mappedBy = "bloodReceiveForm", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<ReceivingProcess> steps = new ArrayList<>();
+
+    @OneToMany(mappedBy = "receiveForm", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    List<BloodUnit> bloodUnits;
 }

@@ -11,6 +11,5 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BloodDonateFormCreationRequest {
-
-    String health_notes;
+    String healthNotes;
 }

@@ -1,12 +1,9 @@
 package com.swp.bdss.dto.request;
 
-import com.swp.bdss.entities.User;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -15,6 +12,6 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BlogCreationRequest {
     String title;
-    String content;
-    String image_link;
+    String imageLink;
+    List<BlogSectionCreationRequest> sections;
 }

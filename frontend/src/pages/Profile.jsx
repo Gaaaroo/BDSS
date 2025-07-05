@@ -1,30 +1,54 @@
-import React from "react";
+import React, { useState, useEffect } from 'react';
+import Navbar from '../components/Navbar';
+import ProfileView from '../components/ProfileView';
+import ProfileUpdate from '../components/ProfileUpdate';
+import { getUserProfile } from '../services/api/userService';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { useApp } from '../Contexts/AppContext';
+import LoadingPage from '../components/LoadingPage';
 
-export default function Profile() {
+export default function ProfilePage() {
+  const [userData, setUserData] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const location = useLocation();
+  const redirectTo = location.state?.redirectTo;
+  const navigate = useNavigate();
+  const fetchUserData = async () => {
+    try {
+      const data = await getUserProfile();
+      setUserData(data);
+    } catch (err) {
+      console.error('Error fetching user profile:', err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  if (!userData) return <LoadingPage />;
+
   return (
-    <div className="max-w-md mx-auto mt-10 p-8 rounded-2xl shadow-lg bg-white font-sans">
-      <div className="flex flex-col items-center">
-        <img
-          src="https://randomuser.me/api/portraits/men/32.jpg"
-          alt="Profile"
-          className="w-24 h-24 rounded-full object-cover mb-4 border-4 border-blue-700"
+    <div>
+      <Navbar />
+      {!isEditing && location.state?.flag !== 'update' ? (
+        <ProfileView
+          userData={userData}
+          onEditClick={() => setIsEditing(true)}
         />
-        <h2 className="mb-2 text-blue-700 text-2xl font-semibold">John Doe</h2>
-        <p className="mb-4 text-gray-600">Frontend Developer</p>
-        <div className="w-full border-t border-gray-200 pt-4 text-left">
-          <p>
-            <span className="font-semibold">Email:</span> john.doe@email.com
-          </p>
-          <p>
-            <span className="font-semibold">Location:</span> New York, USA
-          </p>
-          <p>
-            <span className="font-semibold">Bio:</span> Passionate about
-            building beautiful and performant web apps.
-          </p>
-        </div>
-        
-      </div>
+      ) : (
+        <ProfileUpdate
+          initialData={userData}
+          onCancel={() => setIsEditing(false)}
+          onSaveSuccess={() => {
+            setIsEditing(false);
+            fetchUserData();
+            if (redirectTo) {
+              navigate(redirectTo);
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

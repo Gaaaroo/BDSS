@@ -5,14 +5,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2Error;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidatorResult;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtTimestampValidator;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationProvider;
 import org.springframework.security.web.SecurityFilterChain;
@@ -31,21 +39,23 @@ public class SecurityConfig {
 
     private final String[] PUBLIC_URLS = {"/auth/login", "/auth/introspect", "/auth/logout",
             "/auth/refresh", "/users", "/auth/register", "/auth/verify", "/auth/resend-otp",
-            "/auth/loginWithTokenGoogle"};
-
+            "/auth/loginWithTokenGoogle", "/blog", "blog/top3", "/auth/forgot-password", "/auth/reset-password",};
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         log.info("Security Config Enabled");
-        httpSecurity.authorizeHttpRequests(request ->
-                request.requestMatchers(PUBLIC_URLS)
-                        .permitAll()
+        httpSecurity
+                .cors(Customizer.withDefaults())
+                .authorizeHttpRequests(request ->
+                request.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(PUBLIC_URLS).permitAll()
                         .anyRequest()
                         .authenticated());
 
         httpSecurity.oauth2ResourceServer(oath2 -> oath2
                 .authenticationManagerResolver(authenticationManagerResolver())
-                .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
+                .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
+        );
 
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
@@ -58,9 +68,28 @@ public class SecurityConfig {
     JwtDecoder jwtDecoder() {
         SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
 
-        return NimbusJwtDecoder.withSecretKey(secretKeySpec)
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withSecretKey(secretKeySpec)
                 .macAlgorithm(MacAlgorithm.HS512)
                 .build();
+
+        // Tạo validator check token_type mặc định
+        JwtTimestampValidator timestampValidator = new JwtTimestampValidator();
+        OAuth2TokenValidator<Jwt> combinedValidator = getJwtOAuth2TokenValidator(timestampValidator);
+        decoder.setJwtValidator(combinedValidator);
+        return decoder;
+    }
+
+    private static OAuth2TokenValidator<Jwt> getJwtOAuth2TokenValidator(JwtTimestampValidator timestampValidator) {
+        OAuth2TokenValidator<Jwt> tokenTypeValidator = jwt -> {
+            String tokenType = jwt.getClaimAsString("token_type");
+            if(!tokenType.equals("access")) {
+                return OAuth2TokenValidatorResult.failure(
+                        new OAuth2Error("invalid_token_type", "Only access tokens are allowed", null));
+            }
+            return OAuth2TokenValidatorResult.success();
+        };
+
+        return new DelegatingOAuth2TokenValidator<>(timestampValidator, tokenTypeValidator);
     }
 
     /**

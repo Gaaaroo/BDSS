@@ -15,8 +15,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
@@ -36,14 +34,17 @@ public class AuthenticationController {
     public ApiResponse<AuthenticationResponse> loginWithGoogle(@RequestHeader("Authorization") String authorization) {
         try {
             String idToken = authorization.replace("Bearer ", "");
+            log.info("google token : " + idToken);
 
             FirebaseToken decodedToken = FirebaseAuth.getInstance().verifyIdToken(idToken);
             String email = decodedToken.getEmail();
             String userName = decodedToken.getName();
+            String image = decodedToken.getPicture();
 
             User user = new User();
             user.setUsername(userName);
             user.setEmail(email);
+            user.setImageLink(image);
 
             return ApiResponse.<AuthenticationResponse>builder()
                     .code(1000)
@@ -62,7 +63,7 @@ public class AuthenticationController {
     @PostMapping("/register")
     ApiResponse<UserResponse> register(@RequestBody UserCreationRequest request){
         return ApiResponse.<UserResponse>builder()
-                .code(1111)
+                .code(1000)
                 .message("OTP sent to your email")
                 .data(authenticationService.registerUserAndSendOtp(request))
                 .build();
@@ -81,7 +82,7 @@ public class AuthenticationController {
     @PostMapping("/resend-otp")
     ApiResponse<UserResponse> resendOtp(@RequestBody VerifyOtpRequest request){
         return ApiResponse.<UserResponse>builder()
-                .code(6868)
+                .code(1000)
                 .data(authenticationService.resendOtp(request))
                 .message("OTP resent successfully")
                 .build();
@@ -113,7 +114,7 @@ public class AuthenticationController {
     ApiResponse<Void> logout (@RequestBody LogoutRequest request) throws ParseException, JOSEException{
         authenticationService.logout(request);
         return ApiResponse.<Void>builder()
-                .code(6666)
+                .code(1000)
                 .message("Logout successful")
                 .build();
     }
@@ -121,6 +122,7 @@ public class AuthenticationController {
     @PostMapping("/refresh")
     ApiResponse<AuthenticationResponse> refreshToken(@RequestBody IntrospectRequest request)
             throws ParseException, JOSEException {
+        log.info("=============== refresh rùi nè ==============");
         var result = authenticationService.refreshToken(request);
         return ApiResponse.<AuthenticationResponse>builder()
                 .code(1000)
@@ -129,4 +131,21 @@ public class AuthenticationController {
                 .build();
     }
 
+    @PostMapping("/forgot-password")
+    ApiResponse<?> forgotPassword(@RequestBody ForgotPasswordRequest request) {
+        authenticationService.sendResetPasswordEmail(request);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .message("======================= Password reset link sent to your email =======================")
+                .build();
+    }
+
+    @PostMapping("/reset-password")
+    ApiResponse<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        authenticationService.resetPassword(request);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .message("Password reset successfully")
+                .build();
+    }
 }

@@ -1,89 +1,63 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import BackHome from "./BackHome";
-import { signInWithPopup } from "firebase/auth";
-import { auth, provider } from "../services/api/firebase";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import BackHome from './BackHome';
+import { login, loginWithTokenGoogle } from '../services/api/authService';
+import { useApp } from '../Contexts/AppContext';
+import { loginSchema } from '../Validations/userValidation';
 
 const LoginForm = () => {
   const navigate = useNavigate();
+  const { setIsLogged, getUserRoleAndNavigate } = useApp();
   const [form, setForm] = useState({
-    email: "",
-    password: "",
-    username: "",
-    phone: "",
-    confirmPassword: "",
+    username: '',
+    password: '',
   });
-  const [error, setError] = useState("");
+
+  //General error for the whole form
+  const [error, setError] = useState('');
+  //Specific input validation errors
+  const [formError, setFormError] = useState({});
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setError("");
+    setError('');
+    setFormError({});
   };
 
+  //Handle login form
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!form.email || !form.password) {
-      setError("Please enter both email and password.");
-      return;
-    }
-
-    // Authentication logic here
-    console.log(form);
-
     try {
-      const response = await fetch("http://localhost:8080/bdss/users", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json", //json format
-        },
-        body: JSON.stringify(form),
-      });
-      const data = await response.json();
-      console.log("Login successful:", data);
-    } catch (err) {
-      console.error("Error during login:", err);
-      setError("Login failed. Please try again.");
+      await loginSchema.validate(form, { abortEarly: false });
+      setFormError({});
+      await login(form);
+      setIsLogged(true);
+      await getUserRoleAndNavigate();
+      setError('');
+    } catch (error) {
+      const errors = {};
+      if (error.inner) {
+        error.inner.forEach((e) => {
+          errors[e.path] = e.message;
+        });
+        setFormError(errors);
+      } else {
+        setError('Invalid username or password.');
+      }
     }
   };
 
   const handleRegisterClick = () => {
-    navigate("/register");
+    navigate('/register');
   };
-
-  // Hàm xử lý đăng nhập với Google
 
   const handleLoginWithGG = async () => {
     try {
-      const result = await signInWithPopup(auth, provider);
-      const user = result.user;
-
-      // LẤY FIREBASE ID TOKEN
-      const idToken = await user.getIdToken();
-      console.log("Firebase ID Token:", idToken);
-
-      // Gửi token lên backend
-      const res = await fetch(
-        "http://localhost:8080/bdss/auth/loginWithTokenGoogle",
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!res.ok) {
-        throw new Error("Login failed at backend.");
-      }
-
-      //const data = await res.text();
-      localStorage.setItem("accessToken", idToken);
-      navigate("/");
+      await loginWithTokenGoogle();
+      setIsLogged(true);
+      await getUserRoleAndNavigate();
     } catch (error) {
-      console.error("Login error:", error);
-      alert("Đăng nhập thất bại.");
+      setError('Google authentication failed');
     }
   };
 
@@ -106,37 +80,39 @@ const LoginForm = () => {
               {error}
             </div>
           )}
-          <div className="mb-6">
+          <div className="mb-3">
             <label className="block text-gray-700 mb-2 font-semibold">
               Username
             </label>
             <input
+              autoComplete="true"
               type="text"
               name="username"
               placeholder="Enter your username"
               value={form.username}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition"
-              required
+              className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition text-black"
             />
+            <p className="text-red-500 h-5">{formError.username || ' '}</p>
           </div>
-          <div className="mb-8">
+          <div className="mb-5">
             <label className="block text-gray-700 mb-2 font-semibold">
               Password
             </label>
             <input
+              autoComplete="true"
               type="password"
               name="password"
               placeholder="Enter your password"
               value={form.password}
               onChange={handleChange}
-              className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition"
-              required
+              className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition text-black"
             />
+            <p className="text-red-500 h-5 ">{formError.password || ' '}</p>
           </div>
           <button
             type="submit"
-            className="w-full bg-gradient-to-r from-red-600 to-rose-600 text-white py-3 rounded-lg font-bold text-lg shadow hover:from-red-700 hover:to-rose-700 transition mb-4"
+            className="w-full bg-gradient-to-r from-red-600 to-rose-600 text-white py-3 rounded-lg font-bold text-lg shadow hover:from-red-700 hover:to-rose-700 transition mb-4 cursor-pointer"
           >
             Login
           </button>
@@ -144,11 +120,20 @@ const LoginForm = () => {
             <button
               type="button"
               onClick={handleRegisterClick}
-              className="text-red-600 hover:underline text-sm"
+              className="text-red-600 hover:underline text-sm cursor-pointer"
             >
               Forgot Password?
             </button>
-            <button className="text-black" onClick={handleLoginWithGG}>
+            <button
+              type="button"
+              onClick={handleLoginWithGG}
+              className="flex items-center gap-2 border border-gray-200 rounded-lg p-2 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition cursor-pointer"
+            >
+              <img
+                src="https://cdn.pixabay.com/photo/2021/05/24/09/15/google-logo-6278331_960_720.png"
+                alt=""
+                className="w-4 h-4"
+              />
               Login with Google
             </button>
           </div>
@@ -163,7 +148,7 @@ const LoginForm = () => {
           <button
             type="button"
             onClick={handleRegisterClick}
-            className="bg-white text-red-600 font-semibold px-8 py-3 rounded-lg shadow hover:bg-red-50 transition"
+            className="bg-white text-red-600 font-semibold px-8 py-3 rounded-lg shadow hover:bg-red-50 transition cursor-pointer"
           >
             Register
           </button>

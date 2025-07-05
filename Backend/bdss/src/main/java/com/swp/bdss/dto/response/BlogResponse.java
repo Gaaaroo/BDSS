@@ -1,10 +1,12 @@
 package com.swp.bdss.dto.response;
 
+import com.swp.bdss.dto.request.BlogSectionCreationRequest;
 import com.swp.bdss.entities.User;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @Builder
@@ -12,11 +14,13 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BlogResponse {
-    int blog_id;
+    String userCreate;
+    String userUpdate;
+    int blogId;
     String title;
-    String content;
-    User user;
-    LocalDate created_date;
-    String image_link;
+    List<BlogSectionCreationRequest> sections;
+    LocalDate createdDate;
+    LocalDate updateDate;
+    String imageLink;
     boolean status;
 }

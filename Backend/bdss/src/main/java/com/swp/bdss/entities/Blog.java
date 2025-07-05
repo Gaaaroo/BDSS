@@ -5,6 +5,8 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -15,14 +17,35 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "blog")
 public class Blog {
+
     @Id
-    int blog_id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "blogId")
+    int blogId;
+
+    @Column(name = "title", nullable = false)
     String title;
-    String content;
-    @ManyToOne
-    @JoinColumn(name = "created_by", referencedColumnName = "user_id")
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "createdBy", referencedColumnName = "userId", nullable = false)
     User user;
-    LocalDate created_date;
-    String image_link;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "updatedBy", referencedColumnName = "userId", nullable = true)
+    User userUpdate;
+
+    @Column(name = "createdDate")
+    LocalDate createdDate;
+
+    @Column(name = "updatedDate")
+    LocalDate updateDate;
+
+    @Column(name = "imageLink")
+    String imageLink;
+
+    @Column(name = "status")
     boolean status;
+
+    @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<BlogSection> sections = new ArrayList<>();
 }

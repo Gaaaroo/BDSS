@@ -12,12 +12,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RestController
-@RequestMapping("/donateForm")
+@RequestMapping("/donate-form")
 public class BloodDonateFormController {
     BloodDonateFormService bloodDonateFormService;
 
@@ -53,7 +54,7 @@ public class BloodDonateFormController {
                 .build();
     }
 
-    @GetMapping
+    @GetMapping("/detail")
     ApiResponse<BloodDonateFormResponse> getBloodDonateFormById(@RequestParam String id){
         return ApiResponse.<BloodDonateFormResponse>builder()
                 .code(1000)
@@ -67,6 +68,34 @@ public class BloodDonateFormController {
                 .code(1000)
                 .message( "Update status successfully")
                 .data(bloodDonateFormService.updateBloodDonateFormStatus(id, request))
+                .build();
+    }
+
+    @GetMapping("/search")
+    ApiResponse<List<BloodDonateFormResponse>> searchBloodDonateFormByKeyword(@RequestParam String keyword){
+        return ApiResponse.<List<BloodDonateFormResponse>>builder()
+                .code(1000)
+                .data(bloodDonateFormService.searchBloodDonateFormByKeyWord(keyword))
+                .message("Search blood donate form by keyword successfully")
+                .build();
+    }
+
+    @GetMapping("/count-by-status")
+    ApiResponse<Map<String, Long>> countDonateRequestsByStatus(){
+        return ApiResponse.<Map<String, Long>>builder()
+                .code(1000)
+                .data(bloodDonateFormService.countDonateRequestsByStatus())
+                .message("Count donate requests by status successfully")
+                .build();
+    }
+
+    // Get all blood donate forms by status
+    @GetMapping("/by-status")
+    ApiResponse<List<BloodDonateFormResponse>> getBloodDonateFormsByStatus(@RequestParam String status) {
+        return ApiResponse.<List<BloodDonateFormResponse>>builder()
+                .code(1000)
+                .data(bloodDonateFormService.getBloodDonateFormByStatus(status))
+                .message("Get blood donate forms by status successfully")
                 .build();
     }
 }

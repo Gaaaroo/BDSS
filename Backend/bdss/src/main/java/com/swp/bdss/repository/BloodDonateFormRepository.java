@@ -9,4 +9,8 @@ import java.util.List;
 @Repository
 public interface BloodDonateFormRepository extends JpaRepository<BloodDonateForm, Integer> {
     List<BloodDonateForm> findAllBloodDonateFormByUserUsername(String username);
+
+    List<BloodDonateForm> findByUserFullNameContainingIgnoreCaseOrUserPhoneContainingIgnoreCase(String fullName, String phone);
+
+    List<BloodDonateForm> findAllByStatus(String status);
 }

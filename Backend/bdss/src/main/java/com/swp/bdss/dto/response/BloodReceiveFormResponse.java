@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -12,15 +13,15 @@ import java.time.LocalDate;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BloodReceiveFormResponse {
-    int receive_id;
-    User user;
-    String blood_type;
-    String component_type;
+    int receiveId;
+    UserResponse user;
+    String bloodType;
+    String componentType;
     int quantity;
     int volume;
-    String hospital_address;
+    String hospitalAddress;
     String priority;
-    LocalDate request_date;
+    LocalDate requestDate;
     String status;
-
+    List<UpdateReceivingProcessStepResponse> steps;
 }

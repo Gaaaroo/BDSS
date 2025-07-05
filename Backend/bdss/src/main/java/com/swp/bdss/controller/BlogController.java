@@ -1,14 +1,17 @@
 package com.swp.bdss.controller;
 
+import com.google.protobuf.Api;
 import com.swp.bdss.dto.request.BlogCreationRequest;
 import com.swp.bdss.dto.response.ApiResponse;
 import com.swp.bdss.dto.response.BlogResponse;
-import com.swp.bdss.dto.response.BloodReceiveFormResponse;
 import com.swp.bdss.service.BlogService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,11 +32,23 @@ public class BlogController {
                 .build();
     }
 
-    @GetMapping
-    ApiResponse<List<BlogResponse>> getAllBlog() {
+    @GetMapping("/top3")
+    ApiResponse<List<BlogResponse>> getTop3Blog() {
         return ApiResponse.<List<BlogResponse>>builder()
                 .code(1000)
-                .data(blogService.getAllBlogs())
+                .data(blogService.getTop3Blogs())
+                .build();
+    }
+
+    @GetMapping
+    public ApiResponse<Page<BlogResponse>> getAllBlogs(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "6") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ApiResponse.<Page<BlogResponse>>builder()
+                .code(1000)
+                .data(blogService.getAllBlogs(pageable))
                 .build();
     }
 
@@ -61,9 +76,23 @@ public class BlogController {
                 .build();
     }
 
-    @DeleteMapping
-    String deleteBlog (@RequestParam int id){
+    @DeleteMapping("/{id}")
+    ApiResponse<String> deleteBlog (@PathVariable("id") int id){
         blogService.deleteBlog(id);
-        return "Delete successfully";
+        return ApiResponse.<String>builder()
+                .code(1000)
+                .data("Delete successful")
+                .build();
+    }
+
+    @GetMapping("/search")
+    public ApiResponse<Page<BlogResponse>> searchBlogs(
+            @RequestParam String username,
+            Pageable pageable
+    ) {
+        return ApiResponse.<Page<BlogResponse>>builder()
+                .code(1000)
+                .data(blogService.searchBlogsByUsername(username, pageable))
+                .build();
     }
 }

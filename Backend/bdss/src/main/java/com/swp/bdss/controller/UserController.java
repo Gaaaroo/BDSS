@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -48,6 +49,10 @@ public class UserController {
 
     @GetMapping("/myProfile")
     ApiResponse<UserResponse> getUserProfile(){
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        authentication
+                .getAuthorities()
+                .forEach(grantedAuthority -> log.info("Role: {}", grantedAuthority.getAuthority()));
         return ApiResponse.<UserResponse>builder()
                 .code(1000)
                 .data(userService.getUserProfile())
@@ -77,8 +82,12 @@ public class UserController {
     }
 
 
-
-
-
-
+    @GetMapping("/nearby")
+    public ApiResponse<List<UserResponse>> getNearbyUser(@RequestParam double lat, @RequestParam double lng,
+                                                         @RequestParam(defaultValue = "5") double radius){
+        return ApiResponse.<List<UserResponse>>builder()
+                .code(1000)
+                .data(userService.findUserNearby(lat, lng, radius))
+                .build();
+    }
 }

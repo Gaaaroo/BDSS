@@ -11,14 +11,17 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
+    String imageLink;
     String username;
     String password;
     String gender;
-    String full_name;
+    String fullName;
     LocalDate dob;
     String email;
     String phone;
     String address;
-    String blood_type;
+    Double lat;
+    Double lng;
+    String bloodType;
     String role;
 }

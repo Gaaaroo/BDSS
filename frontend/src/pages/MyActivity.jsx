@@ -1,55 +1,85 @@
-import React from "react";
-import Navbar from "../components/Navbar";
-import History from "../components/History";
-import DonationProgress from "../components/DonationProgress";
-import ReceptionProgress from "../components/ReceptionProgress";
+import React, { useEffect } from 'react';
+import Navbar from '../components/Navbar';
+import img from '../assets/images/cover-photo.jpg';
+import ProgressRequests from './ProgressRequests';
+import { useLocation } from 'react-router';
+
+export function BannerMyActivity() {
+  return (
+    <div>
+      <img src={img} alt="banner" className="w-full h-40 object-cover " />
+    </div>
+  );
+}
 
 export default function MyActivity() {
   // History ===>> Blood Donation / Blood Reception
   // Donation Request Blood Progress
   // Reception Request Blood Progress
-
-  const [activeTab, setActiveTab] = React.useState("donation");
+  const location = useLocation();
+  const [activeTab, setActiveTab] = React.useState('PENDING');
+  const STATUS = {
+    pending: 'PENDING',
+    progressing: 'PROCESSING',
+    approve: 'APPROVED',
+    rejected: 'REJECTED',
+  };
+  useEffect(() => {
+    const status = location.state?.status;
+    if (status) {
+      setActiveTab(status);
+    }
+  }, []);
 
   return (
     <div>
       <Navbar mode="" />
-      <div className="flex gap-4 my-4 justify-start px-10 h-12">
+      <BannerMyActivity />
+      <div className="flex justify-start h-12">
         <button
-          className={`px-6 py-2 shadow transition ${
-            activeTab === "donation"
-              ? "bg-red-500 text-white hover:bg-red-600"
-              : "bg-white text-red-500 border border-red-500 hover:bg-red-100"
+          className={`px-6 py-2 transition text-2xl font-bold ${
+            activeTab === STATUS.pending
+              ? 'border-b-3 border-yellow-500 text-yellow-700 hover:bg-gray-100'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
           }`}
-          onClick={() => setActiveTab("donation")}
+          onClick={() => setActiveTab(STATUS.pending)}
         >
-          Donation Request Blood Progress
+          Pending
         </button>
         <button
-          className={`px-6 py-2 shadow transition ${
-            activeTab === "reception"
-              ? "bg-blue-500 text-white hover:bg-blue-600"
-              : "bg-white text-blue-500 border border-blue-500 hover:bg-blue-100"
+          className={`px-6 py-2 transition text-2xl font-bold ${
+            activeTab === STATUS.progressing
+              ? 'border-b-3 border-blue-500 text-blue-700 hover:bg-gray-100'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
           }`}
-          onClick={() => setActiveTab("reception")}
+          onClick={() => setActiveTab(STATUS.progressing)}
         >
-          Reception Request Blood Progress
+          Progressing
         </button>
         <button
-          className={`px-6 py-2 shadow transition ${
-            activeTab === "history"
-              ? "bg-gray-500 text-white hover:bg-gray-600"
-              : "bg-white text-gray-500 border border-gray-400 hover:bg-gray-100"
+          className={`px-6 py-2 transition text-2xl font-bold ${
+            activeTab === STATUS.approve
+              ? 'border-b-3 border-green-500 text-green-700 hover:bg-gray-100'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
           }`}
-          onClick={() => setActiveTab("history")}
+          onClick={() => setActiveTab(STATUS.approve)}
         >
-          History
+          Approved
+        </button>
+
+        <button
+          className={`px-6 py-2 transition text-2xl font-bold ${
+            activeTab === STATUS.rejected
+              ? 'border-b-3 border-red-500 text-red-700 hover:bg-gray-100'
+              : 'bg-white text-gray-700 hover:bg-gray-100'
+          }`}
+          onClick={() => setActiveTab(STATUS.rejected)}
+        >
+          Rejected
         </button>
       </div>
-      <div className="px-10">
-        {activeTab === "donation" && <DonationProgress />}
-        {activeTab === "reception" && <ReceptionProgress />}
-        {activeTab === "history" && <History />}
+      <div>
+        <ProgressRequests activeTab={activeTab} />
       </div>
     </div>
   );
