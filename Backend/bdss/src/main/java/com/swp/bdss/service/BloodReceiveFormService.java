@@ -248,9 +248,6 @@ public class BloodReceiveFormService {
             log.info("Not Whole count: " + count);
         }
 
-        if (count == 0) {
-            throw new AppException(ErrorCode.NO_BLOOD_RECEIVE_FORM);
-        }
         return count;
     }
 

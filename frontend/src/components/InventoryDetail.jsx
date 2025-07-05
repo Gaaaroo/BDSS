@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function ComponentBloodDetail({
+export default function InventoryDetail({
   data,
   onClose,
   showComponentType = false,
@@ -10,7 +10,10 @@ export default function ComponentBloodDetail({
   return (
     <div className="fixed inset-0 backdrop-brightness-50 bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white rounded-lg p-6 w-[700px] shadow-lg">
-        <h2 className="text-xl font-bold text-red-600">Component Details</h2>
+        <h2 className="text-xl font-bold text-red-600">
+          {showComponentType ? 'Component Details' : 'Whole Details'}
+        </h2>
+
         <table className="table-auto w-full text-sm text-gray-800 border border-gray-200 rounded-md overflow-hidden">
           <tbody>
             {[
@@ -18,7 +21,12 @@ export default function ComponentBloodDetail({
               ...(showComponentType
                 ? [['Component Type', data.componentType]]
                 : []),
-              ['Volume', data.volume],
+              showComponentType
+                ? [
+                    'Volume',
+                    data.volume + ' ml (Component Extracted from Whole Blood)',
+                  ]
+                : ['Volume', data.volume + ' ml'],
               ['Status', data.status],
               showComponentType
                 ? ['Created Date', data.createdDate?.slice(0, 10)]

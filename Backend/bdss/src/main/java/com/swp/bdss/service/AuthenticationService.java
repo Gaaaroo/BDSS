@@ -10,11 +10,13 @@ import com.swp.bdss.dto.response.AuthenticationResponse;
 import com.swp.bdss.dto.response.IntrospectResponse;
 import com.swp.bdss.dto.response.UserResponse;
 import com.swp.bdss.entities.InvalidatedToken;
+import com.swp.bdss.entities.PasswordResetToken;
 import com.swp.bdss.entities.User;
 import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
 import com.swp.bdss.mapper.UserMapper;
 import com.swp.bdss.repository.InvalidatedTokenRepository;
+import com.swp.bdss.repository.PasswordResetTokenRepository;
 import com.swp.bdss.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +28,8 @@ import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.UUID;
@@ -41,6 +45,7 @@ public class AuthenticationService {
     EmailService emailService;
     OtpCodeService otpCodeService;
     UserService userService;
+    PasswordResetTokenRepository passwordResetTokenRepository;
 
     @NonFinal
     @Value("${jwt.signerKey}") // spring injects giá trị lúc runtime nên ko dc là FINAL
@@ -100,9 +105,13 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.EMAIL_EXISTED);
         }
 
+        if(userRepository.findByUsername(request.getUsername()).isPresent()){
+            throw new AppException(ErrorCode.USERNAME_EXISTED);
+        }
+
         User user = userMapper.toUser(request);
         user.setRole("MEMBER");
-        user.setStatus("pending");
+//        user.setStatus("pending");
 
         User savedUser = userRepository.save(user);
         log.info("{}{}",
@@ -120,10 +129,14 @@ public class AuthenticationService {
         //find user by email
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        //check status
-        if(!user.getStatus().equals("pending")){
-            throw new AppException(ErrorCode.USER_IS_ACTIVE);
+        if(!user.isActive()){
+            throw new AppException(ErrorCode.USER_IS_NOT_ACTIVE);
         }
+
+//        //check status
+//        if(!user.getStatus().equals("pending")){
+//            throw new AppException(ErrorCode.USER_IS_ACTIVE);
+//        }
 
         //validate OTP
         boolean isValid = otpCodeService.isOtpCodeValid(user, request.getOtp());
@@ -132,7 +145,8 @@ public class AuthenticationService {
         }
 
         //update user status
-        user.setStatus("active");
+//        user.setStatus("active");
+        user.setActive(true);
         User updatedUser = userRepository.save(user);
 
         //send welcome email
@@ -145,9 +159,13 @@ public class AuthenticationService {
     public UserResponse resendOtp(VerifyOtpRequest request){
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        if(!user.getStatus().equals("pending")){
-            throw new AppException(ErrorCode.USER_IS_ACTIVE);
+        if(!user.isActive()){
+            throw new AppException(ErrorCode.USER_IS_NOT_ACTIVE);
         }
+
+//        if(!user.getStatus().equals("pending")){
+//            throw new AppException(ErrorCode.USER_IS_ACTIVE);
+//        }
         // Generate code - Send email to the user
         String otp = otpCodeService.saveResendOtpCode(user);
         emailService.sendOtpEmail(user.getEmail(), otp);
@@ -313,6 +331,75 @@ public class AuthenticationService {
 
         log.info("Refresh token verified: " + signedJWT);
         return signedJWT;
+    }
+
+    // send reset password email
+    public void sendResetPasswordEmail(ForgotPasswordRequest request){
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if(!user.isActive()){
+            throw new AppException(ErrorCode.USER_IS_NOT_ACTIVE);
+        }
+
+        String token = generateResetPasswordToken(user);
+        PasswordResetToken resetToken = new PasswordResetToken();
+        resetToken.setToken(token);
+        resetToken.setUser(user);
+        resetToken.setExpiryTime(LocalDateTime.now().plusMinutes(5));
+        passwordResetTokenRepository.save(resetToken);
+
+        String resetUrl = "http://localhost:5173/reset-password?token=" + token;
+        emailService.sendResetPasswordEmail(user.getEmail(), resetUrl);
+
+    }
+
+    public String generateResetPasswordToken(User user) {
+        //header
+        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
+
+        //body
+        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
+                .subject(String.valueOf(user.getUserId()))
+                .issuer("bdss.com")
+                .issueTime(new Date())
+                .expirationTime(new Date(
+                        Instant.now().plus(5, ChronoUnit.MINUTES).toEpochMilli()
+                ))
+                .jwtID(UUID.randomUUID().toString())
+                .claim("email", user.getEmail())
+                .claim("scope", user.getRole())
+                .claim("token_type", "reset_password")
+                .build();
+
+        Payload payload = new Payload(jwtClaimsSet.toJSONObject());
+
+        JWSObject jwsObject = new JWSObject(header, payload);
+
+        try{
+            jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
+            return jwsObject.serialize();
+
+        }catch(JOSEException e){
+            log.error("Cannot create reset password token", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void resetPassword(ResetPasswordRequest request){
+        PasswordResetToken token = passwordResetTokenRepository.findByToken(request.getToken())
+                .orElseThrow(() -> new AppException(ErrorCode.OTP_NOT_EXISTED));
+
+        if(token.isUsed() || token.getExpiryTime().isBefore(LocalDateTime.now())){
+            throw new AppException(ErrorCode.OTP_CODE_EXPIRED);
+        }
+
+        User user = token.getUser();
+        user.setPassword(request.getNewPassword());
+        userRepository.save(user);
+
+        token.setUsed(true);
+        passwordResetTokenRepository.save(token);
     }
 
 }
