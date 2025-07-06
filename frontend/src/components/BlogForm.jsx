@@ -87,7 +87,6 @@ export default function BlogForm({ initialData = null, onSubmit, onCancel }) {
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Blog Title"
         className="w-full p-2 mb-4 border rounded"
-        required
       />
 
       <div className="mb-4">

@@ -26,6 +26,8 @@ import ReceiveDetail from '../components/ReceiveDetail';
 import DonationDetail from '../components/DonationDetail';
 import Components from '../pages/Components';
 import LayoutStaff from '../Layouts/LayoutStaff';
+import ForgotPassword from '../pages/ForgotPassword';
+import ResetPassword from '../pages/ResetPassword';
 
 export default function AppRoutes() {
   const { role } = useApp();
@@ -36,6 +38,8 @@ export default function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/verify-otp" element={<OTP />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
       <Route path="/chat" element={<WidgetChat />} />
       <Route path="/rep" element={<ReplyWidgetChat />} />
       <Route path="/forum" element={<Forum />} />

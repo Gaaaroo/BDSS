@@ -29,7 +29,7 @@ export default function CommentSection({
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       handleSendComment();
-      console.log('đây' + currentUserId);
+      // console.log('đây' + currentUserId);
     }
   };
 
@@ -50,7 +50,7 @@ export default function CommentSection({
           onKeyDown={handleKeyDown}
         />
         <button
-          className="ml-2 px-3 py-2 bg-cyan-600 text-white rounded"
+          className="ml-2 px-3 py-2 bg-cyan-600 text-white rounded cursor-pointer"
           onClick={handleSendComment}
         >
           Comment
@@ -59,8 +59,6 @@ export default function CommentSection({
       <div>
         {comments.map(
           (c, index) => (
-            console.log(c),
-            (
               <div
                 key={c.commentId || index}
                 className="mb-1 text-sm text-gray-200 flex justify-between items-center"
@@ -80,8 +78,8 @@ export default function CommentSection({
                   </span>
                   {String(c.userId) === String(currentUserId) ? (
                     <button
-                      className="ml-2 text-gray-400 hover:text-red-500"
-                      title="Xóa bình luận"
+                      className="ml-2 text-gray-400 hover:text-white cursor-pointer"
+                      title="Delete"
                       onClick={() => handleDeleteComment(c.commentId)}
                     >
                       <BiTrash />
@@ -95,7 +93,6 @@ export default function CommentSection({
                   )}
                 </div>
               </div>
-            )
           )
         )}
       </div>
