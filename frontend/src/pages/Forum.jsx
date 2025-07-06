@@ -13,12 +13,19 @@ import { useLocation } from 'react-router-dom';
 import { deleteComment } from '../services/api/commentService';
 import Footer from '../components/Footer';
 import ErrorModal from '../components/ErrorModal';
+import CustomModal from '../components/CustomModal';
+import PostModal from '../components/PostModal';
 
 function Forum() {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState('');
   const [errorModal, setErrorModal] = useState({ open: false, message: '' });
-
+  //confirm delete
+  const [showModal, setShowModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState({
+    postId: null,
+    commentId: null,
+  });
   //search
   const [keyword, setKeyword] = useState('');
   const [searchKey, setSearchKey] = useState('');
@@ -47,7 +54,7 @@ function Forum() {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        console.log('Search keyword:', keyword);
+        // console.log('Search keyword:', keyword);
         let data;
         if (keyword.trim() === '') {
           data = await getForumPosts();
@@ -62,7 +69,7 @@ function Forum() {
             comments: post.comments || [],
           }))
         );
-        console.log('Posts fetched successfully', data);
+        // console.log('Posts fetched successfully', data);
         setError('');
       } catch (error) {
         if (error.response.data.code === 1015) setError('Not found posts');
@@ -125,18 +132,18 @@ function Forum() {
       alert('Comment must be less than 100 characters.');
       return;
     }
-    console.log('Adding comment to post:', postId, content);
+    // console.log('Adding comment to post:', postId, content);
 
     try {
       await createComment({ content, postId: postId });
-      console.log(postId, content);
+      // console.log(postId, content);
       let data;
       if (keyword.trim() === '') {
         data = await getForumPosts();
       } else {
         data = await searchForumPosts(keyword);
       }
-      console.log('Comments fetched successfully', data);
+      // console.log('Comments fetched successfully', data);
 
       setPosts(
         data.map((post) => ({
@@ -177,46 +184,49 @@ function Forum() {
   }
 
   //Handle delete comment
-  const handleDeleteComment = async (postId, commentId) => {
-    if (window.confirm('Are you sure you want to delete this post?')) {
-      console.log('Deleting comment with ID:', commentId);
-      try {
-        await deleteComment(commentId);
-        //Remove the comment from the comments array
-        setPosts((posts) =>
-          posts.map((post) =>
-            post.id === postId
-              ? {
-                  ...post,
-                  comments: post.comments.filter(
-                    (c) => c.commentId !== commentId
-                  ),
-                }
-              : post
-          )
-        );
-      } catch (error) {
-        const backendMessage = error?.response?.data?.message;
-        const backendCode = error?.response?.data?.code;
-        setErrorModal({
-          open: true,
-          message: (
-            <>
-              {backendCode && (
-                <div className="font-semibold text-red-500 pb-2">
-                  Error code: {backendCode}
-                </div>
-              )}
-              <div>
-                {backendMessage ||
-                  'Failed to delete comment. Please try again.'}
+
+  const handleDeleteComment = (postId, commentId) => {
+    setDeleteTarget({ postId, commentId });
+    setShowModal(true);
+  };
+
+  const handleConfirmDelete = async (postId, commentId) => {
+    try {
+      await deleteComment(commentId);
+      //Remove the comment from the comments array
+      setPosts((posts) =>
+        posts.map((post) =>
+          post.id === postId
+            ? {
+                ...post,
+                comments: post.comments.filter(
+                  (c) => c.commentId !== commentId
+                ),
+              }
+            : post
+        )
+      );
+      setShowModal(false);
+    } catch (error) {
+      const backendMessage = error?.response?.data?.message;
+      const backendCode = error?.response?.data?.code;
+      setErrorModal({
+        open: true,
+        message: (
+          <>
+            {backendCode && (
+              <div className="font-semibold text-red-500 pb-2">
+                Error code: {backendCode}
               </div>
-            </>
-          ),
-        });
-        console.log('DSMessage:', backendMessage);
-        console.log('Code:', backendCode);
-      }
+            )}
+            <div>
+              {backendMessage || 'Failed to delete comment. Please try again.'}
+            </div>
+          </>
+        ),
+      });
+      console.log('DSMessage:', backendMessage);
+      console.log('Code:', backendCode);
     }
   };
 
@@ -252,53 +262,14 @@ function Forum() {
         )}
 
         {open && (
-          <>
-            {/* Overlay mờ nền */}
-            <div className="fixed inset-0 bg-black/10 backdrop-blur-xs z-40"></div>
-            {/* Khung post */}
-            <div className="fixed inset-0 flex items-center justify-center z-50 w-full]">
-              <div
-                className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative
-              "
-              >
-                <button
-                  className="absolute top-1 right-2 mr-1.5 text-gray-500 hover:text-red-500 text-2xl"
-                  onClick={handleClosePost}
-                >
-                  ×
-                </button>
-                <h2 className="text-xl font-bold mb-4 text-center text-black">
-                  New post
-                </h2>
-                <input
-                  className="w-full mb-2 p-2 border rounded text-black"
-                  placeholder="Your title"
-                  value={newPost.title}
-                  onChange={(e) =>
-                    setNewPost({ ...newPost, title: e.target.value })
-                  }
-                />
-                <textarea
-                  className="w-full mb-2 p-2 border rounded text-black"
-                  placeholder="Your content"
-                  value={newPost.content}
-                  onChange={(e) =>
-                    setNewPost({ ...newPost, content: e.target.value })
-                  }
-                />
-                <div className="flex justify-center">
-                  <button
-                    className="bg-[#FFA1A1] text-white px-4 py-2 rounded hover:scale-105
-                  transition-all duration-300 hover:bg-red-600 flex items-center justify-center
-                  hover: font-bold mt-1.5"
-                    onClick={handleCreatePost}
-                  >
-                    Post
-                  </button>
-                </div>
-              </div>
-            </div>
-          </>
+          <PostModal
+            open={open}
+            title="New post"
+            formData={newPost}
+            setFormData={setNewPost}
+            onClose={handleClosePost}
+            onSubmit={handleCreatePost}
+          />
         )}
       </div>
 
@@ -353,6 +324,22 @@ function Forum() {
             </div>
           ))}
         </div>
+      )}
+      {showModal && (
+        <CustomModal
+          title="Confirm deletion"
+          onCancel={() => {
+            setShowModal(false);
+          }}
+          onOk={() =>
+            handleConfirmDelete(deleteTarget.postId, deleteTarget.commentId)
+          }
+          okLable="Delete"
+        >
+          <p className="text-gray-700 mb-6">
+            Are you sure you want to delete this comment?
+          </p>
+        </CustomModal>
       )}
       <Footer />
     </>

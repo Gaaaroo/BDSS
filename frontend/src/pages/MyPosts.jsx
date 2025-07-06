@@ -12,6 +12,10 @@ import { BiTrash, BiEdit } from 'react-icons/bi';
 import { deleteComment, createComment } from '../services/api/commentService';
 import Footer from '../components/Footer';
 import LoadingPage from '../components/LoadingPage';
+import CustomModal from '../components/CustomModal';
+import { toast } from 'react-toastify';
+import { commentSchema } from '../Validations/postValidation';
+import PostModal from '../components/PostModal';
 
 function MyPosts() {
   const [posts, setPosts] = useState([]);
@@ -20,6 +24,14 @@ function MyPosts() {
   const [open, setOpen] = useState(false);
   const [editingPost, setEditingPost] = useState(null);
   const [editData, setEditData] = useState({ title: '', content: '' });
+
+  //confirm delete
+  const [showModal, setShowModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState({
+    postId: null,
+    commentId: null,
+  });
+  const [deleteType, setDeleteType] = useState(''); // 'post' hoặc 'comment'
 
   // Get posts of current user
   useEffect(() => {
@@ -43,15 +55,10 @@ function MyPosts() {
   }, []);
 
   // Handle delete post
-  const handleDeletePost = async (postId) => {
-    if (window.confirm('Are you sure you want to delete this post?')) {
-      try {
-        await deletePost(postId);
-        setPosts(posts.filter((post) => post.id !== postId));
-      } catch (err) {
-        console.error('Failed to delete post:', err);
-      }
-    }
+  const handleDeletePost = (postId) => {
+    setDeleteTarget({ postId, commentId: null });
+    setDeleteType('post');
+    setShowModal(true);
   };
 
   // Handle edit post
@@ -64,16 +71,9 @@ function MyPosts() {
 
   // Handle add comment
   const handleAddComment = async (postId, content) => {
-    if (!content) {
-      alert('Please enter content.');
-      return;
-    }
-
-    if (content.length > 100) {
-      alert('Comment must be less than 100 characters.');
-      return;
-    }
     try {
+      // Validate input
+      await commentSchema.validate({ content });
       // Gọi API tạo comment mới
       const newComment = await createComment({ content, postId: postId });
       // Cập nhật lại state posts để thêm comment mới vào đúng post
@@ -85,11 +85,13 @@ function MyPosts() {
         )
       );
     } catch (error) {
-      console.error('Failed to add comment:', error?.response?.data?.code);
-      alert('Failed to add comment!');
+      if (error.name === 'ValidationError') {
+        toast.error(error.message);
+      } else {
+        toast.error('Failed to add comment!');
+      }
     }
   };
-
   // Handle save edited post
   const handleClosePost = () => {
     setOpen(false);
@@ -119,27 +121,39 @@ function MyPosts() {
   };
 
   //Handle delete comment
-  const handleDeleteComment = async (postId, commentId) => {
-    if (window.confirm('Are you sure you want to delete this post?')) {
-      console.log('Deleting comment with ID:', commentId);
-      try {
-        await deleteComment(commentId);
-        //Remove the comment from the comments array
+  const handleDeleteComment = (postId, commentId) => {
+    setDeleteTarget({ postId, commentId });
+    setDeleteType('comment');
+    setShowModal(true);
+  };
+
+  //handle confirm delete comment and post
+  const handleConfirmDelete = async () => {
+    try {
+      if (deleteType === 'post') {
+        await deletePost(deleteTarget.postId);
+        setPosts(posts.filter((post) => post.id !== deleteTarget.postId));
+      } else if (deleteType === 'comment') {
+        await deleteComment(deleteTarget.commentId);
         setPosts((posts) =>
           posts.map((post) =>
-            post.id === postId
+            post.id === deleteTarget.postId
               ? {
                   ...post,
                   comments: post.comments.filter(
-                    (c) => c.comment_id !== commentId
+                    (c) => c.commentId !== deleteTarget.commentId
                   ),
                 }
               : post
           )
         );
-      } catch (err) {
-        console.error('Failed to delete post:', err);
       }
+    } catch (err) {
+      console.error('Failed to delete:', err);
+    } finally {
+      setShowModal(false);
+      setDeleteTarget({ postId: null, commentId: null });
+      setDeleteType('');
     }
   };
 
@@ -179,15 +193,15 @@ function MyPosts() {
               >
                 {/* Nút thùng rác Boxicon */}
                 <button
-                  className="absolute top-3 right-12 text-gray-400 hover:text-cyan-500 text-2xl"
-                  title="Cập nhật bài viết"
+                  className="absolute top-3 right-12 text-gray-400 hover:text-white text-2xl cursor-pointer"
+                  title="Update"
                   onClick={() => handleEditPost(post.id)}
                 >
                   <BiEdit />
                 </button>
                 <button
-                  className="absolute top-3 right-3 text-gray-400 hover:text-red-500 text-2xl"
-                  title="Xóa bài viết"
+                  className="absolute top-3 right-3 text-gray-400 hover:text-white text-2xl cursor-pointer"
+                  title="Delete"
                   onClick={() => handleDeletePost(post.id)}
                 >
                   <BiTrash />
@@ -235,48 +249,34 @@ function MyPosts() {
       </div>
 
       {open && (
-        <>
-          <div className="fixed inset-0 bg-black/10 backdrop-blur-xs z-40"></div>
-          <div className="fixed inset-0 flex items-center justify-center z-50 w-full">
-            <div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative">
-              <button
-                className="absolute top-1 right-2 mr-1.5 text-gray-500 hover:text-red-500 text-2xl"
-                onClick={handleClosePost}
-              >
-                ×
-              </button>
-              <h2 className="text-xl font-bold mb-4 text-center text-black">
-                Update Post
-              </h2>
-              <input
-                className="w-full mb-2 p-2 border rounded text-black"
-                placeholder="Your title"
-                value={editData.title}
-                onChange={(e) =>
-                  setEditData({ ...editData, title: e.target.value })
-                }
-              />
-              <textarea
-                className="w-full mb-2 p-2 border rounded text-black"
-                placeholder="Your content"
-                value={editData.content}
-                onChange={(e) =>
-                  setEditData({ ...editData, content: e.target.value })
-                }
-              />
-              <div className="flex justify-center">
-                <button
-                  className="bg-[#FFA1A1] text-white px-4 py-2 rounded hover:scale-105
-                  transition-all duration-300 hover:bg-red-600 flex items-center justify-center
-                  font-bold mt-1.5"
-                  onClick={handleUpdatePost}
-                >
-                  Update
-                </button>
-              </div>
-            </div>
-          </div>
-        </>
+        <PostModal
+          open={open}
+          title="Update Post"
+          formData={editData}
+          setFormData={setEditData}
+          onClose={handleClosePost}
+          onSubmit={handleUpdatePost}
+          isUpdate
+        />
+      )}
+      {showModal && (
+        <CustomModal
+          title="Confirm deletion"
+          onCancel={() => {
+            setShowModal(false);
+            setDeleteTarget({ postId: null, commentId: null });
+            setDeleteType('');
+          }}
+          onOk={() => {
+            handleConfirmDelete(deleteTarget.postId, deleteTarget.commentId);
+          }}
+          okLable="Delete"
+        >
+          <p className="text-gray-700 mb-6">
+            Are you sure you want to delete this{' '}
+            {deleteType === 'post' ? 'post' : 'comment'}?
+          </p>
+        </CustomModal>
       )}
       <Footer />
     </>

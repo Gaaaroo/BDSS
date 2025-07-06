@@ -63,12 +63,15 @@ export default function MemberManagement() {
               <th className="px-4 py-2 text-left">Phone</th>
               <th className="px-4 py-2 text-left">Email</th>
               <th className="px-4 py-2 text-left">Address</th>
-              <th className="px-4 py-2 text-left">Action</th>
             </tr>
           </thead>
           <tbody>
             {filteredUsers.map((user, idx) => (
-              <tr key={idx} className="even:bg-rose-100">
+              <tr
+                key={idx}
+                className="even:bg-rose-100 cursor-pointer"
+                onClick={() => setSelectedItem(user)}
+              >
                 <td className="px-4 py-2">{idx + 1}</td>
                 <td className="px-4 py-2 font-medium  w-[200px]">
                   {user?.fullName}
@@ -81,14 +84,6 @@ export default function MemberManagement() {
                   {user?.address?.length > 30
                     ? user.address.slice(0, 30) + '...'
                     : user.address}
-                </td>
-                <td className="py-2 text-center space-x-1">
-                  <button
-                    className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-500 text-xs"
-                    onClick={() => setSelectedItem(user)}
-                  >
-                    View
-                  </button>
                 </td>
               </tr>
             ))}
