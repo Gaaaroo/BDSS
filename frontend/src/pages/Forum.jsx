@@ -15,6 +15,8 @@ import Footer from '../components/Footer';
 import ErrorModal from '../components/ErrorModal';
 import CustomModal from '../components/CustomModal';
 import PostModal from '../components/PostModal';
+import { toast } from 'react-toastify';
+import { commentSchema, postSchema } from '../Validations/postValidation';
 
 function Forum() {
   const [open, setOpen] = useState(false);
@@ -83,22 +85,9 @@ function Forum() {
   // handle create post
   const handleCreatePost = async () => {
     //e.preventDefault();
-    if (!newPost.title || !newPost.content) {
-      alert('Please enter both title and content.');
-      return;
-    }
-
-    if (newPost.title.length > 100) {
-      alert('Title must be less than 100 characters.');
-      return;
-    }
-
-    if (newPost.content.length > 100) {
-      alert('Content must be less than 100 characters.');
-      return;
-    }
 
     try {
+      await postSchema.validate(newPost, { abortEarly: false });
       await createPost(newPost);
       setNewPost({ title: '', content: '' });
       setOpen(false);
@@ -117,24 +106,23 @@ function Forum() {
       );
       setError('');
     } catch (error) {
-      setError('Post failed. Please try again.');
+      console.log('err', error)
+      if (error.name === 'ValidationError') {
+        error.errors.forEach((message) => {
+          toast.error(message);
+        });
+      } else {
+        setError('Post failed. Please try again.');
+      }
     }
   };
 
   // create comment for a post
   const handleAddComment = async (postId, content) => {
-    if (!content) {
-      alert('Please enter content.');
-      return;
-    }
-
-    if (content.length > 100) {
-      alert('Comment must be less than 100 characters.');
-      return;
-    }
     // console.log('Adding comment to post:', postId, content);
 
     try {
+      await commentSchema.validate({ content });
       await createComment({ content, postId: postId });
       // console.log(postId, content);
       let data;
@@ -154,9 +142,14 @@ function Forum() {
       );
       setError('');
     } catch (error) {
-      console.error('Add comment error:', error);
-
-      setError('Comment failed. Please try again.');
+      if (error.name === 'ValidationError') {
+        error.errors.forEach((message) => {
+          toast.error(message);
+        });
+      } else {
+        // console.error('Add comment error:', error);
+        setError('Comment failed. Please try again.');
+      }
     }
   };
 
