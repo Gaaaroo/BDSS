@@ -11,6 +11,9 @@ import BlogForm from '../components/BlogForm';
 import BlogDetail from '../components/BlogDetail';
 import { Pencil, Eye, Trash2 } from 'lucide-react';
 import Pagination from '../components/Pagination';
+import CustomModal from '../components/CustomModal';
+import { blogSchema } from '../Validations/blogValidation';
+import { toast } from 'react-toastify';
 
 export default function BlogManagement() {
   const [blogs, setBlogs] = useState([]);
@@ -21,6 +24,9 @@ export default function BlogManagement() {
   const [editBlog, setEditBlog] = useState(null);
   const [searchUsername, setSearchUsername] = useState('');
   const [viewBlog, setViewBlog] = useState(null);
+  //confirm delete
+  const [showModal, setShowModal] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState({blogId: null});
 
   useEffect(() => {
     fetchData();
@@ -58,6 +64,7 @@ export default function BlogManagement() {
 
   const handleFormSubmit = async (formData) => {
     try {
+      await blogSchema.validate(formData, { abortEarly: false });
       if (editBlog) {
         await updateBlog(editBlog.blogId, formData);
       } else {
@@ -66,7 +73,13 @@ export default function BlogManagement() {
       setShowForm(false);
       fetchData();
     } catch (error) {
-      console.error('Error saving blog:', error);
+      if (error.name === 'ValidationError') {
+        error.errors.forEach((msg) => {
+          toast.error(msg); // mỗi lỗi hiển thị riêng
+        });
+      } else {
+        toast.error('Error saving blog');
+      }
     }
   };
 
@@ -88,10 +101,17 @@ export default function BlogManagement() {
     setViewBlog(blog);
   };
 
-  const handleDeleteClick = async (blogId) => {
-    if (window.confirm('Are you sure you want to delete this blog?')) {
+  const handleDeleteClick = (blogId) => {
+    setDeleteTarget({ blogId: blogId });
+    setShowModal(true);
+  };
+
+  const handleConfirmDelete = async (blogId) => {
       try {
         await deleteBlog(blogId);
+
+        setShowModal(false);
+        setDeleteTarget({postId: null});
         // Nếu trang hiện tại có 1 blog duy nhất, sau khi xóa thì chuyển về trang trước
         if (blogs.length === 1 && page > 0) {
           setPage((prev) => prev - 1); // sẽ tự trigger useEffect
@@ -102,7 +122,6 @@ export default function BlogManagement() {
       } catch (error) {
         console.error('Error deleting blog:', error);
       }
-    }
   };
   return (
     <div className="flex">
@@ -290,6 +309,23 @@ export default function BlogManagement() {
           </div>
         )}
       </div>
+      {showModal && (
+        <CustomModal
+          title="Confirm deletion"
+          onCancel={() => {
+            setShowModal(false);
+            setDeleteTarget({ postId: null, commentId: null });
+          }}
+          onOk={() =>
+            handleConfirmDelete(deleteTarget.blogId)
+          }
+          okLable="Delete"
+        >
+          <p className="text-gray-700 mb-6">
+            Are you sure you want to delete this blog?
+          </p>
+        </CustomModal>
+      )}
     </div>
   );
 }
