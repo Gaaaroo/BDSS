@@ -210,7 +210,7 @@ export default function Navbar({ mode }) {
           <>
             <LogoNavbar />
             <button
-              className="ml-4 px-5 py-1.5 text-white bg-red-700 font-bold rounded-lg border-2 border-red-700 hover:bg-red-500 hover:text-white transition"
+              className="ml-4 px-5 py-1.5 text-white bg-red-700 font-bold rounded-lg border-2 border-red-700 hover:bg-red-500 hover:text-white transition cursor-pointer"
               onClick={handleMyPostsClick}
             >
               My Posts
@@ -222,7 +222,7 @@ export default function Navbar({ mode }) {
           <>
             <LogoNavbar />
             <button
-              className="ml-4 px-5 py-1.5 text-white bg-red-700 font-bold rounded-lg border-2 border-red-700 hover:bg-red-500 hover:text-white transition"
+              className="ml-4 px-5 py-1.5 text-white bg-red-700 font-bold rounded-lg border-2 border-red-700 hover:bg-red-500 hover:text-white transition cursor-pointer"
               onClick={handleForumClick}
             >
               Forum

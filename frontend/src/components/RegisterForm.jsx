@@ -46,7 +46,7 @@ export default function RegisterForm() {
         setFormError(errors);
       } else {
         setError(
-          err.response?.data?.message ||
+          error.response?.data?.message ||
             'Registration failed. Please try again.'
         );
       }
@@ -66,7 +66,7 @@ export default function RegisterForm() {
           </p>
         </div>
         {/* Right: Form */}
-        <div className="w-full md:w-1/2 p-10">
+        <div className="w-full md:w-1/2 px-10 pt-5">
           <div className="flex flex-col items-center mb-5">
             <BackHome className="h-16 w-auto mb-2" />
 

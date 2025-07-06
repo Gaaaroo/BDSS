@@ -1,52 +1,46 @@
-import React, { useRef, useState, useEffect, use } from "react";
-import { db } from "../services/api/firebase";
-import dayjs from "dayjs";
-import { nanoid } from "nanoid";
-import { onValue, push, ref, set, remove } from "firebase/database";
-import { useNavigate } from "react-router-dom";
+import React, { useRef, useState, useEffect, useContext } from 'react';
+import { db } from '../services/api/firebase';
+import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
+import { onValue, push, ref, set, remove } from 'firebase/database';
+import { useNavigate } from 'react-router-dom';
+import { useApp } from '../Contexts/AppContext';
 
 export default function WidgetChat() {
   const [open, setOpen] = useState(false);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
-  // Handle sending a message
 
-  const [message, setMessage] = useState("");
-  const [name, setName] = useState("");
+  // Handle sending a message
+  const [message, setMessage] = useState('');
+  const [name, setName] = useState('');
   const [selectedRoom, setSelectedRoom] = useState({});
   const [messages, setMessages] = useState([]);
 
-  const [conversations, setConversation] = useState([
-    {
-      id: 1,
-      name: "Alice",
-      lastMessage: "Hello, how are you?",
-      date: Date.now(),
-      unread: false,
-    },
-  ]);
+  // Require fullName
+  const { profile } = useApp();
 
-  //   const handleSend = () => {
-  //     if (!input.trim()) return;
-  //     const newMessages = [...messages, { from: "user", text: input.trim() }];
-  //     setMessages(newMessages);
-  //     setInput("");
-  //     setTimeout(() => {
-  //       setMessages((prev) => [
-  //         ...prev,
-  //         { from: "bot", text: "Hello! This is a sample reply." },
-  //       ]);
-  //       scrollToBottom();
-  //     }, 1000);
-  //     scrollToBottom();
-  //   };
+  const [requireName, setRequireName] = useState(false);
+  const [tempName, setTempName] = useState('');
 
+  //const [tempName, setTempName] = useState('');
+
+  // const [conversations, setConversation] = useState([
+  //   {
+  //     id: 1,
+  //     name: 'Alice',
+  //     lastMessage: 'Hello, how are you?',
+  //     date: Date.now(),
+  //     unread: false,
+  //   },
+  // ]);
+
+  // Get the user's name from localStorage or prompt
   const [roomId, setRoomId] = useState(() => {
-    let id = localStorage.getItem("roomId");
+    let id = localStorage.getItem('roomId');
     if (!id) {
-      //   id = Date.now().toString();
       id = nanoid(5);
-      localStorage.setItem("roomId", id);
+      localStorage.setItem('roomId', id);
     }
     return id;
   });
@@ -85,7 +79,7 @@ export default function WidgetChat() {
         } else {
           setMessages([]);
         }
-        console.log("Messages:", data);
+        console.log('Messages:', data);
         return () => unsubscribe();
       },
       [roomId]
@@ -97,20 +91,20 @@ export default function WidgetChat() {
   }, [roomId]);
 
   // Create a new conversation
-  const handleCreateConversation = () => {
+  const handleCreateConversation = (customName) => {
     try {
       const newConversation = {
         id: roomId,
-        name: `User ${roomId}`,
-        lastMessage: "",
+        name: profile?.fullName || name || customName,
+        lastMessage: '',
         date: Date.now(),
         unread: false,
       };
-      set(ref(db, "conversations/" + roomId), newConversation);
+      set(ref(db, 'conversations/' + roomId), newConversation);
       setSelectedRoom(newConversation);
-      console.log("Conversation created:", newConversation);
+      console.log('Conversation created:', newConversation);
     } catch (error) {
-      console.error("Error creating conversation:", error);
+      console.error('Error creating conversation:', error);
     }
   };
 
@@ -121,7 +115,8 @@ export default function WidgetChat() {
 
       // 2. Tạo object tin nhắn mới với tên, nội dung và thời gian gửi
       const newMessage = {
-        name: name,
+        name: profile?.fullName || name,
+        userId: profile?.email || roomId,
         content: message,
         date: Date.now(),
       };
@@ -133,19 +128,23 @@ export default function WidgetChat() {
       set(ref(db, `conversations/${roomId}/lastMessage`), message);
       set(ref(db, `conversations/${roomId}/date`), Date.now());
       // 4. Cập nhật state messages để hiển thị tin nhắn mới
-      console.log("Message sent:", newMessage);
+      console.log('Message sent:', newMessage);
     } catch (error) {
-      console.error("Error sending message:", error);
+      console.error('Error sending message:', error);
     }
     // 5. Sau khi gửi xong thì xóa nội dung ô nhập (reset input)
-    setMessage("");
+    setMessage('');
     scrollToBottom();
   };
 
   // Open the chat widget
-  const handleOpenChat = () => {
+  const handleOpenChat = (customName) => {
     if (!selectedRoom.id) {
-      handleCreateConversation();
+      handleCreateConversation(customName);
+    }
+    if (!profile?.fullName && !(customName || name)) {
+      setRequireName(true);
+      return;
     }
     setOpen(true);
     scrollToBottom();
@@ -154,8 +153,8 @@ export default function WidgetChat() {
     setTimeout(() => {
       if (messages.length === 0) {
         const autoMessage = {
-          name: "Admin",
-          content: "Hello! How can we help you?",
+          name: 'Admin',
+          content: 'Hello! How can we help you?',
           date: Date.now(),
         };
         // Push autoMessage lên Firebase
@@ -164,13 +163,71 @@ export default function WidgetChat() {
     }, 500);
   };
 
+  // handle name submission
+  const handleConfirmName = () => {
+    const valid =
+      tempName.trim().length >= 2 && !/[^a-zA-ZÀ-ỹ\s]/.test(tempName);
+    if (!valid) {
+      alert(
+        'The name must be at least 2 characters long and cannot contain special characters!'
+      );
+      return;
+    }
+
+    setName(tempName.trim());
+    //close ask name
+    setRequireName(false);
+    //open chat
+    setTempName('');
+
+    setTimeout(() => {
+      handleOpenChat(tempName.trim());
+    }, 0);
+  };
+
+  // Reset state when logout
+  useEffect(() => {
+    if (!profile) {
+      // Khi logout, reset toàn bộ state chat và tạo roomId mới cho guest
+      setSelectedRoom({});
+      setMessages([]);
+      setName('');
+      setRequireName(false);
+      setTempName('');
+      setOpen(false);
+
+      // Tạo roomId mới cho guest
+      const newId = nanoid(5);
+      localStorage.setItem('roomId', newId);
+      setRoomId(newId);
+    }
+  }, [profile]);
+
+  //  xử lý NAME sau login
+  useEffect(() => {
+    console.log('Profile changed:', profile);
+    if (
+      profile?.fullName &&
+      selectedRoom.id &&
+      selectedRoom.name !== profile.fullName
+    ) {
+      set(ref(db, `conversations/${roomId}/name`), profile.fullName);
+      setSelectedRoom((prev) => ({ ...prev, name: profile.fullName }));
+    }
+  });
+
+  const isMyMessage = (msg) => {
+    const myId = profile?.email || roomId;
+    return msg.userId === myId;
+  };
+
   // Close the chat widget
   const handleCloseChat = () => {
     if (messages.length > 0) {
       messages.forEach((msg) => {
         if (
-          msg.name === "Admin" &&
-          msg.content === "Hello! How can we help you?"
+          msg.name === 'Admin' &&
+          msg.content === 'Hello! How can we help you?'
         ) {
           // Xóa message này khỏi Firebase
           remove(ref(db, `conversations/${roomId}/messages/${msg.id}`));
@@ -179,24 +236,29 @@ export default function WidgetChat() {
     }
 
     // Lọc tin nhắn vs name (Auto-msg)
-    const realMessages = messages.filter((msg) => msg.name !== "Auto-msg");
+    const realMessages = messages.filter((msg) => msg.name !== 'Auto-msg');
 
     // Nếu chưa có tin nhắn nào thì xóa room
     if (selectedRoom.id && realMessages.length === 0) {
       remove(ref(db, `conversations/${roomId}`));
       setSelectedRoom({});
     }
+
+    if (!profile) {
+      localStorage.removeItem('roomId');
+    }
+
     setOpen(false);
   };
 
   // Handle Enter key to send message
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") handleSend();
+    if (e.key === 'Enter') handleSend();
   };
 
   const scrollToBottom = () => {
     setTimeout(() => {
-      messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, 100);
   };
 
@@ -204,11 +266,51 @@ export default function WidgetChat() {
 
   return (
     <>
+      {/* Modal nhập tên nếu chưa có tên */}
+      {requireName && (
+        <div
+          className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center"
+          onClick={() => setRequireName(false)} // Click outside to close modal
+        >
+          <div
+            className="bg-white p-6 rounded-lg shadow-lg flex flex-col items-center relative w-105"
+            onClick={(e) => e.stopPropagation()} // Prevent modal close when clicking inside
+          >
+            {/* X button to close modal */}
+            <button
+              className="absolute top-1 right-3 text-gray-400 hover:text-[#F76C6C] text-2xl font-bold"
+              onClick={() => setRequireName(false)}
+              aria-label="Close"
+            >
+              ×
+            </button>
+            <h3 className="mb-2 mt-2 text-lg font-semibold text-[#F76C6C]">
+              Please enter your name to start chatting
+            </h3>
+            <input
+              type="text"
+              className="border rounded px-3 py-2 mb-3 w-64 mt-4"
+              placeholder="Your name..."
+              value={tempName}
+              onChange={(e) => setTempName(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleConfirmName()}
+              autoFocus
+            />
+            <button
+              className="bg-[#F76C6C] text-white px-4 py-1 mt-3 font-semibold
+              rounded-[50px]"
+              onClick={handleConfirmName}
+            >
+              Start chat
+            </button>
+          </div>
+        </div>
+      )}
       {!open && (
         <div className="fixed bottom-22.5 right-5 flex flex-col z-50">
           <div
             className="w-14 h-14 bg-cyan-300 rounded-full flex items-center justify-center cursor-pointer"
-            onClick={() => navigate("/forum")}
+            onClick={() => navigate('/forum')}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -276,7 +378,7 @@ export default function WidgetChat() {
         {!open && (
           <div
             className="w-14 h-14 bg-cyan-300 rounded-full flex items-center justify-center cursor-pointer text-3xl"
-            onClick={handleOpenChat} // Open chat widget
+            onClick={() => handleOpenChat()} // Open chat widget
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -301,8 +403,8 @@ export default function WidgetChat() {
             className="absolute bottom-20 right-0 w-96 max-w-[95vw] bg-[#FFDEDE] rounded-md border border-[#FFDEDE]
           shadow-lg flex flex-col transition-all text-sm"
             style={{
-              height: "70vh",
-              maxHeight: "70vh",
+              height: '70vh',
+              maxHeight: '70vh',
             }}
           >
             {/* Header */}
@@ -338,22 +440,22 @@ export default function WidgetChat() {
                 <div
                   key={idx}
                   className={`flex mb-2 ${
-                    msg.name === name ? "justify-end" : ""
+                    isMyMessage(msg) ? 'justify-end' : ''
                   }`}
                 >
                   <div
                     className={`rounded-[10px] py-[6px] px-4 max-w-[70%] break-words  ${
-                      msg.name === name
-                        ? "bg-[#ffa3a3] text-white "
-                        : "bg-orange-100 text-black"
+                      isMyMessage(msg)
+                        ? 'bg-[#ffa3a3] text-white '
+                        : 'bg-orange-100 text-black'
                     } flex flex-col`}
                   >
                     <span
                       className={`text-[9px] text-gray-500 mt-1 ${
-                        msg.name === name ? "self-end" : "self-start"
+                        isMyMessage(msg) ? 'self-end' : 'self-start'
                       }`}
                     >
-                      {dayjs(msg.date).format("HH:mm - DD/MM/YYYY")}
+                      {dayjs(msg.date).format('HH:mm - DD/MM/YYYY')}
                     </span>
                     <span>{msg.content}</span>
                   </div>
@@ -362,17 +464,17 @@ export default function WidgetChat() {
               <div ref={messagesEndRef} />
               <div className="w-full flex justify-end">
                 {messages.length > 0 &&
-                  messages[messages.length - 1].name === name && (
+                  isMyMessage(messages[messages.length - 1]) && (
                     <span
                       className={`flex flex-end text-[8px] mr-1
           ${
             selectedRoom.unread
-              ? "text-gray-500 font-normal"
-              : "text-black font-semibold"
+              ? 'text-gray-500 font-normal'
+              : 'text-black font-semibold'
           }
         `}
                     >
-                      {selectedRoom.unread ? "sent" : "seen"}
+                      {selectedRoom.unread ? 'sent' : 'seen'}
                     </span>
                   )}
               </div>
