@@ -1,15 +1,28 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import BackHome from '../components/BackHome';
+import { resetPassword } from '../services/api/authService';
+import { resetPasswordSchema } from '../Validations/userValidation';
 
 export default function ResetPassword() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [token, setToken] = useState('');
   const [form, setForm] = useState({
     newPassword: '',
     confirmPassword: '',
   });
   const [formError, setFormError] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  const [apiError, setApiError] = useState('');
+  //Lấy token từ URL
+  useEffect(() => {
+    const tokenFromURL = searchParams.get('token');
+    if (tokenFromURL) {
+      // console.log('token ne:', tokenFromURL);
+      setToken(tokenFromURL);
+    }
+  }, [searchParams]);
 
   const handleChange = (e) => {
     setForm({
@@ -17,29 +30,27 @@ export default function ResetPassword() {
       [e.target.name]: e.target.value,
     });
     setFormError({});
+    setApiError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const errors = {};
-    if (!form.newPassword.trim()) {
-      errors.newPassword = 'Please enter a new password';
-    } else if (form.newPassword.length < 6) {
-      errors.newPassword = 'Password must be at least 6 characters';
+    try {
+      await resetPasswordSchema.validate(form, { abortEarly: false });
+      await resetPassword(token, form.newPassword);
+      setSubmitted(true);
+    } catch (err) {
+      const errors = {};
+      if (err.inner) {
+        err.inner.forEach((e) => {
+          errors[e.path] = e.message;
+        });
+        setFormError(errors);
+      } else {
+        setApiError(err.message || 'Reset failed. Please try again.');
+      }
     }
-
-    if (form.newPassword !== form.confirmPassword) {
-      errors.confirmPassword = 'Passwords do not match';
-    }
-
-    if (Object.keys(errors).length > 0) {
-      setFormError(errors);
-      return;
-    }
-
-    setSubmitted(true);
-    console.log('New password set successfully!');
   };
 
   return (
@@ -58,15 +69,8 @@ export default function ResetPassword() {
           </p>
 
           {submitted ? (
-            <div className="text-center bg-green-100 text-green-700 p-4 rounded-lg font-medium shadow">
+            <div className="text-center bg-green-100 text-green-700 py-2 rounded-lg font-medium shadow">
               Your password has been reset successfully!
-              <br />
-              <button
-                onClick={() => navigate('/login')}
-                className="mt-4 underline text-sm text-red-600 hover:text-red-700"
-              >
-                Go to Login
-              </button>
             </div>
           ) : (
             <form onSubmit={handleSubmit}>
@@ -78,6 +82,7 @@ export default function ResetPassword() {
                   type="password"
                   name="newPassword"
                   value={form.newPassword}
+                  autoComplete="new-password"
                   onChange={handleChange}
                   placeholder="Enter new password"
                   className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition text-black"
@@ -94,6 +99,7 @@ export default function ResetPassword() {
                   type="password"
                   name="confirmPassword"
                   value={form.confirmPassword}
+                  autoComplete="new-password"
                   onChange={handleChange}
                   placeholder="Re-enter new password"
                   className="w-full px-4 py-3 border border-rose-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 transition text-black"
