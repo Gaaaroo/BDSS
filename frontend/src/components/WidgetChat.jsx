@@ -309,7 +309,7 @@ export default function WidgetChat() {
       {!open && (
         <div className="fixed bottom-22.5 right-5 flex flex-col z-50">
           <div
-            className="w-14 h-14 bg-cyan-300 rounded-full flex items-center justify-center cursor-pointer"
+            className="w-14 h-14 bg-red-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-red-400 transition"
             onClick={() => navigate('/forum')}
           >
             <svg
@@ -377,7 +377,7 @@ export default function WidgetChat() {
         {/* Chat bubble */}
         {!open && (
           <div
-            className="w-14 h-14 bg-cyan-300 rounded-full flex items-center justify-center cursor-pointer text-3xl"
+            className="w-14 h-14 bg-red-500 rounded-full flex items-center justify-center cursor-pointer text-3xl hover:bg-red-400 transition"
             onClick={() => handleOpenChat()} // Open chat widget
           >
             <svg
