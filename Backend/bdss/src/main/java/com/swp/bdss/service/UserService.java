@@ -106,6 +106,13 @@ public class UserService {
         userRepository.deleteById(Integer.parseInt(userId));
     }
 
+    public void banUser(int userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        user.setStatus("BANNED");
+        userRepository.save(user);
+    }
+
     public List<UserResponse> findUserNearby(double lat, double lng, double radiusKm) {
         var context = SecurityContextHolder.getContext();
         int userId = Integer.parseInt(context.getAuthentication().getName());
