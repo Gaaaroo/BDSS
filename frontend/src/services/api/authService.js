@@ -73,3 +73,36 @@ export const resendOTP = async (resendOtpData) => {
     throw error;
   }
 };
+
+// Send password reset email
+export const forgotPassword = async (email) => {
+  try {
+    const res = await axiosClient.post('/auth/forgot-password', email);
+    console.log('res forgotPw: ', res);
+    return res;
+  } catch (error) {
+    console.log('error when sent link email reset pw', error);
+  }
+};
+
+//reset pw
+export const resetPassword = async (token, newPassword) => {
+  try {
+    const res = await axiosClient.post(
+      '/auth/reset-password',
+      {
+        token,
+        newPassword,
+      },
+      {
+        headers: {
+          Authorization: '', //xoá Authorization để tránh interceptor thêm vào
+        },
+      }
+    );
+    return res;
+  } catch (err) {
+    console.log('error when reset pw: ', err);
+    throw err;
+  }
+};

@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import BackHome from '../components/BackHome';
+import { forgotPassword } from '../services/api/authService';
+import LoadingPage from '../components/LoadingPage';
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email.trim()) {
@@ -16,10 +19,18 @@ export default function ForgotPassword() {
       return;
     }
 
-    setError('');
-    setSubmitted(true);
-    console.log('Reset link sent to:', email);
+    setLoading(true);
+    try {
+      await forgotPassword({ email });
+      setSubmitted(true);
+    } catch (err) {
+      setError(err.message || 'Failed to send reset link');
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (loading) return <LoadingPage />;
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-red-100 via-white to-rose-100">
@@ -37,8 +48,8 @@ export default function ForgotPassword() {
           </p>
 
           {submitted ? (
-            <div className="text-center bg-green-100 text-green-700 p-4 rounded-lg font-medium shadow">
-              A OTP code has been sent to <br />
+            <div className="text-center bg-green-100 text-green-700 py-2 rounded-lg font-medium shadow">
+              A reset link has been sent to <br />
               <span className="font-semibold">{email}</span>
             </div>
           ) : (

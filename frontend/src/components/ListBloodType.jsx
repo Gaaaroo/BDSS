@@ -5,22 +5,30 @@ import {
 } from '../services/api/inventoryService';
 import { toast } from 'react-toastify';
 import InventoryDetail from './InventoryDetail';
+import CustomModal from './CustomModal';
 
-export default function ListBloodType({ list }) {
+export default function ListBloodType({ list, fetchList }) {
   const [selectedBloodId, setSelectedBloodId] = useState(null);
   const [selectedComponents, setSelectedComponents] = useState([]);
   const [showSeparateModal, setShowSeparateModal] = useState(false);
   //Modal
   const [selectedItem, setSelectedItem] = useState(null);
+  //Confirm separate modal
+  const [showModal, setShowModal] = useState(false);
+  //Save data separate
+  const [confirmData, setConfirmData] = useState(null);
 
   const handleSeparate = async (selectedBloodId, selectedComponents) => {
     try {
       console.log('Id :', selectedBloodId);
       console.log('cpn', selectedComponents);
-      const res = await separateBloodUnit(selectedBloodId, selectedComponents);
-      await updateBloodStatus('Separated', selectedBloodId);
-      console.log('response:', res);
+      await Promise.all([
+        separateBloodUnit(selectedBloodId, selectedComponents),
+        updateBloodStatus('Separated', selectedBloodId),
+      ]);
       toast.success(`Blood separated successfully!`);
+      //Cập nhật lại danh sách
+      await fetchList();
       setShowSeparateModal(false);
       setSelectedComponents([]);
     } catch (err) {
@@ -187,7 +195,16 @@ export default function ListBloodType({ list }) {
               <button
                 className="px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-500 transition"
                 onClick={() => {
-                  handleSeparate(selectedBloodId, selectedComponents);
+                  if (selectedComponents.length === 0) {
+                    toast.warn('Please select at least one component.');
+                    return;
+                  }
+                  // Lưu thông tin chờ xác nhận
+                  setConfirmData({
+                    bloodId: selectedBloodId,
+                    components: selectedComponents,
+                  });
+                  setShowModal(true);
                 }}
               >
                 Confirm
@@ -201,6 +218,26 @@ export default function ListBloodType({ list }) {
           data={selectedItem}
           onClose={() => setSelectedItem(null)}
         />
+      )}
+      {showModal && (
+        <CustomModal
+          title="Confirm Separation"
+          onCancel={() => {
+            setShowModal(false);
+            setConfirmData(null);
+          }}
+          onOk={async () => {
+            if (confirmData) {
+              await handleSeparate(confirmData.bloodId, confirmData.components);
+            }
+            setShowModal(false);
+            setConfirmData(null);
+          }}
+        >
+          <p className="text-gray-700 mb-6">
+            Are you sure you want to separate the selected blood components?
+          </p>
+        </CustomModal>
       )}
     </>
   );
