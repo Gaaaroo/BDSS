@@ -3,7 +3,9 @@ import dayjs from 'dayjs';
 import { db } from '../services/api/firebase';
 import { onValue, push, ref, set, remove } from 'firebase/database';
 import { Send } from 'lucide-react';
-import { Scroll } from 'lucide-react';
+import { LayoutDashboard } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+
 
 function WidgetChatAdmin() {
   const [conversations, setConversations] = useState([]);
@@ -14,6 +16,7 @@ function WidgetChatAdmin() {
   const [adminName, setAdminName] = useState('Admin');
   const messagesEndRef = useRef(null);
   const [menuOpenId, setMenuOpenId] = useState(null);
+
   // Lấy danh sách các room
   useEffect(() => {
     const conversationsRef = ref(db, 'conversations');
@@ -100,6 +103,8 @@ function WidgetChatAdmin() {
     if (selectedRoom?.id === conversationId) setSelectedRoom(null);
   };
 
+    const navigate = useNavigate();
+
   return (
     <div className="flex w-full h-[100vh] max-h-[100vh] border-r overflow-y-auto bg-[#2e2e2e] ">
       {/* Sidebar: Danh sách các room */}
@@ -107,7 +112,13 @@ function WidgetChatAdmin() {
         className="w-[320px] h-[94vh] p-3 bg-[#1f1f1f] mt-[30px] ml-[30px] mr-[20px]
       rounded-[10px]"
       >
-        <h2 className="font-bold mb-2 text-3xl pl-3 text-white mt-2">Inbox</h2>
+        <div className="flex items-center mb-2 mt-2 pl-3 justify-between">
+          <h2 className="font-bold text-3xl text-white mr-2">Inbox</h2>
+          <LayoutDashboard size={28} className="text-gray-400 mr-4 focus:outline-none cursor-pointer
+          hover: transform hover:scale-110 transition-transform duration-200 hover: font-semibold" 
+          onClick={() => navigate('/dashboard')}
+          title="Go to dashboard"/>
+        </div>
         {conversations.map((conversation) => (
           <div
             key={conversation.id}
@@ -251,7 +262,7 @@ function WidgetChatAdmin() {
               className="bg-[#3a3b3c] p-2 pl-4 pr-4 rounded-[50px] w-full text-white"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              placeholder="Nhập tin nhắn..."
+              placeholder="Type a message..."
               onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
             />
             <button

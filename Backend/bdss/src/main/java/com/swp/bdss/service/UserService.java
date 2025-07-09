@@ -31,7 +31,8 @@ public class UserService {
         user.setEmail(email);
         user.setUsername(username);
         user.setRole("MEMBER");
-        user.setStatus("pending");
+        user.setStatus("ACTIVE");
+        user.setActive(true);
         user.setImageLink(image_link);
 
         User savedUser = userRepository.save(user);
