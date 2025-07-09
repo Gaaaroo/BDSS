@@ -193,4 +193,66 @@ public class BloodDonateFormService {
         return list;
     }
 
+    public Long countBloodDonateFormByBloodType(String bloodType) {
+        return bloodDonateFormRepository.countByUserBloodTypeAndStatus(bloodType, "PROCESSING") +
+               bloodDonateFormRepository.countByUserBloodTypeAndStatus(bloodType, "PENDING");
+    }
+
+    public Long countAllBloodDonateForm(){
+        return bloodDonateFormRepository.count();
+    }
+
+    public Long countBloodDonateFormByRequestDate() {
+        LocalDateTime today = LocalDateTime.now();
+
+        LocalDateTime start = today.toLocalDate().atStartOfDay();
+        LocalDateTime end = start.plusDays(1).minusNanos(1);
+
+        return bloodDonateFormRepository.countByRequestDateBetween(start, end);
+    }
+
+    public Map<String, Long> getRequestStatistics(String mode){
+        LocalDate today = LocalDate.now();
+
+        List<BloodDonateForm> requests = bloodDonateFormRepository.findAll();
+
+        switch (mode.toLowerCase()){
+            case "day":
+                return requests.stream()
+                        .filter(r -> r.getRequestDate().toLocalDate()
+                                .isAfter(today.minusDays(7)))
+                        .collect(Collectors.groupingBy(
+                                r -> r.getRequestDate().getDayOfWeek().toString(),
+                                Collectors.counting()
+                        ));
+            case "month":
+                return requests.stream()
+                        .filter(r -> r.getRequestDate().getMonth() == today.getMonth()
+                        && r.getRequestDate().getYear() == today.getYear())
+                        .collect(Collectors.groupingBy(
+                                r -> String.valueOf(r.getRequestDate().getDayOfMonth()),
+                                Collectors.counting()
+                        ));
+            case "year":
+                return requests.stream()
+                        .filter(r -> r.getRequestDate().getYear() == today.getYear())
+                        .collect(Collectors.groupingBy(
+                                r -> r.getRequestDate().getMonth().toString(),
+                                Collectors.counting()
+                        ));
+            default:
+                throw new AppException(ErrorCode.INVALID_MODE);
+        }
+    }
+
+    public Long countBloodDonateFormByRequestDateBetween(LocalDate startDate, LocalDate endDate) {
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.atTime(23, 59, 59);
+
+        return bloodDonateFormRepository.countByRequestDateBetween(start, end);
+    }
+
+    public Long countByBloodType(String bloodType) {
+        return bloodDonateFormRepository.countByUserBloodType(bloodType);
+    }
 }
