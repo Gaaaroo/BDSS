@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useContext } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { db } from '../services/api/firebase';
 import dayjs from 'dayjs';
 import { nanoid } from 'nanoid';
@@ -22,18 +22,6 @@ export default function WidgetChat() {
 
   const [requireName, setRequireName] = useState(false);
   const [tempName, setTempName] = useState('');
-
-  //const [tempName, setTempName] = useState('');
-
-  // const [conversations, setConversation] = useState([
-  //   {
-  //     id: 1,
-  //     name: 'Alice',
-  //     lastMessage: 'Hello, how are you?',
-  //     date: Date.now(),
-  //     unread: false,
-  //   },
-  // ]);
 
   // Get the user's name from localStorage or prompt
   const [roomId, setRoomId] = useState(() => {
@@ -236,7 +224,12 @@ export default function WidgetChat() {
     }
 
     // Lọc tin nhắn vs name (Auto-msg)
-    const realMessages = messages.filter((msg) => msg.name !== 'Auto-msg');
+    const realMessages = messages.filter(
+      (msg) =>
+        !(
+          msg.name === 'Admin' && msg.content === 'Hello! How can we help you?'
+        ) && msg.name !== 'Auto-msg'
+    );
 
     // Nếu chưa có tin nhắn nào thì xóa room
     if (selectedRoom.id && realMessages.length === 0) {

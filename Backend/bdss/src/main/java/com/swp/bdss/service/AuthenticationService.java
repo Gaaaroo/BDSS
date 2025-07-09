@@ -86,6 +86,10 @@ public class AuthenticationService {
     public AuthenticationResponse isAuthenticated(AuthenticationRequest request) {
         var user = userRepository.findByUsername(request.getUsername()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED ));
 
+        if(!user.isActive()){
+            throw new AppException(ErrorCode.USER_IS_NOT_ACTIVE);
+        }
+
         boolean authenticated = user.getPassword().equals(request.getPassword());
 
         if(!authenticated) throw new AppException(ErrorCode.INCORRECT_PASSWORD);
@@ -111,13 +115,10 @@ public class AuthenticationService {
 
         User user = userMapper.toUser(request);
         user.setRole("MEMBER");
-//        user.setStatus("pending");
-
+        user.setStatus("PENDING");
+        user.setActive(false);
         User savedUser = userRepository.save(user);
-        log.info("{}{}",
-                savedUser.getUserId(),
-                savedUser.getEmail()
-        );
+
         // Generate code - Send email to the user
         String otp = otpCodeService.saveOtpCode(savedUser);
         emailService.sendOtpEmail(savedUser.getEmail(), otp);
@@ -129,15 +130,6 @@ public class AuthenticationService {
         //find user by email
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        if(!user.isActive()){
-            throw new AppException(ErrorCode.USER_IS_NOT_ACTIVE);
-        }
-
-//        //check status
-//        if(!user.getStatus().equals("pending")){
-//            throw new AppException(ErrorCode.USER_IS_ACTIVE);
-//        }
-
         //validate OTP
         boolean isValid = otpCodeService.isOtpCodeValid(user, request.getOtp());
         if(!isValid){
@@ -145,12 +137,12 @@ public class AuthenticationService {
         }
 
         //update user status
-//        user.setStatus("active");
+        user.setStatus("ACTIVE");
         user.setActive(true);
         User updatedUser = userRepository.save(user);
 
         //send welcome email
-
+        emailService.sendWelcomeEmail(updatedUser.getEmail());
 
         return userMapper.toUserResponse(updatedUser);
     }
@@ -159,9 +151,7 @@ public class AuthenticationService {
     public UserResponse resendOtp(VerifyOtpRequest request){
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        if(!user.isActive()){
-            throw new AppException(ErrorCode.USER_IS_NOT_ACTIVE);
-        }
+
 
 //        if(!user.getStatus().equals("pending")){
 //            throw new AppException(ErrorCode.USER_IS_ACTIVE);
