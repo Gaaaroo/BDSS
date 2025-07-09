@@ -22,11 +22,23 @@ export const registerSchema = yup.object({
 
   password: yup
     .string()
-    .min(5, 'Password must be at least 5 characters')
+    .min(6, 'Password must be at least 6 characters')
     .required('Please enter your password'),
 
   confirmPassword: yup
     .string()
     .oneOf([yup.ref('password')], 'Passwords do not match')
     .required('Please re-enter the same password to confirm'),
+});
+
+export const resetPasswordSchema = yup.object().shape({
+  newPassword: yup
+    .string()
+    .trim()
+    .required('Please enter a new password')
+    .min(6, 'Password must be at least 6 characters'),
+  confirmPassword: yup
+    .string()
+    .oneOf([yup.ref('newPassword'), null], 'Passwords do not match')
+    .required('Please confirm your password'),
 });

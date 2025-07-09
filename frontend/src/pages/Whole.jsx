@@ -145,7 +145,7 @@ export default function Whole() {
         statusOptions={statusOptions}
       />
       {/* List Whole */}
-      <ListBloodType list={list} />
+      <ListBloodType list={list} fetchList={fetchAPI} />
       <Pagination
         page={page}
         totalPages={totalPages}
