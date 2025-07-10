@@ -88,4 +88,8 @@ public class CommentService {
         log.info("comment deleted: {}", comment.getContent());
     }
 
+    public Long countAllComments(){
+        return commentRepository.count();
+    }
+
 }

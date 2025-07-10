@@ -2,3 +2,17 @@
 body {
   background-color: white;
 }
+
+@keyframes slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.animate-slide-in-up {
+  animation: slide-in-up 0.7s cubic-bezier(0.4,0,0.2,1);
+}

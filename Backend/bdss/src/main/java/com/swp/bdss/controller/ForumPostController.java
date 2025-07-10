@@ -97,4 +97,13 @@ public class ForumPostController {
                 .build();
     }
 
+    @GetMapping("/count-all")
+    ApiResponse<Long> countAllForumPosts() {
+        return ApiResponse.<Long>builder()
+                .code(1000)
+                .data(forumPostService.countAllForumPosts())
+                .message("count all forum posts successfully")
+                .build();
+    }
+
 }

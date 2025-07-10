@@ -125,4 +125,8 @@ public class ForumPostService {
         return forumPostMapper.toForumPostResponse(forumPost);
     }
 
+    public Long countAllForumPosts() {
+        return forumPostRepository.count();
+    }
+
 }

@@ -17,6 +17,7 @@ public class ForumPostResponse {
     String title;
     String content;
     String username;
+    String imageLink;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
     List<CommentResponse> comments;

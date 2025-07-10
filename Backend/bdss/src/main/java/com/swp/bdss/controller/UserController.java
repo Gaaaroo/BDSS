@@ -90,4 +90,23 @@ public class UserController {
                 .data(userService.findUserNearby(lat, lng, radius))
                 .build();
     }
+
+    @PutMapping("/ban-user")
+    public ApiResponse<UserResponse> banUser(@RequestParam int userId) {
+        userService.banUser(userId);
+        return ApiResponse.<UserResponse>builder()
+                .code(1000)
+                .message("User banned successfully")
+                .build();
+
+    }
+
+    @GetMapping("/count-all")
+    public ApiResponse<Long> countAllUsers() {
+        return ApiResponse.<Long>builder()
+                .code(1000)
+                .data(userService.countAll())
+                .message("Count of all users retrieved successfully")
+                .build();
+    }
 }

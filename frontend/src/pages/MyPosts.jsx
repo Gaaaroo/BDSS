@@ -33,19 +33,29 @@ function MyPosts() {
   });
   const [deleteType, setDeleteType] = useState(''); // 'post' hoặc 'comment'
 
+  // Animation: track which posts are visible (giống Forum)
+  const [visiblePosts, setVisiblePosts] = useState([]);
+  const [visibleCount, setVisibleCount] = useState(2);
+
   // Get posts of current user
   useEffect(() => {
     const fetchMyPosts = async () => {
       setLoading(true);
       try {
         const data = await getMyPosts();
-        // Lọc bài viết của user hiện tại
         const myPosts = data.map((post) => ({
           ...post,
           id: post.postId,
           comments: post.comments || [],
         }));
         setPosts(myPosts);
+        setVisiblePosts([]);
+        setVisibleCount(2);
+        myPosts.forEach((_, idx) => {
+          setTimeout(() => {
+            setVisiblePosts((prev) => [...prev, idx]);
+          }, idx * 350);
+        });
       } catch (err) {
         setPosts([]);
       }
@@ -53,6 +63,31 @@ function MyPosts() {
     };
     fetchMyPosts();
   }, []);
+
+  // Infinite scroll - tăng số lượng post khi cuộn gần cuối trang
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 200
+      ) {
+        setVisibleCount((prev) => {
+          const next = Math.min(prev + 2, posts.length);
+          for (let i = prev; i < next; i++) {
+            setTimeout(() => {
+              setVisiblePosts((old) => {
+                if (!old.includes(i)) return [...old, i];
+                return old;
+              });
+            }, (i - prev) * 350);
+          }
+          return next;
+        });
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [posts.length]);
 
   // Handle delete post
   const handleDeletePost = (postId) => {
@@ -63,7 +98,7 @@ function MyPosts() {
 
   // Handle edit post
   const handleEditPost = (postId) => {
-    const post = posts.find((p) => p.id === postId); //find post by id
+    const post = posts.find((p) => p.id === postId);
     setEditingPost(post);
     setEditData({ title: post.title, content: post.content });
     setOpen(true);
@@ -72,11 +107,8 @@ function MyPosts() {
   // Handle add comment
   const handleAddComment = async (postId, content) => {
     try {
-      // Validate input
       await commentSchema.validate({ content });
-      // Gọi API tạo comment mới
       const newComment = await createComment({ content, postId: postId });
-      // Cập nhật lại state posts để thêm comment mới vào đúng post
       setPosts((posts) =>
         posts.map((post) =>
           post.id === postId
@@ -92,6 +124,7 @@ function MyPosts() {
       }
     }
   };
+
   // Handle save edited post
   const handleClosePost = () => {
     setOpen(false);
@@ -114,8 +147,6 @@ function MyPosts() {
       setOpen(false);
       setEditingPost(null);
     } catch (err) {
-      console.log(editData);
-      console.log(editingPost.id);
       alert('Cập nhật bài viết thất bại!');
     }
   };
@@ -149,7 +180,7 @@ function MyPosts() {
         );
       }
     } catch (err) {
-      console.error('Failed to delete:', err);
+      toast.error('Failed to delete!');
     } finally {
       setShowModal(false);
       setDeleteTarget({ postId: null, commentId: null });
@@ -186,64 +217,95 @@ function MyPosts() {
               !
             </div>
           ) : (
-            posts.map((post) => (
-              <div
-                key={post.id}
-                className="mb-8 p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg border border-[#FFA1A1] relative"
-              >
-                {/* Nút thùng rác Boxicon */}
-                <button
-                  className="absolute top-3 right-12 text-gray-400 hover:text-white text-2xl cursor-pointer"
-                  title="Update"
-                  onClick={() => handleEditPost(post.id)}
-                >
-                  <BiEdit />
-                </button>
-                <button
-                  className="absolute top-3 right-3 text-gray-400 hover:text-white text-2xl cursor-pointer"
-                  title="Delete"
-                  onClick={() => handleDeletePost(post.id)}
-                >
-                  <BiTrash />
-                </button>
-                <div className="flex items-center mb-3">
-                  <div className="w-10 h-10 rounded-full bg-cyan-400 flex items-center justify-center text-white font-bold text-lg mr-3 shadow">
-                    {post.username?.charAt(0) || 'U'}
-                  </div>
-                  <div>
-                    <span className="font-semibold text-cyan-300">
-                      {post.username}
-                    </span>
-                    <span className="ml-3 text-xs text-gray-500">
-                      {post.updated_at &&
-                      post.updated_at !== post.created_at ? (
-                        <>
-                          Update at:{' '}
-                          {dayjs(post.updated_at).format('HH:mm - DD/MM/YYYY')}
-                        </>
-                      ) : (
-                        dayjs(post.created_at).format('HH:mm - DD/MM/YYYY')
-                      )}
-                    </span>
-                  </div>
-                </div>
-                <h3 className="text-xl font-bold text-[#FFA1A1] mb-2">
-                  {wrapText(post.title, 44)}
-                </h3>
-                <p className="text-white mb-4">{wrapText(post.content, 60)}</p>
-                <div className="border-t border-[#FFA1A1] pt-3 mt-3">
-                  <CommentSection
-                    comments={post.comments}
-                    handleDeleteComment={(commentId) =>
-                      handleDeleteComment(post.id, commentId)
+            <div className="max-w-full">
+              {posts.slice(0, visibleCount).map((post, index) => (
+                <div
+                  key={post.id || index}
+                  className={`relative group mt-5 mb-8 p-0 max-w-2xl mx-auto
+                    transition-all duration-700 ease-out
+                    ${
+                      visiblePosts.includes(index)
+                        ? 'opacity-100 translate-y-0 scale-100 animate-slide-in-up'
+                        : 'opacity-0 translate-y-10 scale-95 pointer-events-none'
                     }
-                    handleAddComment={(comment) => {
-                      handleAddComment(post.id, comment);
-                    }}
-                  />
+                  `}
+                >
+                  {/* Hover glow effect */}
+                  <div className="absolute inset-0 rounded-2xl bg-[#F76C6C]/20 opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none z-0"></div>
+
+                  {/* Post Card */}
+                  <div className="relative z-10 bg-[#FFF5F5] rounded-2xl p-6 border border-[#FFA1A1] shadow-md hover:shadow-lg transition-shadow duration-300">
+                    {/* Header */}
+                    <div className="flex items-center mb-4">
+                      <div className="w-12 h-12 rounded-full bg-[#F76C6C] flex items-center justify-center text-white font-bold text-xl mr-4 shadow-md border-2 border-white group-hover:scale-105 transition duration-200 overflow-hidden">
+                        {post.imageLink ? (
+                          <img
+                            src={post.imageLink}
+                            alt={post.username}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          post.username?.charAt(0) || 'U'
+                        )}
+                      </div>
+                      <div>
+                        <span className="font-semibold text-[#F76C6C] text-lg">
+                          {post.username}
+                        </span>
+                        <span className="ml-3 left text-xs text-[#C96F6F]">
+                          {post.updated_at &&
+                          post.updated_at !== post.created_at ? (
+                            <>
+                              Updated:{' '}
+                              {dayjs(post.updated_at).format(
+                                'HH:mm - DD/MM/YYYY'
+                              )}
+                            </>
+                          ) : (
+                            dayjs(post.created_at).format('HH:mm - DD/MM/YYYY')
+                          )}
+                        </span>
+                      </div>
+                      {/* Edit/Delete buttons */}
+                      <button
+                        className="ml-auto mr-2 text-[#FFA1A1] hover:text-[#F76C6C] text-xl"
+                        title="Edit"
+                        onClick={() => handleEditPost(post.id)}
+                      >
+                        <BiEdit />
+                      </button>
+                      <button
+                        className="text-[#FFA1A1] hover:text-[#F76C6C] text-xl"
+                        title="Delete"
+                        onClick={() => handleDeletePost(post.id)}
+                      >
+                        <BiTrash />
+                      </button>
+                    </div>
+                    {/* Title */}
+                    <h3 className="text-xl font-bold text-[#F76C6C] mb-2 tracking-tight group-hover:underline transition-all duration-200">
+                      {wrapText(post.title, 44)}
+                    </h3>
+                    {/* Content */}
+                    <p className="text-[#A94442] mb-4 text-base whitespace-pre-line leading-relaxed">
+                      {wrapText(post.content, 60)}
+                    </p>
+                    {/* Comment section */}
+                    <div className="border-t border-[#FFA1A1] pt-4 mt-4">
+                      <CommentSection
+                        comments={post.comments}
+                        handleDeleteComment={(commentId) =>
+                          handleDeleteComment(post.id, commentId)
+                        }
+                        handleAddComment={(comment) =>
+                          handleAddComment(post.id, comment)
+                        }
+                      />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))
+              ))}
+            </div>
           )}
         </div>
       </div>
@@ -267,9 +329,7 @@ function MyPosts() {
             setDeleteTarget({ postId: null, commentId: null });
             setDeleteType('');
           }}
-          onOk={() => {
-            handleConfirmDelete(deleteTarget.postId, deleteTarget.commentId);
-          }}
+          onOk={handleConfirmDelete}
           okLable="Delete"
         >
           <p className="text-gray-700 mb-6">
