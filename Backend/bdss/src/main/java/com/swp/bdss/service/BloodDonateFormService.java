@@ -24,9 +24,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -38,6 +36,9 @@ public class BloodDonateFormService {
     BloodDonateFormRepository bloodDonateFormRepository;
     BloodDonateFormMapper bloodDonateFormMapper;
     UserMapper userMapper;
+
+    private static final List<String> BLOOD_TYPES = Arrays.asList("A+", "B+", "O+", "AB+", "A-", "B-", "O-", "AB-");
+
 
     //create blood donate form (USER)
     public BloodDonateFormResponse createBloodDonateForm(BloodDonateFormCreationRequest request){
@@ -252,15 +253,28 @@ public class BloodDonateFormService {
         return bloodDonateFormRepository.countByRequestDateBetween(start, end);
     }
 
-    public Long countByBloodType(String bloodType) {
-        return bloodDonateFormRepository.countByUserBloodType(bloodType);
+    public Map<String, Long> countByBloodType() {
+        Map<String, Long> result = new LinkedHashMap<>();
+        for (String bloodType : BLOOD_TYPES) {
+            Long count = bloodDonateFormRepository.countByUserBloodType(bloodType);
+            result.put(bloodType, count);
+        }
+        return result;
     }
 
-    public Long countByBloodTypeByToday(String bloodType) {
+    public Map<String, Long> countByBloodTypeByToday(String bloodType) {
         LocalDateTime today = LocalDateTime.now();
         LocalDateTime start = today.toLocalDate().atStartOfDay();
         LocalDateTime end = start.plusDays(1).minusNanos(1);
 
-        return bloodDonateFormRepository.countByUserBloodTypeAndRequestDateBetween(bloodType, start, end);
+        Map<String, Long> result = new LinkedHashMap<>();
+        for(String type : BLOOD_TYPES) {
+            Long count = bloodDonateFormRepository.countByUserBloodTypeAndRequestDateBetween(type, start, end);
+            result.put(type, count);
+        }
+
+        return result;
     }
+
+
 }
