@@ -49,7 +49,7 @@ export default function Banner() {
           className="bg-gray-100 text-black text-[20px] px-4 py-2 rounded-3xl shadow font-bold w-52 transform transition-transform duration-200 hover:scale-110 mt-4 cursor-pointer"
           onClick={handleBloodButtonClick}
         >
-          Blood type
+          Blood Suitability 
         </button>
       </div>
       {showModal && (

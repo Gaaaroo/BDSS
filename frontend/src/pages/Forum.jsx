@@ -8,62 +8,57 @@ import {
   getForumPosts,
   searchForumPosts,
 } from '../services/api/forumService';
-import { createComment } from '../services/api/commentService';
+import { createComment, deleteComment } from '../services/api/commentService';
 import { useLocation } from 'react-router-dom';
-import { deleteComment } from '../services/api/commentService';
 import Footer from '../components/Footer';
 import ErrorModal from '../components/ErrorModal';
 import CustomModal from '../components/CustomModal';
 import PostModal from '../components/PostModal';
 import { toast } from 'react-toastify';
 import { commentSchema, postSchema } from '../Validations/postValidation';
+import SearchForumPost from '../components/SearchForumPost';
+import { PencilSquareIcon } from '@heroicons/react/24/solid';
+import MiniForumStat from '../components/MiniForumStat';
 
 function Forum() {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState('');
   const [errorModal, setErrorModal] = useState({ open: false, message: '' });
-  //confirm delete
   const [showModal, setShowModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState({
     postId: null,
     commentId: null,
   });
-  //search
   const [keyword, setKeyword] = useState('');
   const [searchKey, setSearchKey] = useState('');
-
-  //post
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState({ title: '', content: '' });
-
+  const [statReload, setStatReload] = useState(0);
+  const [isCommenting, setIsCommenting] = useState(false);
   const location = useLocation();
 
-  // const token = localStorage.getItem("authToken");
-  ////
-  // Lấy danh sách bài viết từ API khi load trang
-  //   useEffect(() => {
-  //     axios.get("/api/posts").then(res => setPosts(res.data));
-  //   }, []);
+  // Animation: track which posts are visible
+  const [visiblePosts, setVisiblePosts] = useState([]);
+  // Số lượng post hiển thị (infinite scroll)
+  const [visibleCount, setVisibleCount] = useState(2);
 
-  // Gọi API lấy dữ liệu user khi component mount
+  const handleSearch = () => setKeyword(searchKey);
 
-  // setKeyword to search
-  const handleSearch = () => {
-    setKeyword(searchKey);
-  };
+  // Hiệu ứng slide-in cho từng post
+  // Thêm class animate-slide-in-up vào file src/index.css hoặc App.css:
+  // @keyframes slide-in-up {
+  //   from { opacity: 0; transform: translateY(40px) scale(0.98);}
+  //   to { opacity: 1; transform: translateY(0) scale(1);}
+  // }
+  // .animate-slide-in-up { animation: slide-in-up 0.7s cubic-bezier(0.4,0,0.2,1); }
 
-  // view all posts and search posts by keyword
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        // console.log('Search keyword:', keyword);
-        let data;
-        if (keyword.trim() === '') {
-          data = await getForumPosts();
-        } else {
-          data = await searchForumPosts(keyword);
-        }
-        // setPosts(data);
+        let data =
+          keyword.trim() === ''
+            ? await getForumPosts()
+            : await searchForumPosts(keyword);
         setPosts(
           data.map((post) => ({
             ...post,
@@ -71,32 +66,73 @@ function Forum() {
             comments: post.comments || [],
           }))
         );
-        // console.log('Posts fetched successfully', data);
         setError('');
+        setVisiblePosts([]);
+        setVisibleCount(2);
+        data.forEach((_, idx) => {
+          setTimeout(() => {
+            setVisiblePosts((prev) => [...prev, idx]);
+          }, idx * 350);
+        });
       } catch (error) {
-        if (error.response.data.code === 1015) setError('Not found posts');
+        if (error.response?.data?.code === 1015) setError('Not found posts');
         else setError('Error fetching posts. Please try again.');
       }
     };
-
     fetchPosts();
   }, [keyword]);
 
-  // handle create post
-  const handleCreatePost = async () => {
-    //e.preventDefault();
+  // Animate posts khi fetch mới, trừ khi đang comment
+  useEffect(() => {
+    if (isCommenting) {
+      setIsCommenting(false);
+      return;
+    }
+    setVisiblePosts([]);
+    setVisibleCount(2);
+    [0, 1].forEach((idx) => {
+      setTimeout(() => {
+        setVisiblePosts((prev) => [...prev, idx]);
+      }, idx * 350);
+    });
+  }, [posts]);
 
+  // Infinite scroll - tăng số lượng post khi cuộn gần cuối trang
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + window.scrollY >=
+        document.body.offsetHeight - 200
+      ) {
+        setVisibleCount((prev) => {
+          const next = Math.min(prev + 2, posts.length);
+          // Animate các post mới
+          for (let i = prev; i < next; i++) {
+            setTimeout(() => {
+              setVisiblePosts((old) => {
+                if (!old.includes(i)) return [...old, i];
+                return old;
+              });
+            }, (i - prev) * 350);
+          }
+          return next;
+        });
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [posts.length]);
+
+  const handleCreatePost = async () => {
     try {
       await postSchema.validate(newPost, { abortEarly: false });
       await createPost(newPost);
       setNewPost({ title: '', content: '' });
       setOpen(false);
-      let data;
-      if (keyword.trim() === '') {
-        data = await getForumPosts();
-      } else {
-        data = await searchForumPosts(keyword);
-      }
+      let data =
+        keyword.trim() === ''
+          ? await getForumPosts()
+          : await searchForumPosts(keyword);
       setPosts(
         data.map((post) => ({
           ...post,
@@ -105,34 +141,32 @@ function Forum() {
         }))
       );
       setError('');
+      setStatReload((prev) => prev + 1);
+      setVisiblePosts([]);
+      setVisibleCount(2);
+      data.forEach((_, idx) => {
+        setTimeout(() => {
+          setVisiblePosts((prev) => [...prev, idx]);
+        }, idx * 120);
+      });
     } catch (error) {
-      console.log('err', error)
       if (error.name === 'ValidationError') {
-        error.errors.forEach((message) => {
-          toast.error(message);
-        });
+        error.errors.forEach((message) => toast.error(message));
       } else {
         setError('Post failed. Please try again.');
       }
     }
   };
 
-  // create comment for a post
   const handleAddComment = async (postId, content) => {
-    // console.log('Adding comment to post:', postId, content);
-
     try {
+      setIsCommenting(true);
       await commentSchema.validate({ content });
-      await createComment({ content, postId: postId });
-      // console.log(postId, content);
-      let data;
-      if (keyword.trim() === '') {
-        data = await getForumPosts();
-      } else {
-        data = await searchForumPosts(keyword);
-      }
-      // console.log('Comments fetched successfully', data);
-
+      await createComment({ content, postId });
+      let data =
+        keyword.trim() === ''
+          ? await getForumPosts()
+          : await searchForumPosts(keyword);
       setPosts(
         data.map((post) => ({
           ...post,
@@ -141,42 +175,29 @@ function Forum() {
         }))
       );
       setError('');
+      setStatReload((prev) => prev + 1);
+      // Không reset visiblePosts, visibleCount => không hiệu ứng lại khi comment
     } catch (error) {
       if (error.name === 'ValidationError') {
-        error.errors.forEach((message) => {
-          toast.error(message);
-        });
+        error.errors.forEach((message) => toast.error(message));
       } else {
-        // console.error('Add comment error:', error);
         setError('Comment failed. Please try again.');
       }
+      setIsCommenting(false);
     }
   };
 
-  // Open the chat widget
-  const handleOpenPost = () => {
-    setOpen(true);
-  };
+  const handleOpenPost = () => setOpen(true);
+  const handleClosePost = () => setOpen(false);
 
-  // Close the chat widget
-  const handleClosePost = () => {
-    setOpen(false);
-  };
-
-  // Check if the post form should be opened based on location state
   useEffect(() => {
-    if (location.state?.openCreatePost) {
-      setOpen(true);
-    }
+    if (location.state?.openCreatePost) setOpen(true);
   }, [location.state]);
 
-  //Function to wrap text at a specified length
   function wrapText(str, n) {
     if (!str) return '';
     return str.replace(new RegExp(`(.{1,${n}})`, 'g'), '$1\n');
   }
-
-  //Handle delete comment
 
   const handleDeleteComment = (postId, commentId) => {
     setDeleteTarget({ postId, commentId });
@@ -185,8 +206,8 @@ function Forum() {
 
   const handleConfirmDelete = async (postId, commentId) => {
     try {
+      setIsCommenting(true);
       await deleteComment(commentId);
-      //Remove the comment from the comments array
       setPosts((posts) =>
         posts.map((post) =>
           post.id === postId
@@ -200,6 +221,7 @@ function Forum() {
         )
       );
       setShowModal(false);
+      setStatReload((prev) => prev + 1);
     } catch (error) {
       const backendMessage = error?.response?.data?.message;
       const backendCode = error?.response?.data?.code;
@@ -218,8 +240,6 @@ function Forum() {
           </>
         ),
       });
-      console.log('DSMessage:', backendMessage);
-      console.log('Code:', backendCode);
     }
   };
 
@@ -236,10 +256,31 @@ function Forum() {
         setSearchKey={setSearchKey}
         handleSearch={handleSearch}
       />
-      <div className="fixed bottom-5 right-5 flex flex-col z-50 ">
+
+      {/* Mini stats bar */}
+      <MiniForumStat reload={statReload} />
+
+      <SearchForumPost
+        searchKey={searchKey}
+        setSearchKey={setSearchKey}
+        handleSearch={handleSearch}
+      />
+
+      {/* CTA Button */}
+      <div className="flex justify-center ">
+        <button
+          onClick={handleOpenPost}
+          className="px-6 py-2 bg-gradient-to-br from-[#FFA1A1] to-[#F76C6C] text-white font-bold rounded-full shadow hover:scale-105 transition flex items-center gap-2"
+        >
+          <PencilSquareIcon className="w-6 h-6 text-white" />
+          Share your story or ask for help
+        </button>
+      </div>
+
+      <div className="fixed bottom-5 right-5 flex flex-col z-50">
         {!open && (
           <div
-            className="w-14 h-14 bg-cyan-300 rounded-full flex items-center justify-center cursor-pointer text-3xl"
+            className="w-14 h-14 bg-[#F76C6C] rounded-full flex items-center justify-center cursor-pointer text-3xl"
             onClick={handleOpenPost}
           >
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
@@ -273,46 +314,79 @@ function Forum() {
           </div>
         </div>
       ) : (
-        <div className="max-w-full">
-          {posts.map((post, index) => (
+        <div
+          className="max-w-full">
+          {/* SỬA: chỉ render posts.slice(0, visibleCount) */}
+          {posts.slice(0, visibleCount).map((post, index) => (
             <div
               key={post.id || index}
-              className=" mt-5 mb-8 p-6 bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-lg border border-[#FFA1A1] max-w-2xl mx-auto "
+              className={`relative group mt-5 mb-8 p-0 max-w-2xl mx-auto
+      transition-all duration-700 ease-out
+      ${
+        visiblePosts.includes(index)
+          ? 'opacity-100 translate-y-0 scale-100 animate-slide-in-up'
+          : 'opacity-0 translate-y-10 scale-95 pointer-events-none'
+      }
+    `}
             >
-              <div className="flex items-center mb-3">
-                <div className="w-10 h-10 rounded-full bg-cyan-400 flex items-center justify-center text-white font-bold text-lg mr-3 shadow">
-                  {post.username?.charAt(0) || 'U'}
-                </div>
-                <div>
-                  <span className="font-semibold text-cyan-300">
-                    {post.username}
-                  </span>
-                  <span className="ml-2 text-xs text-gray-500">
-                    {post.updated_at && post.updated_at !== post.created_at ? (
-                      <>
-                        Update at:{' '}
-                        {dayjs(post.updated_at).format('HH:mm - DD/MM/YYYY')}
-                      </>
+              {/* Hover glow effect */}
+              <div className="absolute inset-0 rounded-2xl bg-[#F76C6C]/20 opacity-0 group-hover:opacity-100 transition duration-300 pointer-events-none z-0"></div>
+
+              {/* Post Card */}
+              <div className="relative z-10 bg-[#FFF5F5] rounded-2xl p-6 border border-[#FFA1A1] shadow-md hover:shadow-lg transition-shadow duration-300">
+                {/* Header */}
+                <div className="flex items-center mb-4">
+                  <div className="w-12 h-12 rounded-full bg-[#F76C6C] flex items-center justify-center text-white font-bold text-xl mr-4 shadow-md border-2 border-white group-hover:scale-105 transition duration-200 overflow-hidden">
+                    {post.imageLink ? (
+                      <img
+                        src={post.imageLink}
+                        alt={post.username}
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
-                      dayjs(post.created_at).format('HH:mm - DD/MM/YYYY')
+                      post.username?.charAt(0) || 'U'
                     )}
-                  </span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-[#F76C6C] text-lg">
+                      {post.username}
+                    </span>
+                    <span className="ml-3 left text-xs text-[#C96F6F]">
+                      {post.updated_at &&
+                      post.updated_at !== post.created_at ? (
+                        <>
+                          Updated:{' '}
+                          {dayjs(post.updated_at).format('HH:mm - DD/MM/YYYY')}
+                        </>
+                      ) : (
+                        dayjs(post.created_at).format('HH:mm - DD/MM/YYYY')
+                      )}
+                    </span>
+                  </div>
                 </div>
-              </div>
-              <h3 className="text-xl font-bold text-[#FFA1A1] mb-2">
-                {wrapText(post.title, 44)}
-              </h3>
-              <p className="text-white mb-4">{wrapText(post.content, 60)}</p>
-              <div className="border-t border-[#FFA1A1] pt-3 mt-3">
-                <CommentSection
-                  comments={post.comments}
-                  handleDeleteComment={(commentId) =>
-                    handleDeleteComment(post.id, commentId)
-                  }
-                  handleAddComment={(comment) =>
-                    handleAddComment(post.id, comment)
-                  }
-                />
+
+                {/* Title */}
+                <h3 className="text-xl font-bold text-[#F76C6C] mb-2 tracking-tight group-hover:underline transition-all duration-200">
+                  {wrapText(post.title, 44)}
+                </h3>
+
+                {/* Content */}
+                <p className="text-[#A94442] mb-4 text-base whitespace-pre-line leading-relaxed">
+                  {wrapText(post.content, 60)}
+                </p>
+
+                {/* Comment section */}
+                <div className="border-t border-[#FFA1A1] pt-4 mt-4">
+                  <CommentSection
+                    comments={post.comments}
+                    handleDeleteComment={(commentId) =>
+                      handleDeleteComment(post.id, commentId)
+                    }
+                    handleAddComment={(comment) =>
+                      handleAddComment(post.id, comment)
+                    }
+                  />
+                </div>
               </div>
             </div>
           ))}
@@ -321,9 +395,7 @@ function Forum() {
       {showModal && (
         <CustomModal
           title="Confirm deletion"
-          onCancel={() => {
-            setShowModal(false);
-          }}
+          onCancel={() => setShowModal(false)}
           onOk={() =>
             handleConfirmDelete(deleteTarget.postId, deleteTarget.commentId)
           }

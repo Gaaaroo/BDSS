@@ -100,4 +100,13 @@ public class UserController {
                 .build();
 
     }
+
+    @GetMapping("/count-all")
+    public ApiResponse<Long> countAllUsers() {
+        return ApiResponse.<Long>builder()
+                .code(1000)
+                .data(userService.countAll())
+                .message("Count of all users retrieved successfully")
+                .build();
+    }
 }

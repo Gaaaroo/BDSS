@@ -106,7 +106,7 @@ public class BloodReceiveFormService {
 
         bloodReceiveForm.setBloodType(request.getBloodType());
         bloodReceiveForm.setUser(user);
-        bloodReceiveForm.setRequestDate(LocalDate.now());
+        bloodReceiveForm.setRequestDate(LocalDateTime.now());
         bloodReceiveForm.setStatus("PENDING");
         UserResponse userResponse = userMapper.toUserResponse(user);
 
@@ -249,6 +249,59 @@ public class BloodReceiveFormService {
         }
 
         return count;
+    }
+
+    public Long countAllBloodReceiveForm() {
+        return bloodReceiveFormRepository.count();
+    }
+
+    public Long countBloodReceiveFormByToday(){
+        LocalDateTime today = LocalDateTime.now();
+
+        LocalDateTime start = today.toLocalDate().atStartOfDay();
+        LocalDateTime end = today.plusDays(1).minusNanos(1);
+
+        return bloodReceiveFormRepository.countByRequestDateBetween(start, end);
+    }
+
+    public Long countBloodReceiveFormByRequestDateBetween(LocalDate startDate, LocalDate endDate) {
+        LocalDateTime start = startDate.atStartOfDay();
+        LocalDateTime end = endDate.atTime(23, 59, 59);
+        return bloodReceiveFormRepository.countByRequestDateBetween(start, end);
+    }
+
+    public Map<String, Long> getRequestStatistics(String mode){
+        LocalDate today = LocalDate.now();
+
+        List<BloodReceiveForm> requests = bloodReceiveFormRepository.findAll();
+
+        switch (mode.toLowerCase()){
+            case "day":
+                return requests.stream()
+                        .filter(r -> r.getRequestDate().toLocalDate()
+                                .isAfter(today.minusDays(7)))
+                        .collect(Collectors.groupingBy(
+                                r -> r.getRequestDate().getDayOfWeek().toString(),
+                                Collectors.counting()
+                        ));
+            case "month":
+                return requests.stream()
+                        .filter(r -> r.getRequestDate().getMonth() == today.getMonth()
+                                && r.getRequestDate().getYear() == today.getYear())
+                        .collect(Collectors.groupingBy(
+                                r -> String.valueOf(r.getRequestDate().getDayOfMonth()),
+                                Collectors.counting()
+                        ));
+            case "year":
+                return requests.stream()
+                        .filter(r -> r.getRequestDate().getYear() == today.getYear())
+                        .collect(Collectors.groupingBy(
+                                r -> r.getRequestDate().getMonth().toString(),
+                                Collectors.counting()
+                        ));
+            default:
+                throw new AppException(ErrorCode.INVALID_MODE);
+        }
     }
 
 }
