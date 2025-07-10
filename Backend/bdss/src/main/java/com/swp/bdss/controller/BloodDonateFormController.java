@@ -148,11 +148,20 @@ public class BloodDonateFormController {
     }
 
     @GetMapping("/count-by-blood-type")     //này đếm hết ko phân biệt status
-    ApiResponse<Long> countByBloodType(@RequestParam String bloodType) {
-        return ApiResponse.<Long>builder()
+    ApiResponse<Map<String, Long>> countByBloodType() {
+        return ApiResponse.<Map<String, Long>>builder()
                 .code(1000)
-                .data(bloodDonateFormService.countByBloodType(bloodType))
+                .data(bloodDonateFormService.countByBloodType())
                 .message("Count blood donate forms by blood type and status successfully")
+                .build();
+    }
+
+    @GetMapping("/count-today-by-blood-type")
+    ApiResponse<Map<String,Long>> countBloodDonateFormByTodayAndBloodType(@RequestParam String bloodType) {
+        return ApiResponse.<Map<String,Long>>builder()
+                .code(1000)
+                .data(bloodDonateFormService.countByBloodTypeByToday(bloodType))
+                .message("Count blood donate forms by today and blood type successfully")
                 .build();
     }
 

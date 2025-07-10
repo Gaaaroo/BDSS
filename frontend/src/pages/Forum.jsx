@@ -267,7 +267,7 @@ function Forum() {
       />
 
       {/* CTA Button */}
-      <div className="flex justify-center ">
+      <div className="flex justify-center mb-8">
         <button
           onClick={handleOpenPost}
           className="px-6 py-2 bg-gradient-to-br from-[#FFA1A1] to-[#F76C6C] text-white font-bold rounded-full shadow hover:scale-105 transition flex items-center gap-2"
