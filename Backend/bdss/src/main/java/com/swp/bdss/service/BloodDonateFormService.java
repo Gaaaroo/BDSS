@@ -255,4 +255,12 @@ public class BloodDonateFormService {
     public Long countByBloodType(String bloodType) {
         return bloodDonateFormRepository.countByUserBloodType(bloodType);
     }
+
+    public Long countByBloodTypeByToday(String bloodType) {
+        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime start = today.toLocalDate().atStartOfDay();
+        LocalDateTime end = start.plusDays(1).minusNanos(1);
+
+        return bloodDonateFormRepository.countByUserBloodTypeAndRequestDateBetween(bloodType, start, end);
+    }
 }

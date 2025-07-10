@@ -156,4 +156,13 @@ public class BloodDonateFormController {
                 .build();
     }
 
+    @GetMapping("/count-today-by-blood-type")
+    ApiResponse<Long> countBloodDonateFormByTodayAndBloodType(@RequestParam String bloodType) {
+        return ApiResponse.<Long>builder()
+                .code(1000)
+                .data(bloodDonateFormService.countByBloodTypeByToday(bloodType))
+                .message("Count blood donate forms by today and blood type successfully")
+                .build();
+    }
+
 }
