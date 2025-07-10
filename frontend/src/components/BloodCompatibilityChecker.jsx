@@ -7,47 +7,57 @@ export default function BloodCompatibilityChecker() {
   const [compatibleDonors, setCompatibleDonors] = useState([]);
 
   const bloodCompatibilityData = {
-    whole: {
-      "A+": ["A+", "A-", "O+", "O-"],
-      "A-": ["A-", "O-"],
-      "B+": ["B+", "B-", "O+", "O-"],
-      "B-": ["B-", "O-"],
-      "AB+": ["A+", "B+", "AB+", "O+", "A-", "B-", "AB-", "O-"],
-      "AB-": ["A-", "B-", "AB-", "O-"],
-      "O+": ["O+", "O-"],
-      "O-": ["O-"],
-    },
-    rbc: {
-      "A+": ["A+", "A-", "O+", "O-"],
-      "A-": ["A-", "O-"],
-      "B+": ["B+", "B-", "O+", "O-"],
-      "B-": ["B-", "O-"],
-      "AB+": ["All"],
-      "AB-": ["AB-", "A-", "B-", "O-"],
-      "O+": ["O+", "O-"],
-      "O-": ["O-"],
-    },
-    plasma: {
-      "A+": ["A+", "AB+", "AB-"],
-      "A-": ["A-", "AB-"],
-      "B+": ["B+", "AB+", "AB-"],
-      "B-": ["B-", "AB-"],
-      "AB+": ["AB+"],
-      "AB-": ["AB-"],
-      "O+": ["A+", "B+", "AB+", "O+"],
-      "O-": ["A-", "B-", "AB-", "O-"],
-    },
-    platelets: {
-      "A+": ["A+", "A-", "O+", "O-"],
-      "A-": ["A-", "O-"],
-      "B+": ["B+", "B-", "O+", "O-"],
-      "B-": ["B-", "O-"],
-      "AB+": ["A+", "B+", "AB+", "O+", "A-", "B-", "AB-", "O-"],
-      "AB-": ["A-", "B-", "AB-", "O-"],
-      "O+": ["O+", "O-"],
-      "O-": ["O-"],
-    },
-  };
+  whole: {
+    "A+": ["A+", "A-", "O+", "O-"],
+    "A-": ["A-", "O-"],
+    "B+": ["B+", "B-", "O+", "O-"],
+    "B-": ["B-", "O-"],
+    "AB+": ["A+", "B+", "AB+", "O+", "A-", "B-", "AB-", "O-"],
+    "AB-": ["A-", "B-", "AB-", "O-"],
+    "O+": ["O+", "O-"],
+    "O-": ["O-"],
+  },
+  rbc: {
+    "A+": ["A+", "A-", "O+", "O-"],
+    "A-": ["A-", "O-"],
+    "B+": ["B+", "B-", "O+", "O-"],
+    "B-": ["B-", "O-"],
+    "AB+": ["A+", "B+", "AB+", "O+", "A-", "B-", "AB-", "O-"],
+    "AB-": ["AB-", "A-", "B-", "O-"],
+    "O+": ["O+", "O-"],
+    "O-": ["O-"],
+  },
+  plasma: {
+    "A+": ["A+", "AB+", "AB-"],
+    "A-": ["A-", "AB-"],
+    "B+": ["B+", "AB+", "AB-"],
+    "B-": ["B-", "AB-"],
+    "AB+": ["AB+"],
+    "AB-": ["AB-"],
+    "O+": ["A+", "B+", "AB+", "O+"],
+    "O-": ["A-", "B-", "AB-", "O-"],
+  },
+  platelets: {
+    "A+": ["A+", "A-", "O+", "O-"],
+    "A-": ["A-", "O-"],
+    "B+": ["B+", "B-", "O+", "O-"],
+    "B-": ["B-", "O-"],
+    "AB+": ["A+", "B+", "AB+", "O+", "A-", "B-", "AB-", "O-"],
+    "AB-": ["A-", "B-", "AB-", "O-"],
+    "O+": ["O+", "O-"],
+    "O-": ["O-"],
+  },
+  wbc: {
+    "A+": ["A+", "A-", "O+", "O-"],
+    "A-": ["A-", "O-"],
+    "B+": ["B+", "B-", "O+", "O-"],
+    "B-": ["B-", "O-"],
+    "AB+": ["A+", "B+", "AB+", "O+", "A-", "B-", "AB-", "O-"],
+    "AB-": ["A-", "B-", "AB-", "O-"],
+    "O+": ["O+", "O-"],
+    "O-": ["O-"],
+  },
+};
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -119,7 +129,8 @@ export default function BloodCompatibilityChecker() {
           >
             <option value=""></option>
             <option value="whole">Whole</option>
-            <option value="rbc">RBC</option>
+            <option value="rbc">RBCs</option>
+            <option value="wbc">WBCs</option>
             <option value="plasma">Plasma</option>
             <option value="platelets">Platelets</option>
           </select>
@@ -162,7 +173,9 @@ export default function BloodCompatibilityChecker() {
             </ul>
           </div>
           <div className="absolute top-[380px] transform items-center ">
-            <BloodDocs />
+            {compatibleDonors.map((blood) => (
+              <BloodDocs key={blood} bloodT={blood} />
+            ))}
           </div>
         </div>
       )}
