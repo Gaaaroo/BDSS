@@ -4,7 +4,6 @@ import com.google.protobuf.Api;
 import com.swp.bdss.dto.request.BloodReceiveFormCreationRequest;
 import com.swp.bdss.dto.request.BloodReceiveFormUpdateStatusRequest;
 import com.swp.bdss.dto.response.ApiResponse;
-import com.swp.bdss.dto.response.BloodDonateFormResponse;
 import com.swp.bdss.dto.response.BloodReceiveFormResponse;
 import com.swp.bdss.dto.response.BloodResponse;
 import com.swp.bdss.service.BloodReceiveFormService;
@@ -14,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -143,5 +143,44 @@ public class BloodReceiveFormController {
                 .data(count)
                 .build();
     }
+
+    @GetMapping("/count-all")
+    ApiResponse<Long> countAllBloodReceiveForm() {
+        return ApiResponse.<Long>builder()
+                .code(1000)
+                .data(bloodReceiveFormService.countAllBloodReceiveForm())
+                .message("Count all blood receive forms successfully")
+                .build();
+    }
+
+    @GetMapping("/count-by-today")
+    ApiResponse<Long> countAllBloodReceiveFormByToday(){
+        return ApiResponse.<Long>builder()
+                .code(1000)
+                .data(bloodReceiveFormService.countBloodReceiveFormByToday())
+                .message("Count blood receive forms by request date successfully")
+                .build();
+    }
+
+    @GetMapping("/count-by-dates-between")
+    ApiResponse<Long> countBloodReceiveFormByRequestDateBetween(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
+        return ApiResponse.<Long>builder()
+                .code(1000)
+                .data(bloodReceiveFormService.countBloodReceiveFormByRequestDateBetween(startDate, endDate))
+                .message("Count blood receive forms by request date between successfully")
+                .build();
+    }
+
+    @GetMapping("/get-statistics")
+    ApiResponse<Map<String, Long>> getBloodReceiveFormStatistics(@RequestParam String mode) {
+        return ApiResponse.<Map<String, Long>>builder()
+                .code(1000)
+                .data(bloodReceiveFormService.getRequestStatistics(mode))
+                .message("Get blood receive form statistics successfully")
+                .build();
+    }
+
+
+
 
 }
