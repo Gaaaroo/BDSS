@@ -14,6 +14,7 @@ public interface ForumPostMapper {
 
     @Mapping(source = "postId", target = "postId")
     @Mapping(source = "user.username", target = "username")
+    @Mapping(source = "user.imageLink", target = "imageLink")
     @Mapping(source = "comments", target = "comments")
     ForumPostResponse toForumPostResponse(ForumPost forumPost);
 }

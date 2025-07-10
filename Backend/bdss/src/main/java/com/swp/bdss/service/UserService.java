@@ -136,4 +136,8 @@ public class UserService {
         return R * c;
     }
 
+    public Long countAll(){
+        return userRepository.count();
+    }
+
 }

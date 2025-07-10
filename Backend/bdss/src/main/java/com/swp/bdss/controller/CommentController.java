@@ -47,4 +47,14 @@ public class CommentController {
                 .message("Admin delete comment successfully")
                 .build();
     }
+
+    @GetMapping("/count-all")
+    ApiResponse<Long> countAllComments() {
+        return ApiResponse.<Long>builder()
+                .code(1000)
+                .data(commentService.countAllComments())
+                .message("Count all comments successfully")
+                .build();
+    }
 }
+
