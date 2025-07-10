@@ -4,6 +4,8 @@ import com.swp.bdss.entities.BloodDonateForm;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -13,4 +15,10 @@ public interface BloodDonateFormRepository extends JpaRepository<BloodDonateForm
     List<BloodDonateForm> findByUserFullNameContainingIgnoreCaseOrUserPhoneContainingIgnoreCase(String fullName, String phone);
 
     List<BloodDonateForm> findAllByStatus(String status);
+
+    Long countByUserBloodTypeAndStatus(String bloodType, String status);
+
+    Long countByRequestDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+
+    Long countByUserBloodType(String bloodType);
 }

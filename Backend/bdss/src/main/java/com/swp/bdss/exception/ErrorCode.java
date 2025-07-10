@@ -38,6 +38,8 @@ public enum ErrorCode {
     STEP_NOT_FOUND(1028, "Step not found for donation ID and step number", HttpStatus.BAD_REQUEST),
     NOT_ELIGIBLE_TO_REGISTER_RECEIVE(1029, "User is not eligible to register blood receive form", HttpStatus.BAD_REQUEST),
     USERNAME_EXISTED(1030, "Username already existed", HttpStatus.BAD_REQUEST),
+    INVALID_MODE(1031, "Mode must be one of: day, month, year", HttpStatus.BAD_REQUEST),
+
     ;
 
     private final int code;
