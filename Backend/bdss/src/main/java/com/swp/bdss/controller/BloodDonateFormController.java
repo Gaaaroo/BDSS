@@ -157,10 +157,10 @@ public class BloodDonateFormController {
     }
 
     @GetMapping("/count-today-by-blood-type")
-    ApiResponse<Map<String,Long>> countBloodDonateFormByTodayAndBloodType(@RequestParam String bloodType) {
+    ApiResponse<Map<String,Long>> countBloodDonateFormByTodayAndBloodType() {
         return ApiResponse.<Map<String,Long>>builder()
                 .code(1000)
-                .data(bloodDonateFormService.countByBloodTypeByToday(bloodType))
+                .data(bloodDonateFormService.countByBloodTypeByToday())
                 .message("Count blood donate forms by today and blood type successfully")
                 .build();
     }

@@ -23,11 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -45,6 +41,9 @@ public class BloodReceiveFormService {
     BloodComponentUnitRepository bloodComponentUnitRepository;
     BloodUnitMapper bloodUnitMapper;
     BloodComponentUnitMapper bloodComponentUnitMapper;
+
+    private static final List<String> BLOOD_TYPES = Arrays.asList("A+", "B+", "O+", "AB+", "A-", "B-", "O-", "AB-");
+    private static final List<String> COMPONENT_TYPES = Arrays.asList("Whole", "Plasma", "Platelets", "RBC", "WBC");
 
     public List<BloodResponse> getAllSuitableBloodByReceiveId(int receiveId, int page, int size) {
         BloodReceiveForm bloodReceiveForm = bloodReceiveFormRepository.findById(receiveId)
@@ -251,7 +250,22 @@ public class BloodReceiveFormService {
         return count;
     }
 
-    public Long countAllBloodReceiveForm() {
+    public Map<String, Map<String, Long>> countAllBloodReceiveFormByBloodTypeAndComponentType() {
+        Map<String, Map<String, Long>> result = new LinkedHashMap<>();
+
+        for (String componentType : COMPONENT_TYPES) {
+            Map<String, Long> componentCount = new LinkedHashMap<>();
+            for (String bloodType : BLOOD_TYPES) {
+                long count = bloodReceiveFormRepository.countByBloodTypeAndComponentType(bloodType, componentType);
+                componentCount.put(bloodType, count);
+            }
+            result.put(componentType, componentCount);
+        }
+
+        return result;
+    }
+
+    public Long countAll() {
         return bloodReceiveFormRepository.count();
     }
 
@@ -262,6 +276,20 @@ public class BloodReceiveFormService {
         LocalDateTime end = today.plusDays(1).minusNanos(1);
 
         return bloodReceiveFormRepository.countByRequestDateBetween(start, end);
+    }
+
+    public Map<String, Long> countBloodTypeToday(){
+        LocalDateTime today = LocalDateTime.now();
+        LocalDateTime start = today.toLocalDate().atStartOfDay();
+        LocalDateTime end = today.plusDays(1).minusNanos(1);
+
+        HashMap<String, Long> bloodTypeCount = new LinkedHashMap<>();
+        for (String bloodType : BLOOD_TYPES) {
+            long count = bloodReceiveFormRepository.countByBloodTypeAndRequestDateBetween(bloodType, start, end);
+            bloodTypeCount.put(bloodType, count);
+        }
+
+        return bloodTypeCount;
     }
 
     public Long countBloodReceiveFormByRequestDateBetween(LocalDate startDate, LocalDate endDate) {
