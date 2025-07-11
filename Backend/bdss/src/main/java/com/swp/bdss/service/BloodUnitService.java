@@ -152,7 +152,14 @@ public class BloodUnitService {
     }
 
     public long countBloodUnitsByType(String bloodType) {
-        return bloodUnitRepository.countByBloodType(bloodType);
+        return bloodUnitRepository.countByBloodTypeAndStatus(bloodType, "Stored");
+    }
+    public long countAllBloodUnits() {
+        return bloodUnitRepository.countAllBloodUnits();
+    }
+
+    public long countBloodUnitsByStatus(String status) {
+        return bloodUnitRepository.countByStatus(status);
     }
 
     @Transactional
