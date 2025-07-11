@@ -144,15 +144,27 @@ public class BloodReceiveFormController {
                 .build();
     }
 
+    // TRẢ VỀ TỔNG SỐ ĐƠN Ở ĐÂY
     @GetMapping("/count-all")
-    ApiResponse<Long> countAllBloodReceiveForm() {
+    ApiResponse<Long> countAll() {
         return ApiResponse.<Long>builder()
                 .code(1000)
-                .data(bloodReceiveFormService.countAllBloodReceiveForm())
-                .message("Count all blood receive forms successfully")
+                .data(bloodReceiveFormService.countAll())
+                .message("Count all blood receive forms by blood type and component type successfully")
                 .build();
     }
 
+    //TRẢ VỀ DANH SÁCH TỔNG SỐ ĐƠN THEO LOẠI MÁU VÀ LOẠI THÀNH PHẦN Ở ĐÂY
+    @GetMapping("/list-all")
+    ApiResponse<Map<String, Map<String, Long>>> listAllByBloodTypeAndComponentType() {
+        return ApiResponse.<Map<String, Map<String, Long>>>builder()
+                .code(1000)
+                .data(bloodReceiveFormService.countAllBloodReceiveFormByBloodTypeAndComponentType())
+                .message("Count all blood receive forms by blood type and component type successfully")
+                .build();
+    }
+
+    // TRẢ VỀ SỐ ĐƠN ĐĂNG KÝ TRONG HÔM NAY Ở ĐÂY
     @GetMapping("/count-by-today")
     ApiResponse<Long> countAllBloodReceiveFormByToday(){
         return ApiResponse.<Long>builder()
@@ -162,6 +174,7 @@ public class BloodReceiveFormController {
                 .build();
     }
 
+    // TRẢ VỀ SỐ LƯỢNG ĐƠN THEO NGÀY YÊU CẦU
     @GetMapping("/count-by-dates-between")
     ApiResponse<Long> countBloodReceiveFormByRequestDateBetween(@RequestParam LocalDate startDate, @RequestParam LocalDate endDate) {
         return ApiResponse.<Long>builder()
@@ -171,12 +184,23 @@ public class BloodReceiveFormController {
                 .build();
     }
 
+    // BY DAY MONTH YEAR Ở ĐÂY
     @GetMapping("/get-statistics")
     ApiResponse<Map<String, Long>> getBloodReceiveFormStatistics(@RequestParam String mode) {
         return ApiResponse.<Map<String, Long>>builder()
                 .code(1000)
                 .data(bloodReceiveFormService.getRequestStatistics(mode))
                 .message("Get blood receive form statistics successfully")
+                .build();
+    }
+
+    // TRẢ VỀ DANH SÁCH TRONG NGÀY HÔM NAY Ở ĐÂY
+    @GetMapping("/count-today-by-blood-type")
+    ApiResponse<Map<String,Long>> countBloodDonateFormByTodayAndBloodType() {
+        return ApiResponse.<Map<String,Long>>builder()
+                .code(1000)
+                .data(bloodReceiveFormService.countBloodTypeToday())
+                .message("Count blood donate forms by today and blood type successfully")
                 .build();
     }
 

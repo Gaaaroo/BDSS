@@ -262,7 +262,7 @@ public class BloodDonateFormService {
         return result;
     }
 
-    public Map<String, Long> countByBloodTypeByToday(String bloodType) {
+    public Map<String, Long> countByBloodTypeByToday() {
         LocalDateTime today = LocalDateTime.now();
         LocalDateTime start = today.toLocalDate().atStartOfDay();
         LocalDateTime end = start.plusDays(1).minusNanos(1);
