@@ -135,9 +135,30 @@ public class BloodUnitController {
                 .build();
     }
 
-    @GetMapping("/countBloodUnit")
+    //localhost:8080/bdss/bloodUnit/count/all
+    @GetMapping("/count/all")
+    public ApiResponse<Long> countAllBloodUnits() {
+        long count = bloodUnitService.countAllBloodUnits();
+        return ApiResponse.<Long>builder()
+                .code(1000)
+                .data(count)
+                .build();
+    }
+
+    //localhost:8080/bdss/bloodUnit/count/by-type?bloodType=O%2B
+    @GetMapping("/count/by-type")
     public ApiResponse<Long> countBloodUnitsByType(@RequestParam String bloodType) {
         long count = bloodUnitService.countBloodUnitsByType(bloodType);
+        return ApiResponse.<Long>builder()
+                .code(1000)
+                .data(count)
+                .build();
+    }
+
+    //localhost:8080/bdss/bloodUnit/count/by-status?status=stored
+    @GetMapping("/count/by-status")
+    public ApiResponse<Long> countBloodUnitsByStatus(@RequestParam String status) {
+        long count = bloodUnitService.countBloodUnitsByStatus(status);
         return ApiResponse.<Long>builder()
                 .code(1000)
                 .data(count)

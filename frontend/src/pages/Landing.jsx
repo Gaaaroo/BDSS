@@ -10,6 +10,7 @@ import BlogSection from '../components/BlogSection';
 import { Element, Events, scrollSpy } from 'react-scroll';
 import WidgetChat from '../components/WidgetChat';
 import { useApp } from '../Contexts/AppContext';
+import MapPin from '../components/MapPin';
 
 export default function Home() {
   const { isLogged } = useApp();
@@ -67,6 +68,7 @@ export default function Home() {
         <Footer />
       </div>
       <WidgetChat />
+      <MapPin />
     </>
   );
 }

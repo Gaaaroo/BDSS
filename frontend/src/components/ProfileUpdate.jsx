@@ -40,6 +40,7 @@ export default function ProfileUpdate({
       const downloadUrl = await getDownloadURL(imageRef);
       setFormData((prev) => ({ ...prev, imageLink: downloadUrl }));
     } catch (error) {
+      console.error('Image upload failed:', error);
       toast.error('Failed to upload image.');
     } finally {
       setUploading(false);

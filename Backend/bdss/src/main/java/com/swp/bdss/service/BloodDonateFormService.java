@@ -70,7 +70,7 @@ public class BloodDonateFormService {
                 LocalDateTime lastDonateDate = bloodUnit.getDonatedDate();
                 long daysSinceLastDonate = ChronoUnit.DAYS.between(lastDonateDate.toLocalDate(), LocalDate.now());
 
-                if (daysSinceLastDonate > 20) {
+                if (daysSinceLastDonate > 84) {
                     canRegister = true;
                 }
             }

@@ -23,7 +23,12 @@ public interface BloodUnitRepository extends JpaRepository<BloodUnit, Integer> {
 
     Page<BloodUnit> findByBloodTypeAndStatusInOrderByBloodIdDesc(String bloodType, List<String> statuses, Pageable pageable);
 
-    long countByBloodType(String bloodType);
+    long countByBloodTypeAndStatus(String bloodType, String status);
+
+    @Query("SELECT COUNT(b) FROM BloodUnit b")
+    long countAllBloodUnits();
+
+    long countByStatus(String status);
 
 
     @Query("""

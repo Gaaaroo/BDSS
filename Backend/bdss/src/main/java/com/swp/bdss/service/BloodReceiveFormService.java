@@ -88,7 +88,7 @@ public class BloodReceiveFormService {
 
         boolean canRegister = false;
 
-        if (user.getBloodDonateForms().isEmpty()) {
+        if (user.getBloodReceiveForms().isEmpty()) {
             canRegister = true;
         } else {
             BloodReceiveForm lastForm = user.getBloodReceiveForms().getLast();
