@@ -104,16 +104,18 @@ export default function Dashboard() {
           />
           <TotalCard title="Blogs" total={10} data={[]} color="bg-amber-100" />
         </div>
-        <div className="grid grid-cols-2 gap-6 mb-5">
+        <div className="grid grid-cols-2 gap-4 mb-5">
           <StaticsFormChart />
           <SeekerComponentChart />
         </div>
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 gap-4">
           <StatusChart />
           <WholeChart />
         </div>
-        <div className="grid grid-cols-2 gap-6">
+        {/* <div className="grid grid-cols-2 gap-6">
           <RecentDonors donors={donors} />
+        </div> */}
+        <div className="my-5">
           <ComponentChart />
         </div>
       </div>

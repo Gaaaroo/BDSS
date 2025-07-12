@@ -14,7 +14,7 @@ export const countAllDonors = async () => {
 //count all blood donate forms by today
 export const countDonorsToday = async () => {
   try {
-    const res = axiosClient.get('/donate-form/count-by-today');
+    const res = await axiosClient.get('/donate-form/count-by-today');
     return res;
   } catch (error) {
     console.log('err count today', error);
@@ -23,7 +23,7 @@ export const countDonorsToday = async () => {
 //mode can be "day", "month", or "year"
 export const getDonorsStatics = async (mode) => {
   try {
-    const res = axiosClient.get('/donate-form/get-statistics', {
+    const res = await axiosClient.get('/donate-form/get-statistics', {
       params: { mode },
     });
     return res;
@@ -34,7 +34,7 @@ export const getDonorsStatics = async (mode) => {
 //này đếm hết ko phân biệt status
 export const countDonorsByBloodType = async () => {
   try {
-    const res = axiosClient.get('/donate-form/count-by-blood-type');
+    const res = await axiosClient.get('/donate-form/count-by-blood-type');
     return res;
   } catch (error) {
     console.log('err', error);
@@ -69,7 +69,7 @@ export const countSeekersToday = async () => {
 //DANH SÁCH TỔNG SỐ ĐƠN THEO LOẠI MÁU VÀ LOẠI THÀNH PHẦN
 export const listReceiveByBloodTypeAndComponentType = async () => {
   try {
-    const res = axiosClient.get('/receive-form/list-all');
+    const res = await axiosClient.get('/receive-form/list-all');
     return res;
   } catch (error) {
     console.log('err count today', error);
@@ -79,7 +79,7 @@ export const listReceiveByBloodTypeAndComponentType = async () => {
 //mode can be "day", "month", or "year"
 export const getReceiveStatics = async (mode) => {
   try {
-    const res = axiosClient.get('/receive-form/get-statistics', {
+    const res = await axiosClient.get('/receive-form/get-statistics', {
       params: { mode },
     });
     return res;
@@ -91,3 +91,47 @@ export const getReceiveStatics = async (mode) => {
 //Còn lại
 // count-by-date-between
 // count-today-by-blood-type
+
+//Inventory
+// Count all blood Unit in Inventory
+export const countAllBloodUnit = async () => {
+  try {
+    const res = await axiosClient.get('/bloodUnit/count/all');
+    return res;
+  } catch (error) {
+    console.log('err countAllBloodUnit', error);
+  }
+};
+
+//Whole chart data
+export const wholeChartData = async () => {
+  try {
+    const res = await axiosClient.get('/bloodUnit/count/by-blood-types');
+    return res;
+  } catch (error) {
+    console.log('err wholeChartData', error);
+  }
+};
+
+// Inventory status of blood unit
+
+export const statusBloodUnit = async () => {
+  try {
+    const res = await axiosClient.get('/bloodUnit/count/by-status');
+    return res;
+  } catch (error) {
+    console.log('err statusBloodUnit', error);
+  }
+};
+
+// Chart ml whole component
+export const wholeComponentChart = async () => {
+  try {
+    const res = await axiosClient.get(
+      '/bloodUnit/count/blood-ml-whole-component'
+    );
+    return res;
+  } catch (error) {
+    console.log('err wholeComponentChart', error);
+  }
+};
