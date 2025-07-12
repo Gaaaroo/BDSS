@@ -21,7 +21,10 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -169,5 +172,83 @@ public class BloodComponentUnitService {
         bloodComponentUnitRepository.saveAll(components);
     }
 
+    public Map<String, Long> countBloodComponentUnitsGroupedByStatus() {
+        List<String> allStatuses = List.of("Stored", "Used", "Expired");
+        List<Object[]> result = bloodComponentUnitRepository.countBloodComponentUnitsGroupedByStatus();
 
+        Map<String, Long> resultMap = new HashMap<>();
+        for (String status : allStatuses) {
+            resultMap.put(status, 0L);
+        }
+
+        for (Object[] row : result) {
+            String status = (String) row[0];
+            Long count = (Long) row[1];
+            resultMap.put(status, count);
+        }
+
+        return resultMap;
+    }
+
+    public Map<String, Long> countStoredComponentUnitsByBloodType() {
+        List<String> allBloodTypes = List.of("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-");
+        List<Object[]> result = bloodComponentUnitRepository.countStoredComponentUnitsByBloodType();
+
+        Map<String, Long> resultMap = new LinkedHashMap<>(); // Dùng LinkedHashMap để giữ thứ tự nhóm máu
+
+        // Khởi tạo tất cả nhóm máu có count = 0
+        for (String bloodType : allBloodTypes) {
+            resultMap.put(bloodType, 0L);
+        }
+
+        // Ghi đè count thật nếu có từ DB
+        for (Object[] row : result) {
+            String bloodType = (String) row[0];
+            Long count = (Long) row[1];
+            resultMap.put(bloodType, count);
+        }
+
+        return resultMap;
+    }
+
+    public Map<String, Map<String, Object>> countStoredComponentTypeByBloodType() {
+        List<String> bloodTypes = List.of("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-");
+        List<String> componentTypes = List.of("Plasma", "Platelets", "RBCs", "WBCs");
+
+        List<Object[]> result = bloodComponentUnitRepository.countStoredByBloodTypeAndComponentType();
+
+        Map<String, Map<String, Object>> resultMap = new LinkedHashMap<>();
+
+        // Khởi tạo cấu trúc mặc định
+        for (String bloodType : bloodTypes) {
+            Map<String, Long> components = new LinkedHashMap<>();
+            for (String component : componentTypes) {
+                components.put(component, 0L);
+            }
+
+            Map<String, Object> bloodData = new HashMap<>();
+            bloodData.put("total", 0L);
+            bloodData.put("components", components);
+
+            resultMap.put(bloodType, bloodData);
+        }
+
+        // Ghi đè dữ liệu thật
+        for (Object[] row : result) {
+            String bloodType = (String) row[0];
+            String componentType = (String) row[1];
+            Long count = (Long) row[2];
+
+            Map<String, Object> bloodData = resultMap.get(bloodType);
+            if (bloodData != null) {
+                Map<String, Long> components = (Map<String, Long>) bloodData.get("components");
+                components.put(componentType, count);
+
+                long total = components.values().stream().mapToLong(Long::longValue).sum();
+                bloodData.put("total", total);
+            }
+        }
+
+        return resultMap;
+    }
 }

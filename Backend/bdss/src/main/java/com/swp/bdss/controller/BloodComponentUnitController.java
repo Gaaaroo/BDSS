@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequestMapping("/bloodComponentUnit")
@@ -111,6 +112,33 @@ public class BloodComponentUnitController {
         return ApiResponse.<Page<BloodComponentUnitResponse>>builder()
                 .code(1000)
                 .data(bloodComponentUnitService.getAllBloodComponentUnitsByTypeAndStatusAndFullName(bloodType, status, fullName, pageable))
+                .build();
+    }
+
+    // GET: /bloodComponentUnit/count/by-status
+    @GetMapping("/count/by-status")
+    public ApiResponse<Map<String, Long>> countComponentUnitsByStatus() {
+        return ApiResponse.<Map<String, Long>>builder()
+                .code(1000)
+                .data(bloodComponentUnitService.countBloodComponentUnitsGroupedByStatus())
+                .build();
+    }
+
+    // GET: /bdss/bloodComponentUnit/count/by-bloodType
+    @GetMapping("/count/by-bloodType")
+    public ApiResponse<Map<String, Long>> countByBloodTypeWithStoredStatus() {
+        return ApiResponse.<Map<String, Long>>builder()
+                .code(1000)
+                .data(bloodComponentUnitService.countStoredComponentUnitsByBloodType())
+                .build();
+    }
+
+
+    @GetMapping("/count/by-bloodType-componentType")
+    public ApiResponse<Map<String, Map<String, Object>>> countByBloodTypeDetails() {
+        return ApiResponse.<Map<String, Map<String, Object>>>builder()
+                .code(1000)
+                .data(bloodComponentUnitService.countStoredComponentTypeByBloodType())
                 .build();
     }
 }

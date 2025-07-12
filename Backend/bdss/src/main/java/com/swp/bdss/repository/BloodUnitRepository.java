@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface BloodUnitRepository extends JpaRepository<BloodUnit, Integer> {
@@ -24,6 +25,15 @@ public interface BloodUnitRepository extends JpaRepository<BloodUnit, Integer> {
     Page<BloodUnit> findByBloodTypeAndStatusInOrderByBloodIdDesc(String bloodType, List<String> statuses, Pageable pageable);
 
     long countByBloodType(String bloodType);
+
+    @Query("SELECT b.bloodType, COUNT(b) FROM BloodUnit b WHERE b.status = :status GROUP BY b.bloodType")
+    List<Object[]> countByStatusGroupedByBloodType(@Param("status") String status);
+
+    @Query("SELECT COUNT(b) FROM BloodUnit b")
+    long countAllBloodUnits();
+
+    @Query("SELECT b.status, COUNT(b) FROM BloodUnit b GROUP BY b.status")
+    List<Object[]> countBloodUnitsGroupedByStatus();
 
 
     @Query("""
@@ -59,4 +69,12 @@ public interface BloodUnitRepository extends JpaRepository<BloodUnit, Integer> {
     @Query("SELECT bu FROM BloodUnit bu WHERE bu.status = 'stored' AND bu.receiveForm IS NULL AND bu.bloodType = :bloodType")
     Page<BloodUnit> findAllSuitableBloodUnitByType(@Param("bloodType") String bloodType, Pageable pageable);
 
+    @Query("""
+                SELECT b.bloodType, b.volume, COUNT(b)
+                FROM BloodUnit b
+                WHERE b.status = 'Stored'
+                GROUP BY b.bloodType, b.volume
+            """)
+    List<Object[]> countStoredWholeByBloodTypeAndVolume();
 }
+

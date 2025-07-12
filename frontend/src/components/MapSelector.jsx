@@ -1,10 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import {
-  GoogleMap,
-  LoadScript,
-  Marker,
-  Autocomplete,
-} from '@react-google-maps/api';
+import { GoogleMap, Marker, Autocomplete } from '@react-google-maps/api';
 import { getNearbyUsers } from '../services/api/userService';
 
 // Kích thước bản đồ hiển thị

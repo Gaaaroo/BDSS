@@ -10,6 +10,7 @@ import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
 import com.swp.bdss.mapper.BloodUnitMapper;
 import com.swp.bdss.mapper.UserMapper;
+import com.swp.bdss.repository.BloodComponentUnitRepository;
 import com.swp.bdss.repository.BloodDonateFormRepository;
 import com.swp.bdss.repository.BloodUnitRepository;
 import jakarta.transaction.Transactional;
@@ -25,7 +26,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +37,7 @@ public class BloodUnitService {
     BloodUnitMapper bloodUnitMapper;
     BloodDonateFormRepository bloodDonateFormRepository;
     UserMapper userMapper;
+    BloodComponentUnitRepository bloodComponentUnitRepository;
 
     public BloodUnitResponse addBloodUnit(BloodUnitRequest request) {
         BloodUnit bloodUnit = new BloodUnit();
@@ -155,6 +157,52 @@ public class BloodUnitService {
         return bloodUnitRepository.countByBloodType(bloodType);
     }
 
+    public Map<String, Long> countStoredBloodUnitsGroupedByBloodTypeFull() {
+        // Danh sách tất cả các nhóm máu
+        List<String> allBloodTypes = List.of("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-");
+
+        // Kết quả từ DB
+        List<Object[]> result = bloodUnitRepository.countByStatusGroupedByBloodType("Stored");
+
+        // Map khởi tạo với tất cả nhóm máu = 0
+        Map<String, Long> resultMap = new HashMap<>();
+        for (String type : allBloodTypes) {
+            resultMap.put(type, 0L);
+        }
+
+        // Ghi đè lại các nhóm máu có kết quả từ DB
+        for (Object[] row : result) {
+            String bloodType = (String) row[0];
+            Long count = (Long) row[1];
+            resultMap.put(bloodType, count);
+        }
+
+        return resultMap;
+    }
+
+
+    public long countAllBloodUnits() {
+        return bloodUnitRepository.countAllBloodUnits();
+    }
+
+    public Map<String, Long> countBloodUnitsGroupedByStatus() {
+        List<String> allStatuses = List.of("Stored", "Used", "Expired");
+        List<Object[]> result = bloodUnitRepository.countBloodUnitsGroupedByStatus();
+
+        Map<String, Long> resultMap = new HashMap<>();
+        for (String status : allStatuses) {
+            resultMap.put(status, 0L);
+        }
+
+        for (Object[] row : result) {
+            String status = (String) row[0];
+            Long count = (Long) row[1];
+            resultMap.put(status, count);
+        }
+
+        return resultMap;
+    }
+
     @Transactional
     public void updateExpiredBloodUnits() {
         List<BloodUnit> expiredUnits = bloodUnitRepository.findByStatusNotAndExpiryDateBefore(
@@ -191,6 +239,61 @@ public class BloodUnitService {
         bloodUnitRepository.saveAll(allUnits);
     }
 
+    public List<Map<String, Object>> countBloodInventoryByTypeComponentAndVolume() {
+        List<String> bloodTypes = List.of("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-");
+        List<String> volumes = List.of("250ml", "350ml", "450ml");
+        List<String> componentTypes = List.of("whole", "Plasma", "Platelets", "RBCs", "WBCs");
 
+        // Khởi tạo kết quả mặc định
+        Map<String, Map<String, Map<String, Long>>> data = new LinkedHashMap<>();
+        for (String bloodType : bloodTypes) {
+            Map<String, Map<String, Long>> componentMap = new LinkedHashMap<>();
+            for (String component : componentTypes) {
+                Map<String, Long> volumeMap = new LinkedHashMap<>();
+                for (String volume : volumes) {
+                    volumeMap.put(volume, 0L);
+                }
+                componentMap.put(component, volumeMap);
+            }
+            data.put(bloodType, componentMap);
+        }
+
+        // Lấy dữ liệu Whole
+        List<Object[]> wholeData = bloodUnitRepository.countStoredWholeByBloodTypeAndVolume();
+        for (Object[] row : wholeData) {
+            String bloodType = (String) row[0];
+            String volume = row[1] + "ml";
+            Long count = (Long) row[2];
+
+            if (data.containsKey(bloodType)) {
+                data.get(bloodType).get("whole").put(volume, count);
+            }
+        }
+
+        // Lấy dữ liệu Component
+        List<Object[]> compData = bloodComponentUnitRepository.countStoredComponentByBloodTypeAndTypeAndVolume();
+        for (Object[] row : compData) {
+            String bloodType = (String) row[0];
+            String component = ((String) row[1]);
+            String volume = row[2] + "ml";
+            Long count = (Long) row[3];
+
+
+            if (data.containsKey(bloodType) && data.get(bloodType).containsKey(component)) {
+                data.get(bloodType).get(component).put(volume, count);
+            }
+        }
+
+        // Chuyển sang list<Map<String, Object>> để trả ra JSON
+        List<Map<String, Object>> result = new ArrayList<>();
+        for (String bloodType : bloodTypes) {
+            Map<String, Object> bloodTypeEntry = new LinkedHashMap<>();
+            bloodTypeEntry.put("bloodType", bloodType);
+            bloodTypeEntry.putAll(data.get(bloodType));
+            result.add(bloodTypeEntry);
+        }
+
+        return result;
+    }
 
 }
