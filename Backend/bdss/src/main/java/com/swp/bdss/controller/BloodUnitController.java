@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RequestMapping("/bloodUnit")
@@ -135,6 +136,16 @@ public class BloodUnitController {
                 .build();
     }
 
+    @GetMapping("/countBloodUnit")
+    public ApiResponse<Long> countBloodUnit(@RequestParam String bloodType) {
+        long count = bloodUnitService.countBloodUnitsByType(bloodType);
+        return ApiResponse.<Long>builder()
+                .code(1000)
+                .data(count)
+                .build();
+    }
+
+    //Đếm tổng số máu trong kho
     //localhost:8080/bdss/bloodUnit/count/all
     @GetMapping("/count/all")
     public ApiResponse<Long> countAllBloodUnits() {
@@ -145,23 +156,35 @@ public class BloodUnitController {
                 .build();
     }
 
-    //localhost:8080/bdss/bloodUnit/count/by-type?bloodType=O%2B
-    @GetMapping("/count/by-type")
-    public ApiResponse<Long> countBloodUnitsByType(@RequestParam String bloodType) {
-        long count = bloodUnitService.countBloodUnitsByType(bloodType);
-        return ApiResponse.<Long>builder()
+    //dùng cho biểu đồ cột của whole
+    //localhost:8080/bdss/bloodUnit/count/by-blood-types
+    @GetMapping("/count/by-blood-types")
+    public ApiResponse<Map<String, Long>> countStoredBloodUnitsByAllBloodTypes() {
+        Map<String, Long> counts = bloodUnitService.countStoredBloodUnitsGroupedByBloodTypeFull();
+        return ApiResponse.<Map<String, Long>>builder()
                 .code(1000)
-                .data(count)
+                .data(counts)
                 .build();
     }
 
-    //localhost:8080/bdss/bloodUnit/count/by-status?status=stored
+
+    //duùng cho biểu đồ tròn, in ra 3 cái status
+    //localhost:8080/bdss/bloodUnit/count/by-status
     @GetMapping("/count/by-status")
-    public ApiResponse<Long> countBloodUnitsByStatus(@RequestParam String status) {
-        long count = bloodUnitService.countBloodUnitsByStatus(status);
-        return ApiResponse.<Long>builder()
+    public ApiResponse<Map<String, Long>> countBloodUnitsGroupedByStatus() {
+        Map<String, Long> counts = bloodUnitService.countBloodUnitsGroupedByStatus();
+        return ApiResponse.<Map<String, Long>>builder()
                 .code(1000)
-                .data(count)
+                .data(counts)
+                .build();
+    }
+
+    // này để làm cái sơ đò ml nè
+    @GetMapping("/count/blood-ml-whole-component")
+    public ApiResponse<List<Map<String, Object>>> getBloodInventoryChartData() {
+        return ApiResponse.<List<Map<String, Object>>>builder()
+                .code(1000)
+                .data(bloodUnitService.countBloodInventoryByTypeComponentAndVolume())
                 .build();
     }
 

@@ -68,4 +68,26 @@ public interface BloodComponentUnitRepository extends JpaRepository<BloodCompone
             Pageable pageable
     );
 
+    @Query("SELECT b.status, COUNT(b) FROM BloodComponentUnit b GROUP BY b.status")
+    List<Object[]> countBloodComponentUnitsGroupedByStatus();
+
+    @Query("SELECT b.bloodType, COUNT(b) FROM BloodComponentUnit b WHERE b.status = 'Stored' GROUP BY b.bloodType")
+    List<Object[]> countStoredComponentUnitsByBloodType();
+
+    @Query("""
+                SELECT b.bloodType, b.componentType, COUNT(b)
+                FROM BloodComponentUnit b
+                WHERE b.status = 'Stored'
+                GROUP BY b.bloodType, b.componentType
+            """)
+    List<Object[]> countStoredByBloodTypeAndComponentType();
+
+    @Query("""
+                SELECT b.bloodType, b.componentType, b.volume, COUNT(b)
+                FROM BloodComponentUnit b
+                WHERE b.status = 'Stored'
+                GROUP BY b.bloodType, b.componentType, b.volume
+            """)
+    List<Object[]> countStoredComponentByBloodTypeAndTypeAndVolume();
+
 }
