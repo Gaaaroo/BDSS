@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Repository
 public interface BloodUnitRepository extends JpaRepository<BloodUnit, Integer> {
@@ -23,12 +24,16 @@ public interface BloodUnitRepository extends JpaRepository<BloodUnit, Integer> {
 
     Page<BloodUnit> findByBloodTypeAndStatusInOrderByBloodIdDesc(String bloodType, List<String> statuses, Pageable pageable);
 
-    long countByBloodTypeAndStatus(String bloodType, String status);
+    long countByBloodType(String bloodType);
+
+    @Query("SELECT b.bloodType, COUNT(b) FROM BloodUnit b WHERE b.status = :status GROUP BY b.bloodType")
+    List<Object[]> countByStatusGroupedByBloodType(@Param("status") String status);
 
     @Query("SELECT COUNT(b) FROM BloodUnit b")
     long countAllBloodUnits();
 
-    long countByStatus(String status);
+    @Query("SELECT b.status, COUNT(b) FROM BloodUnit b GROUP BY b.status")
+    List<Object[]> countBloodUnitsGroupedByStatus();
 
 
     @Query("""

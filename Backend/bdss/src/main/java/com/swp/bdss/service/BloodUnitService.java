@@ -25,7 +25,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -152,14 +154,53 @@ public class BloodUnitService {
     }
 
     public long countBloodUnitsByType(String bloodType) {
-        return bloodUnitRepository.countByBloodTypeAndStatus(bloodType, "Stored");
+        return bloodUnitRepository.countByBloodType(bloodType);
     }
+
+    public Map<String, Long> countStoredBloodUnitsGroupedByBloodTypeFull() {
+        // Danh sách tất cả các nhóm máu
+        List<String> allBloodTypes = List.of("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-");
+
+        // Kết quả từ DB
+        List<Object[]> result = bloodUnitRepository.countByStatusGroupedByBloodType("Stored");
+
+        // Map khởi tạo với tất cả nhóm máu = 0
+        Map<String, Long> resultMap = new HashMap<>();
+        for (String type : allBloodTypes) {
+            resultMap.put(type, 0L);
+        }
+
+        // Ghi đè lại các nhóm máu có kết quả từ DB
+        for (Object[] row : result) {
+            String bloodType = (String) row[0];
+            Long count = (Long) row[1];
+            resultMap.put(bloodType, count);
+        }
+
+        return resultMap;
+    }
+
+
     public long countAllBloodUnits() {
         return bloodUnitRepository.countAllBloodUnits();
     }
 
-    public long countBloodUnitsByStatus(String status) {
-        return bloodUnitRepository.countByStatus(status);
+    public Map<String, Long> countBloodUnitsGroupedByStatus() {
+        List<String> allStatuses = List.of("Stored", "Used", "Expired");
+        List<Object[]> result = bloodUnitRepository.countBloodUnitsGroupedByStatus();
+
+        Map<String, Long> resultMap = new HashMap<>();
+        for (String status : allStatuses) {
+            resultMap.put(status, 0L);
+        }
+
+        for (Object[] row : result) {
+            String status = (String) row[0];
+            Long count = (Long) row[1];
+            resultMap.put(status, count);
+        }
+
+        return resultMap;
     }
 
     @Transactional
