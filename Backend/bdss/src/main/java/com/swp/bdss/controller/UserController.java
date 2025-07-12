@@ -91,6 +91,19 @@ public class UserController {
                 .build();
     }
 
+    @GetMapping("/nearby-with-bloodType")
+    public ApiResponse<List<UserResponse>> getNearbyUser(
+            @RequestParam double lat,
+            @RequestParam double lng,
+            @RequestParam(defaultValue = "5") double radius,
+            @RequestParam(required = false) String bloodType) {
+
+        return ApiResponse.<List<UserResponse>>builder()
+                .code(1000)
+                .data(userService.findUserNearbyWithBloodType(lat, lng, radius, bloodType))
+                .build();
+    }
+
     @PutMapping("/ban-user")
     public ApiResponse<UserResponse> banUser(@RequestParam int userId) {
         userService.banUser(userId);

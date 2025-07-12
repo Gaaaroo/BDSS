@@ -28,6 +28,29 @@ export const getNearbyUsers = async (lat, lng, radius = 5) => {
   return response;
 };
 
+export const getNearbyUsersWithBloodType = async (
+  lat,
+  lng,
+  radius = 5,
+  bloodType = null
+) => {
+  const params = {
+    lat,
+    lng,
+    radius,
+  };
+
+  if (bloodType) {
+    params.bloodType = bloodType;
+  }
+
+  const response = await axiosClient.get('/users/nearby-with-bloodType', {
+    params,
+  });
+
+  return response;
+};
+
 export const getAllUserProfile = async () => {
   try {
     const res = await axiosClient.get('/users');
