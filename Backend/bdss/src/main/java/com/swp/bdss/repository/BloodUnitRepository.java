@@ -69,4 +69,12 @@ public interface BloodUnitRepository extends JpaRepository<BloodUnit, Integer> {
     @Query("SELECT bu FROM BloodUnit bu WHERE bu.status = 'stored' AND bu.receiveForm IS NULL AND bu.bloodType = :bloodType")
     Page<BloodUnit> findAllSuitableBloodUnitByType(@Param("bloodType") String bloodType, Pageable pageable);
 
+    @Query("""
+                SELECT b.bloodType, b.volume, COUNT(b)
+                FROM BloodUnit b
+                WHERE b.status = 'Stored'
+                GROUP BY b.bloodType, b.volume
+            """)
+    List<Object[]> countStoredWholeByBloodTypeAndVolume();
 }
+

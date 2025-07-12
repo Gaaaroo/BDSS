@@ -179,4 +179,13 @@ public class BloodUnitController {
                 .build();
     }
 
+    // này để làm cái sơ đò ml nè
+    @GetMapping("/count/blood-ml-whole-component")
+    public ApiResponse<List<Map<String, Object>>> getBloodInventoryChartData() {
+        return ApiResponse.<List<Map<String, Object>>>builder()
+                .code(1000)
+                .data(bloodUnitService.countBloodInventoryByTypeComponentAndVolume())
+                .build();
+    }
+
 }
