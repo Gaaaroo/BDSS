@@ -1,17 +1,17 @@
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Autoplay, EffectFade } from "swiper/modules";
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Autoplay, EffectFade } from 'swiper/modules';
 
-import img1 from "../assets/images/slider-1.PNG";
-import img2 from "../assets/images/slider-2.PNG";
-import img3 from "../assets/images/slider-3.PNG";
-import img4 from "../assets/images/slider-4.PNG";
-import img5 from "../assets/images/slider-5.PNG";
-import img6 from "../assets/images/slider-6.PNG";
-import img7 from "../assets/images/slider-7.PNG";
+import img1 from '../assets/images/slider-1.PNG';
+import img2 from '../assets/images/slider-2.PNG';
+import img3 from '../assets/images/slider-3.PNG';
+import img4 from '../assets/images/slider-4.PNG';
+import img5 from '../assets/images/slider-5.png';
+import img6 from '../assets/images/slider-6.png';
+import img7 from '../assets/images/slider-7.PNG';
 
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/effect-fade";
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/effect-fade';
 
 function ImageCarousel() {
   return (
