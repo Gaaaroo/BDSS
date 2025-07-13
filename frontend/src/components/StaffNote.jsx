@@ -2,17 +2,17 @@ import { UserRound } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import DropdownButton from './DropdownButton';
 
-export default function StaffNote({ dateUpdate, nameStaff, notes }) {
-  const [activeNote, setActiveNote] = useState('');
+export default function StaffNote({ notes }) {
+  const [activeStep, setActiveStep] = useState('');
   const [current, setCurrent] = useState();
   useEffect(() => {
     console.log(notes);
   }, [notes]);
 
   const handleStep = (step) => {
-    const activeStep = notes.find((x) => x.stepNumber === step);
-    if (activeStep) {
-      setActiveNote(activeStep.note);
+    const tmp = notes.find((x) => x.stepNumber === step);
+    if (tmp) {
+      setActiveStep(tmp);
     }
     setCurrent(step);
   };
@@ -22,7 +22,7 @@ export default function StaffNote({ dateUpdate, nameStaff, notes }) {
       const maxStep = Math.max(...notes.map((x) => x.stepNumber));
       const maxStepNote = notes.find((x) => x.stepNumber === maxStep);
       if (maxStepNote) {
-        setActiveNote(maxStepNote.note);
+        setActiveStep(maxStepNote);
       }
       setCurrent(maxStep);
     }
@@ -35,10 +35,13 @@ export default function StaffNote({ dateUpdate, nameStaff, notes }) {
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-2 bg-white px-5 py-1.5 text-base font-bold rounded-full shadow text-red-800 tracking-wide border border-red-300">
               <UserRound strokeWidth={3} />
-              {nameStaff}
+              {activeStep.updatedBy}
             </div>
             <div className="flex items-center gap-2 bg-white px-5 py-1.5 text-base font-bold rounded-full shadow text-red-800 tracking-wide border border-red-300">
-              Date: {dateUpdate}
+              Date:{' '}
+              {activeStep?.updatedAt
+                ? activeStep.updatedAt.slice(0, 10)
+                : activeStep}
             </div>
           </div>
           <DropdownButton
@@ -49,7 +52,7 @@ export default function StaffNote({ dateUpdate, nameStaff, notes }) {
         </div>
 
         <div className="p-4 min-h-[200px] text-gray-800 text-lg leading-relaxed bg-white rounded-b-3xl">
-          {activeNote}
+          {activeStep.note}
         </div>
       </div>
     </div>

@@ -15,8 +15,6 @@ export default function ReceiveDetail() {
   const { id } = useParams();
   const [step, setStep] = useState(0);
   const [notes, setNotes] = useState([]);
-  const [nameStaff, setNameStaff] = useState();
-  const [date, setDate] = useState();
   const [detail, setDetail] = useState();
   const [loading, setLoading] = useState(true);
 
@@ -24,21 +22,13 @@ export default function ReceiveDetail() {
     try {
       const res = await myReceiveDetail(id);
       let count = 0;
-      let nameStaff = '';
-      let date = '';
       for (const item of res.steps) {
         if (item.status === 'DONE') {
           count += 1;
-          if (item.updatedBy && item.updatedAt) {
-            nameStaff = item.updatedBy;
-            date = item.updatedAt;
-          }
         }
       }
       setNotes(res.steps.filter((x) => x.status == 'DONE'));
       setStep(count);
-      setNameStaff(nameStaff);
-      setDate(date);
       setDetail(res);
     } catch (error) {
       console.log(error);
@@ -152,11 +142,7 @@ export default function ReceiveDetail() {
             />
           </div>
         </div>
-        <StaffNote
-          notes={notes}
-          dateUpdate={date.slice(0, 10)}
-          nameStaff={nameStaff}
-        />
+        <StaffNote notes={notes} />
         <Footer />
       </div>
     </>
