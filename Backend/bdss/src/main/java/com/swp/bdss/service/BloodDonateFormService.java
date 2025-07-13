@@ -39,6 +39,8 @@ public class BloodDonateFormService {
 
     private static final List<String> BLOOD_TYPES = Arrays.asList("A+", "B+", "O+", "AB+", "A-", "B-", "O-", "AB-");
 
+    public static record DonorInfo(String bloodType, LocalDate requestDate) {}
+
 
     //create blood donate form (USER)
     public BloodDonateFormResponse createBloodDonateForm(BloodDonateFormCreationRequest request){
@@ -274,6 +276,22 @@ public class BloodDonateFormService {
         }
 
         return result;
+    }
+
+    public Map<String, DonorInfo> getBloodDonateFormWithFullName(){
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime sevenDaysAgo = now.minusDays(7);
+
+        Map<String, String> result = new LinkedHashMap<>();
+
+        return bloodDonateFormRepository.findAllByRequestDateBetween(sevenDaysAgo, now)
+                .stream()
+                .collect(Collectors.toMap(
+                        form -> form.getUser().getFullName(),
+                        form -> new DonorInfo(form.getUser().getBloodType(), form.getRequestDate().toLocalDate()),
+                        (existing, replacement) -> existing, // Handle duplicates by keeping the first one
+                        LinkedHashMap::new // Maintain insertion order
+                ));
     }
 
 

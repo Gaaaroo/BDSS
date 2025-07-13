@@ -44,6 +44,7 @@ public class BloodReceiveFormService {
 
     private static final List<String> BLOOD_TYPES = Arrays.asList("A+", "B+", "O+", "AB+", "A-", "B-", "O-", "AB-");
     private static final List<String> COMPONENT_TYPES = Arrays.asList("Whole", "Plasma", "Platelets", "RBC", "WBC");
+    public static record SeekResponse(String bloodType, String componentType, LocalDate requestDate) {}
 
     public List<BloodResponse> getAllSuitableBloodByReceiveId(int receiveId, int page, int size) {
         BloodReceiveForm bloodReceiveForm = bloodReceiveFormRepository.findById(receiveId)
@@ -331,5 +332,19 @@ public class BloodReceiveFormService {
                 throw new AppException(ErrorCode.INVALID_MODE);
         }
     }
+
+    public Map<String, SeekResponse> listFormWithName(){
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime sevenDaysAgo = now.minusDays(7);
+
+        return bloodReceiveFormRepository.findAllByRequestDateBetween(sevenDaysAgo, now)
+                .stream()
+                .collect(Collectors.toMap(
+                        form -> form.getUser().getFullName(),
+                        form -> new SeekResponse(form.getBloodType(), form.getComponentType(), form.getRequestDate().toLocalDate()),
+                        (existing, replacement) -> existing // Giữ nguyên nếu trùng tên
+                ));
+    }
+
 
 }

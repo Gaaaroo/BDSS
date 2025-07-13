@@ -165,4 +165,14 @@ public class BloodDonateFormController {
                 .build();
     }
 
+    @GetMapping("/list-with-name")
+    ApiResponse<Map<String, BloodDonateFormService.DonorInfo>> getBloodDonateFormListWithName() {
+        return ApiResponse.<Map<String, BloodDonateFormService.DonorInfo>>builder()
+                .code(1000)
+                .data(bloodDonateFormService.getBloodDonateFormWithFullName())
+                .message("Get blood donate form list with name successfully")
+                .build();
+    }
+
+
 }
