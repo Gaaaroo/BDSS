@@ -56,4 +56,7 @@ public class BloodReceiveForm {
 
     @OneToMany(mappedBy = "receiveForm", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     List<BloodUnit> bloodUnits;
+
+    @OneToMany(mappedBy = "bloodReceiveForm", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<BloodComponentUnit> bloodComponentUnits = new ArrayList<>();
 }
