@@ -93,8 +93,8 @@ export const getReceiveStatics = async (mode) => {
 // count-today-by-blood-type
 
 //Inventory
-// Count all blood Unit in Inventory
-export const countAllBloodUnit = async () => {
+// Count all blood whole in Inventory
+export const countWholeBloodUnit = async () => {
   try {
     const res = await axiosClient.get('/bloodUnit/count/all');
     return res;
@@ -113,14 +113,14 @@ export const wholeChartData = async () => {
   }
 };
 
-// Inventory status of blood unit
+// whole status chart
 
-export const statusBloodUnit = async () => {
+export const statusWhole = async () => {
   try {
     const res = await axiosClient.get('/bloodUnit/count/by-status');
     return res;
   } catch (error) {
-    console.log('err statusBloodUnit', error);
+    console.log('err statusWhole', error);
   }
 };
 
@@ -133,5 +133,15 @@ export const wholeComponentChart = async () => {
     return res;
   } catch (error) {
     console.log('err wholeComponentChart', error);
+  }
+};
+
+//component status chart
+export const statusComponent = async () => {
+  try {
+    const res = await axiosClient.get('/bloodComponentUnit/count/by-status');
+    return res;
+  } catch (error) {
+    console.log('err statusComponent', error);
   }
 };

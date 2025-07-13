@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import TotalCard from '../components/TotalCard';
-import RecentDonors from '../components/RecentDonors';
-import WholeChart from '../components/WholeChart';
-import StatusChart from '../components/StatusChart';
 import ComponentChart from '../components/ComponentChart';
 import {
   countAllDonors,
@@ -10,10 +7,12 @@ import {
   countDonorsByBloodType,
   countDonorsToday,
   countSeekersToday,
+  countWholeBloodUnit,
 } from '../services/api/dashboardService';
-import DonorChart from '../components/StaticsFormChart';
 import SeekerComponentChart from '../components/SeekercomponentChart';
 import StaticsFormChart from '../components/StaticsFormChart';
+import StatusWholeChart from '../components/StatusWholeChart';
+import StatusComponentChart from '../components/StatusComponentChart';
 
 export default function Dashboard() {
   const [data, setData] = useState([]);
@@ -21,6 +20,7 @@ export default function Dashboard() {
   const [totalSeekers, setTotalSeekers] = useState();
   const [totalDonorsToday, setTotalDonorsToday] = useState();
   const [totalSeekersToday, setTotalSeekersToday] = useState();
+  const [totalWhole, setTotalWhole] = useState();
 
   useEffect(() => {
     const fetchAllDashboardData = async () => {
@@ -28,12 +28,14 @@ export default function Dashboard() {
         const [
           totalDonorsRes,
           totalSeekersRes,
+          totalWholesRes,
           donorsTodayRes,
           seekersTodayRes,
           bloodCountsRes,
         ] = await Promise.all([
           countAllDonors(),
           countAllReceive(),
+          countWholeBloodUnit(),
           countDonorsToday(),
           countSeekersToday(),
           countDonorsByBloodType(),
@@ -43,6 +45,7 @@ export default function Dashboard() {
         setTotalSeekers(totalSeekersRes);
         setTotalDonorsToday(donorsTodayRes);
         setTotalSeekersToday(seekersTodayRes);
+        setTotalWhole(totalWholesRes);
 
         const formattedBlood = Object.entries(bloodCountsRes).map(
           ([key, value]) => ({
@@ -97,8 +100,8 @@ export default function Dashboard() {
             color="bg-pink-100"
           />
           <TotalCard
-            title="In Stock"
-            total={130}
+            title="Total Whole"
+            total={totalWhole}
             data={[]}
             color="bg-green-100"
           />
@@ -109,8 +112,9 @@ export default function Dashboard() {
           <SeekerComponentChart />
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <StatusChart />
-          <WholeChart />
+          <StatusWholeChart />
+          <StatusComponentChart />
+          {/* <WholeChart /> */}
         </div>
         {/* <div className="grid grid-cols-2 gap-6">
           <RecentDonors donors={donors} />
