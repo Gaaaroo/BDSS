@@ -1,4 +1,5 @@
 import axios from 'axios';
+import qs from 'qs';
 
 const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
@@ -7,6 +8,7 @@ const axiosClient = axios.create({
     'Content-Type': 'application/json',
   },
   withCredentials: true,
+  paramsSerializer: (params) => qs.stringify(params, { arrayFormat: 'repeat' }),
 });
 
 const apis = {
@@ -41,7 +43,7 @@ const handleAuthError = async (error) => {
     originalRequest._retryCount = 0;
   }
 
-  if (error.response.status === 401 && originalRequest._retryCount < 5) {
+  if (error?.response?.status === 401 && originalRequest._retryCount < 5) {
     originalRequest._retryCount += 1;
     const refreshToken = localStorage.getItem('refreshToken');
     if (!refreshToken) {

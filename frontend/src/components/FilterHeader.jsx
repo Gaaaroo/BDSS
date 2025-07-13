@@ -14,6 +14,14 @@ export default function FilterHeader({
 }) {
   const bloodOptions = ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'];
 
+  const handleStatusChange = (status) => {
+    if (statusFilter.includes(status)) {
+      setStatusFilter(statusFilter.filter((s) => s !== status));
+    } else {
+      setStatusFilter([...statusFilter, status]);
+    }
+  };
+
   return (
     <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
       <h2 className="text-2xl font-bold text-rose-600">{title}</h2>
@@ -41,25 +49,26 @@ export default function FilterHeader({
         </select>
       </div>
 
-      {/* Status */}
-      <div className="flex items-center gap-2">
-        <label className="text-gray-600 font-medium text-sm">
-          <Funnel className="w-5 h-5 text-gray-500" />
-        </label>
-        <select
-          value={statusFilter[0] || 'All'}
-          onChange={(e) =>
-            setStatusFilter(e.target.value === 'All' ? [] : [e.target.value])
-          }
-          className="border border-red-300 rounded px-3 py-1 text-sm font-medium text-gray-800 focus:outline-none hover:bg-red-100"
-        >
-          <option value="All">All Status</option>
+      {/* Status Filter - Multiple Checkboxes */}
+      <div className="flex items-center gap-3">
+        <Funnel className="w-6 h-6 text-gray-500" />
+        <div className="flex flex-wrap gap-4">
           {statusOptions.map((status) => (
-            <option key={status} value={status}>
+            <label
+              key={status}
+              className="flex items-center text-base text-gray-800 font-medium"
+            >
+              <input
+                type="checkbox"
+                value={status}
+                checked={statusFilter.includes(status)}
+                onChange={() => handleStatusChange(status)}
+                className="mr-2 w-5 h-5 accent-red-500"
+              />
               {status}
-            </option>
+            </label>
           ))}
-        </select>
+        </div>
       </div>
     </div>
   );
