@@ -10,7 +10,6 @@ export default function StatusWholeChart() {
 
   const fetchStatusWholeData = async () => {
     const res = await statusWhole();
-    console.log('Whole chart API result:', res);
     setStatusData(res);
     try {
     } catch (error) {

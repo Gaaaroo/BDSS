@@ -25,7 +25,6 @@ export default function WholeChart() {
 
   const fetchWholeChartData = async () => {
     const res = await wholeChartData();
-    console.log('Whole chart API result:', res);
     setWholeData(res);
     try {
     } catch (error) {

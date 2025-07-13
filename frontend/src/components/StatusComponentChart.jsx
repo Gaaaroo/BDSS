@@ -10,7 +10,6 @@ export default function StatusComponentChart() {
 
   const fetchStatusComponentData = async () => {
     const res = await statusComponent();
-    console.log('Component chart API result:', res);
     setStatusData(res);
     try {
     } catch (error) {

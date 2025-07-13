@@ -15,7 +15,7 @@ import StaticsFormChart from '../components/StaticsFormChart';
 import StatusWholeChart from '../components/StatusWholeChart';
 import StatusComponentChart from '../components/StatusComponentChart';
 
-export default function Dashboard() {
+export default function DashboardStaff() {
   const [data, setData] = useState([]);
   const [totalDonors, setTotalDonors] = useState();
   const [totalSeekers, setTotalSeekers] = useState();

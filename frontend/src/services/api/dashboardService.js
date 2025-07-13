@@ -5,7 +5,6 @@ import React from 'react';
 export const countAllDonors = async () => {
   try {
     const res = await axiosClient.get('/donate-form/count-all');
-    console.log('count all donors', res);
     return res;
   } catch (error) {
     console.log('err count all', error);
@@ -49,7 +48,6 @@ export const countDonorsByBloodType = async () => {
 export const countAllReceive = async () => {
   try {
     const res = await axiosClient.get('/receive-form/count-all');
-    console.log('count all donors', res);
     return res;
   } catch (error) {
     console.log('err count all', error);
@@ -59,7 +57,6 @@ export const countAllReceive = async () => {
 export const countSeekersToday = async () => {
   try {
     const res = await axiosClient.get('/receive-form/count-by-today');
-    console.log('count all donors', res);
     return res;
   } catch (error) {
     console.log('err count all', error);
@@ -150,7 +147,6 @@ export const statusComponent = async () => {
 export const countAllBlog = async () => {
   try {
     const res = await axiosClient.get('/blog/count');
-    console.log('blog', res);
     return res;
   } catch (error) {
     console.log('err countAllBlog', error);

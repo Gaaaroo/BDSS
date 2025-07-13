@@ -56,7 +56,7 @@ export const AppProvider = ({ children }) => {
           navigate('/dashboard');
           break;
         case 'ADMIN':
-          navigate('/');
+          navigate('/dashboard');
           break;
         default:
           navigate('/');
