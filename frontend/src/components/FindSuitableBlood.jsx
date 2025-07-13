@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import { getSuitableBloodByReceiveId } from '../services/api/bloodRequestService';
 import { assignBloodUnitToReceiveForm } from '../services/api/bloodUnitService';
+import { useApp } from '../Contexts/AppContext';
+import MapFinder from './MapFinder';
 
 export default function FindSuitableBlood({ receiveId }) {
+  const { profile } = useApp();
   const [openPopup, setOpenPopup] = useState(false);
   const [suitableBloodList, setSuitableBloodList] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [showFinder, setShowFinder] = useState(false);
 
   const fetchData = async (pageNumber = 0) => {
     setLoading(true);
@@ -83,7 +87,7 @@ export default function FindSuitableBlood({ receiveId }) {
 
       {openPopup && (
         <div className="fixed inset-0 bg-black/30 z-40 flex items-center justify-center">
-          <div className="bg-white rounded-xl shadow-lg p-6 w-[90%] max-w-[1600px] h-[700px] overflow-y-auto relative transform translate-x-[120px]">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-[70%] max-w-[1600px] h-[700px] overflow-y-auto relative transform translate-x-[120px]">
             <button
               className="absolute top-4 right-6 text-gray-500 hover:text-red-500 text-2xl"
               onClick={handleClosePopup}
@@ -100,9 +104,37 @@ export default function FindSuitableBlood({ receiveId }) {
             ) : error ? (
               <p className="text-center text-red-500">{error}</p>
             ) : suitableBloodList.length === 0 ? (
-              <p className="text-center text-gray-500">
-                No suitable blood found.
-              </p>
+              <div className="text-center mt-6">
+                <p className="text-gray-500 text-lg mb-4">
+                  No suitable blood found.
+                </p>
+                <button
+                  onClick={() => setShowFinder(true)}
+                  className="mx-auto flex items-center justify-center bg-red-500 hover:bg-red-400 text-white font-semibold px-4 py-2 rounded-full transition"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-5 h-5 mr-2"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 11c1.657 0 3-1.343 3-3S13.657 5 12 5 9 6.343 9 8s1.343 3 3 3z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 22s8-6.5 8-13a8 8 0 10-16 0c0 6.5 8 13 8 13z"
+                    />
+                  </svg>
+                  Find Blood Donors Near You
+                </button>
+              </div>
             ) : (
               <>
                 <div className="overflow-x-auto">
@@ -201,6 +233,15 @@ export default function FindSuitableBlood({ receiveId }) {
             )}
           </div>
         </div>
+      )}
+      {showFinder && (
+        <MapFinder
+          initialLocation={{
+            lat: profile?.lat,
+            lng: profile?.lng,
+          }}
+          onClose={() => setShowFinder(false)}
+        />
       )}
     </>
   );
