@@ -24,6 +24,14 @@ import java.util.List;
 public class BlogController {
     BlogService blogService;
 
+    @GetMapping("/count")
+    public ApiResponse<Long> countAllBlogs() {
+        return ApiResponse.<Long>builder()
+                .code(1000)
+                .data(blogService.countAllBlog())
+                .build();
+    }
+
     @PostMapping
     ApiResponse<BlogResponse> createBlog (@RequestBody BlogCreationRequest request){
         return ApiResponse.<BlogResponse>builder()

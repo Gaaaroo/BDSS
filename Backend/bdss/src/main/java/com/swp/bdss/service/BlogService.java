@@ -136,4 +136,8 @@ public class BlogService {
         blogRepository.deleteById(blogId);
     }
 
+    public long countAllBlog() {
+        return blogRepository.count();
+    }
+
 }

@@ -108,6 +108,73 @@ public class BloodUnitService {
                 });
     }
 
+
+
+    public Page<BloodUnitResponse> getFilteredBloodUnits(
+            String bloodType,
+            List<String> statuses,
+            String fullName,
+            Pageable pageable
+    ) {
+        updateExpiryNotes();
+        updateExpiredBloodUnits();
+
+        Page<BloodUnit> bloodUnits;
+
+        boolean hasBloodType = bloodType != null && !bloodType.isBlank();
+        boolean hasStatus = statuses != null && !statuses.isEmpty();
+        boolean hasFullName = fullName != null && !fullName.isBlank();
+
+        // 1. All 3 filters
+        if (hasBloodType && hasStatus && hasFullName) {
+            bloodUnits = bloodUnitRepository.findByBloodTypeAndStatusInAndFullNameLikeIgnoreCase(
+                    bloodType, statuses, fullName, pageable);
+        }
+
+        // 2. bloodType + status (no fullName)
+        else if (hasBloodType && hasStatus) {
+            bloodUnits = bloodUnitRepository.findByBloodTypeAndStatusInOrderByBloodIdDesc(
+                    bloodType, statuses, pageable);
+        }
+
+        // 3. status + fullName (no bloodType)
+        else if (!hasBloodType && hasStatus && hasFullName) {
+            bloodUnits = bloodUnitRepository.findByStatusInAndFullNameLikeIgnoreCase(
+                    statuses, fullName, pageable);
+        }
+
+        // 4. Only status
+        else if (hasStatus) {
+            bloodUnits = bloodUnitRepository.findByStatusInOrderByBloodIdDesc(statuses, pageable);
+        }
+
+        // 5. Only bloodType
+        else if (hasBloodType) {
+            bloodUnits = bloodUnitRepository.findByBloodTypeOrderByBloodIdDesc(bloodType, pageable);
+        }
+
+        // 6. Only fullName
+        else if (hasFullName) {
+            bloodUnits = bloodUnitRepository.findByFullNameLikeIgnoreCase(
+                    fullName, pageable);
+        }
+
+        // 6. No filters: lấy tất cả
+        else {
+            bloodUnits = bloodUnitRepository.findAllByOrderByBloodIdDesc(pageable);
+        }
+
+
+        return bloodUnits.map(bloodUnit -> {
+            BloodUnitResponse response = bloodUnitMapper.toBloodUnitResponse(bloodUnit);
+            response.setUserResponse(userMapper.toUserResponse(
+                    bloodUnit.getBloodDonateForm().getUser()));
+            return response;
+        });
+    }
+
+
+
     public Page<BloodUnitResponse> getAllBloodUnitType(String bloodType, Pageable pageable) {
         updateExpiryNotes();
         updateExpiredBloodUnits();
