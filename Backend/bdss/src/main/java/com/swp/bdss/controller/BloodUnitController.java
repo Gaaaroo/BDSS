@@ -188,4 +188,16 @@ public class BloodUnitController {
                 .build();
     }
 
+    @PostMapping("/assign")
+    public ApiResponse<String> assignToReceiveForm(
+            @RequestParam int bloodId,
+            @RequestParam int receiveId,
+            @RequestParam String componentType
+    ) {
+        bloodUnitService.assignToReceiveForm(bloodId, receiveId, componentType);
+        return ApiResponse.<String>builder()
+                .code(1000)
+                .data("Assigned successfully")
+                .build();
+    }
 }

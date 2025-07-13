@@ -44,5 +44,7 @@ public class BloodComponentUnit {
     @JoinColumn(name = "bloodID", referencedColumnName = "bloodId", nullable = false)
     BloodUnit bloodUnit;
 
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "receiveId", referencedColumnName = "receiveId")
+    BloodReceiveForm bloodReceiveForm;
 }
