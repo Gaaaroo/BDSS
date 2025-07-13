@@ -20,6 +20,8 @@ public interface BloodDonateFormRepository extends JpaRepository<BloodDonateForm
 
     Long countByRequestDateBetween(LocalDateTime startDate, LocalDateTime endDate);
 
+    List<BloodDonateForm> findAllByRequestDateBetween(LocalDateTime startDate, LocalDateTime endDate);
+
     Long countByUserBloodType(String bloodType);
 
     Long countByUserBloodTypeAndRequestDateBetween(String bloodType, LocalDateTime startDate, LocalDateTime endDate);

@@ -204,6 +204,15 @@ public class BloodReceiveFormController {
                 .build();
     }
 
+    @GetMapping("/list-with-name")
+    ApiResponse<Map<String, BloodReceiveFormService.SeekResponse>> getBloodReceiveFormWithName() {
+        return ApiResponse.<Map<String, BloodReceiveFormService.SeekResponse>>builder()
+                .code(1000)
+                .data(bloodReceiveFormService.listFormWithName())
+                .message("Get blood receive forms by name successfully")
+                .build();
+    }
+
 
 
 
