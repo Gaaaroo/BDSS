@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,8 +45,9 @@ public class BloodReceiveFormService {
 
     private static final List<String> BLOOD_TYPES = Arrays.asList("A+", "B+", "O+", "AB+", "A-", "B-", "O-", "AB-");
     private static final List<String> COMPONENT_TYPES = Arrays.asList("Whole", "Plasma", "Platelets", "RBC", "WBC");
+    public static record SeekResponse(String bloodType, String componentType, LocalDate requestDate) {}
 
-    public List<BloodResponse> getAllSuitableBloodByReceiveId(int receiveId, int page, int size) {
+    public Page<BloodResponse> getAllSuitableBloodByReceiveId(int receiveId, int page, int size) {
         BloodReceiveForm bloodReceiveForm = bloodReceiveFormRepository.findById(receiveId)
                 .orElseThrow(() -> new AppException(ErrorCode.NO_BLOOD_RECEIVE_FORM));
         String bloodType = bloodReceiveForm.getBloodType();
@@ -55,28 +57,36 @@ public class BloodReceiveFormService {
         if (componentType.equalsIgnoreCase("Whole")) {
             Page<BloodUnit> bloodUnits = bloodUnitRepository.findAllSuitableBloodUnitByType(bloodType, pageable);
 
-            return bloodUnits.getContent().stream()
-                    .filter(bloodUnit -> bloodUnit.getStatus().equalsIgnoreCase("stored"))
-                    .map(bloodUnit -> {
-                        BloodUnitResponse response = bloodUnitMapper.toBloodUnitResponse(bloodUnit);
-                        response.setUserResponse(userMapper.toUserResponse(bloodUnit.getBloodDonateForm().getUser()));
-                        return response;
-                    }).collect(Collectors.toList());
-        } else {
-            List<BloodResponse> responses = new ArrayList<>();
-            for (BloodComponentUnit bloodComponentUnit : bloodComponentUnitRepository
-                    .findAllSuitableBloodComponentUnitByType(bloodType, componentType, pageable)) {
-                if (bloodComponentUnit.getStatus().equalsIgnoreCase("Stored") &&
-                        bloodComponentUnit.getComponentType().equalsIgnoreCase(bloodReceiveForm.getComponentType())) {
-                    BloodComponentUnitResponse bloodComponentUnitResponse = bloodComponentUnitMapper.toBloodComponentUnitResponse(bloodComponentUnit);
-                    bloodComponentUnitResponse.setUserResponse(userMapper.toUserResponse(bloodComponentUnit.getBloodUnit().getBloodDonateForm().getUser()));
-                    responses.add(bloodComponentUnitResponse);
-                }
-            }
-            return responses;
-        }
+            List<BloodResponse> content = bloodUnits.getContent().stream()
+                    .filter(unit -> unit.getStatus().equalsIgnoreCase("Stored"))
+                    .map(unit -> {
+                        BloodUnitResponse response = bloodUnitMapper.toBloodUnitResponse(unit);
+                        response.setUserResponse(userMapper.toUserResponse(unit.getBloodDonateForm().getUser()));
+                        return (BloodResponse) response;
+                    })
+                    .toList();
 
+            return new PageImpl<>(content, pageable, bloodUnits.getTotalElements());
+        } else {
+            Page<BloodComponentUnit> componentUnits = bloodComponentUnitRepository
+                    .findAllSuitableBloodComponentUnitByType(bloodType, componentType, pageable);
+
+            List<BloodResponse> content = componentUnits.getContent().stream()
+                    .filter(unit -> unit.getStatus().equalsIgnoreCase("Stored") &&
+                            unit.getComponentType().equalsIgnoreCase(componentType))
+                    .map(unit -> {
+                        BloodComponentUnitResponse response = bloodComponentUnitMapper.toBloodComponentUnitResponse(unit);
+                        response.setUserResponse(userMapper.toUserResponse(unit.getBloodUnit().getBloodDonateForm().getUser()));
+                        return (BloodResponse) response;
+                    })
+                    .toList();
+
+            return new PageImpl<>(content, pageable, componentUnits.getTotalElements());
+        }
     }
+
+
+
 
     public BloodReceiveFormResponse createBloodReceiveForm(BloodReceiveFormCreationRequest request) {
         BloodReceiveForm bloodReceiveForm = bloodReceiveFormMapper.toBloodReceiveForm(request);
@@ -331,5 +341,19 @@ public class BloodReceiveFormService {
                 throw new AppException(ErrorCode.INVALID_MODE);
         }
     }
+
+    public Map<String, SeekResponse> listFormWithName(){
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime sevenDaysAgo = now.minusDays(7);
+
+        return bloodReceiveFormRepository.findAllByRequestDateBetween(sevenDaysAgo, now)
+                .stream()
+                .collect(Collectors.toMap(
+                        form -> form.getUser().getFullName(),
+                        form -> new SeekResponse(form.getBloodType(), form.getComponentType(), form.getRequestDate().toLocalDate()),
+                        (existing, replacement) -> existing // Giữ nguyên nếu trùng tên
+                ));
+    }
+
 
 }

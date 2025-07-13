@@ -66,6 +66,18 @@ public interface BloodUnitRepository extends JpaRepository<BloodUnit, Integer> {
             Pageable pageable
     );
 
+    @Query("""
+                SELECT bu FROM BloodUnit bu
+                JOIN bu.bloodDonateForm bdf
+                JOIN bdf.user u
+                WHERE LOWER(u.fullName) LIKE LOWER(CONCAT('%', :fullName, '%'))
+                ORDER BY bu.bloodId DESC
+            """)
+    Page<BloodUnit> findByFullNameLikeIgnoreCase(
+            @Param("fullName") String fullName,
+            Pageable pageable
+    );
+
     @Query("SELECT bu FROM BloodUnit bu WHERE bu.status = 'stored' AND bu.receiveForm IS NULL AND bu.bloodType = :bloodType")
     Page<BloodUnit> findAllSuitableBloodUnitByType(@Param("bloodType") String bloodType, Pageable pageable);
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { updateReceivingProcessStep } from '../services/api/bloodRequestService';
+import FindSuitableBlood from './FindSuitableBlood';
 
 const stepNames = [
   'Confirm information',
@@ -98,7 +99,7 @@ export default function StepProgress({
   };
 
   return (
-    <div className="w-full max-w-xl mx-auto bg-[#FDE4E4] rounded-xl shadow-lg px-4 pt-3 pb-6">
+    <div className="w-full max-w-xl mx-auto bg-[#FDE4E4] rounded-xl shadow-lg px-4 pt-3 pb-[18px]">
       <h2 className="text-xl font-bold mb-4 text-center text-black">
         Step Progress
       </h2>
@@ -167,6 +168,10 @@ export default function StepProgress({
           );
         })}
       </div>
+
+      {steps[0]?.status == 'DONE' && (
+        <FindSuitableBlood receiveId={receiveId} />
+      )}
 
       {/* Modal chi tiết step */}
       {openStepIdx !== null && (

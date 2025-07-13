@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -42,12 +43,17 @@ public class BloodReceiveFormController {
     }
 
     @GetMapping("suitable-blood")
-    ApiResponse<List<BloodResponse>> getAllSuitableBloodByReceiveId ( @RequestParam int receiveId,
-                                                                      @RequestParam(defaultValue = "0") int page,
-                                                                      @RequestParam(defaultValue = "10") int size) {
-        return ApiResponse.<List<BloodResponse>>builder()
+    public ApiResponse<Page<BloodResponse>> getAllSuitableBloodByReceiveId(
+            @RequestParam int receiveId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Page<BloodResponse> result = bloodReceiveFormService.getAllSuitableBloodByReceiveId(receiveId, page, size);
+
+        return ApiResponse.<Page<BloodResponse>>builder()
                 .code(1000)
-                .data(bloodReceiveFormService.getAllSuitableBloodByReceiveId(receiveId, page, size))
+                .data(result)
+                .message("Fetch suitable blood successfully")
                 .build();
     }
 
@@ -201,6 +207,15 @@ public class BloodReceiveFormController {
                 .code(1000)
                 .data(bloodReceiveFormService.countBloodTypeToday())
                 .message("Count blood donate forms by today and blood type successfully")
+                .build();
+    }
+
+    @GetMapping("/list-with-name")
+    ApiResponse<Map<String, BloodReceiveFormService.SeekResponse>> getBloodReceiveFormWithName() {
+        return ApiResponse.<Map<String, BloodReceiveFormService.SeekResponse>>builder()
+                .code(1000)
+                .data(bloodReceiveFormService.listFormWithName())
+                .message("Get blood receive forms by name successfully")
                 .build();
     }
 

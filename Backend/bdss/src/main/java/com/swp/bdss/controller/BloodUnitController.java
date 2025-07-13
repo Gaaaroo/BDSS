@@ -11,8 +11,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -66,6 +68,30 @@ public class BloodUnitController {
                 .data(bloodUnitService.updateBloodUnitStatus(status, bloodId))
                 .build();
     }
+
+    @GetMapping("/filter")
+    public ApiResponse<Page<BloodUnitResponse>> filterBloodUnits(
+            @RequestParam(required = false) String bloodType,
+            @RequestParam(required = false) List<String> statuses,
+            @RequestParam(required = false) String fullName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "bloodId"));
+
+        Page<BloodUnitResponse> result = bloodUnitService.getFilteredBloodUnits(
+                bloodType, statuses, fullName, pageable
+        );
+
+        return ApiResponse.<Page<BloodUnitResponse>>builder()
+                .code(1000)
+                .data(result)
+                .build();
+    }
+
+
 
     // sort theo day vs volum thì thêm sort=expiryDate,asc vào url
     //hàm này dùng trong trang tổng in ra tất cả bloodUnit nhưng chỉ in ra theo status thui
@@ -188,4 +214,16 @@ public class BloodUnitController {
                 .build();
     }
 
+    @PostMapping("/assign")
+    public ApiResponse<String> assignToReceiveForm(
+            @RequestParam int bloodId,
+            @RequestParam int receiveId,
+            @RequestParam String componentType
+    ) {
+        bloodUnitService.assignToReceiveForm(bloodId, receiveId, componentType);
+        return ApiResponse.<String>builder()
+                .code(1000)
+                .data("Assigned successfully")
+                .build();
+    }
 }

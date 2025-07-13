@@ -87,6 +87,29 @@ export const getDonateRequestByStatus = async (status) => {
 
 /////////////////////////////--RECEIVE--/////////////////////////////////////
 
+// Find suitabe blood by receiveId
+export const getSuitableBloodByReceiveId = async (
+  receiveId,
+  page = 0,
+  size = 10
+) => {
+  try {
+    const response = await axiosClient.get('/receive-form/suitable-blood', {
+      params: {
+        receiveId,
+        page,
+        size,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error(
+      error?.response?.data?.message || 'Error fetching suitable blood units'
+    );
+    throw error;
+  }
+};
+
 // count receive request by status
 export const countReceiveRequestByStatus = async () => {
   try {

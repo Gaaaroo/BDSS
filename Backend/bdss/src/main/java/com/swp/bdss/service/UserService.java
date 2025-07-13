@@ -125,6 +125,20 @@ public class UserService {
                 .toList();
     }
 
+    public List<UserResponse> findUserNearbyWithBloodType(double lat, double lng, double radiusKm, String bloodType) {
+        var context = SecurityContextHolder.getContext();
+        int userId = Integer.parseInt(context.getAuthentication().getName());
+
+        return userRepository.findAll().stream()
+                .filter(user -> user.getLat() != null && user.getLng() != null)
+                .filter(user -> user.getUserId() != userId)
+                .filter(user -> haversine(lat, lng, user.getLat(), user.getLng()) <= radiusKm)
+                .filter(user -> bloodType == null || user.getBloodType() != null &&
+                        user.getBloodType().equalsIgnoreCase(bloodType))
+                .map(userMapper::toUserResponse)
+                .toList();
+    }
+
     private double haversine(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371; // đây là bán kính trái đất
         double dLat = Math.toRadians(lat2 - lat1);

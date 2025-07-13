@@ -2,16 +2,14 @@ package com.swp.bdss.service;
 
 import com.swp.bdss.dto.request.BloodUnitRequest;
 import com.swp.bdss.dto.response.BloodUnitResponse;
-import com.swp.bdss.entities.BloodDonateForm;
-import com.swp.bdss.entities.BloodUnit;
-import com.swp.bdss.entities.DonationProcess;
-import com.swp.bdss.entities.User;
+import com.swp.bdss.entities.*;
 import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
 import com.swp.bdss.mapper.BloodUnitMapper;
 import com.swp.bdss.mapper.UserMapper;
 import com.swp.bdss.repository.BloodComponentUnitRepository;
 import com.swp.bdss.repository.BloodDonateFormRepository;
+import com.swp.bdss.repository.BloodReceiveFormRepository;
 import com.swp.bdss.repository.BloodUnitRepository;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -38,6 +36,7 @@ public class BloodUnitService {
     BloodDonateFormRepository bloodDonateFormRepository;
     UserMapper userMapper;
     BloodComponentUnitRepository bloodComponentUnitRepository;
+    BloodReceiveFormRepository bloodReceiveFormRepository;
 
     public BloodUnitResponse addBloodUnit(BloodUnitRequest request) {
         BloodUnit bloodUnit = new BloodUnit();
@@ -67,6 +66,36 @@ public class BloodUnitService {
          return bloodUnitResponse;
     }
 
+    public void assignToReceiveForm(int bloodId, int receiveId, String componentType) {
+        // Tìm Receive Form
+        BloodReceiveForm receiveForm = bloodReceiveFormRepository.findById(receiveId)
+                .orElseThrow(() -> new AppException(ErrorCode.RECEIVE_FORM_NOT_EXISTED));
+
+        if ("whole".equalsIgnoreCase(componentType)) {
+            BloodUnit bloodUnit = bloodUnitRepository.findById(bloodId)
+                    .orElseThrow(() -> new AppException(ErrorCode.BLOOD_UNIT_NOT_EXIST));
+
+            if (!"Stored".equalsIgnoreCase(bloodUnit.getStatus())) {
+                throw new AppException(ErrorCode.BLOOD_UNIT_ALREADY_USED_OR_INVALID);
+            }
+
+            bloodUnit.setReceiveForm(receiveForm);
+            bloodUnit.setStatus("Used");
+            bloodUnitRepository.save(bloodUnit);
+
+        } else {
+            BloodComponentUnit component = bloodComponentUnitRepository.findById(bloodId)
+                    .orElseThrow(() -> new AppException(ErrorCode.BLOOD_UNIT_NOT_EXIST));
+
+            if (!"Stored".equalsIgnoreCase(component.getStatus())) {
+                throw new AppException(ErrorCode.BLOOD_COMPONENT_ALREADY_USED_OR_INVALID);
+            }
+            component.setBloodReceiveForm(receiveForm);
+            component.setStatus("Used");
+            bloodComponentUnitRepository.save(component);
+        }
+    }
+
     public Page<BloodUnitResponse> getAllBloodUnits(Pageable pageable) {
         updateExpiryNotes();
         updateExpiredBloodUnits();
@@ -78,6 +107,73 @@ public class BloodUnitService {
                     return bloodUnitResponse;
                 });
     }
+
+
+
+    public Page<BloodUnitResponse> getFilteredBloodUnits(
+            String bloodType,
+            List<String> statuses,
+            String fullName,
+            Pageable pageable
+    ) {
+        updateExpiryNotes();
+        updateExpiredBloodUnits();
+
+        Page<BloodUnit> bloodUnits;
+
+        boolean hasBloodType = bloodType != null && !bloodType.isBlank();
+        boolean hasStatus = statuses != null && !statuses.isEmpty();
+        boolean hasFullName = fullName != null && !fullName.isBlank();
+
+        // 1. All 3 filters
+        if (hasBloodType && hasStatus && hasFullName) {
+            bloodUnits = bloodUnitRepository.findByBloodTypeAndStatusInAndFullNameLikeIgnoreCase(
+                    bloodType, statuses, fullName, pageable);
+        }
+
+        // 2. bloodType + status (no fullName)
+        else if (hasBloodType && hasStatus) {
+            bloodUnits = bloodUnitRepository.findByBloodTypeAndStatusInOrderByBloodIdDesc(
+                    bloodType, statuses, pageable);
+        }
+
+        // 3. status + fullName (no bloodType)
+        else if (!hasBloodType && hasStatus && hasFullName) {
+            bloodUnits = bloodUnitRepository.findByStatusInAndFullNameLikeIgnoreCase(
+                    statuses, fullName, pageable);
+        }
+
+        // 4. Only status
+        else if (hasStatus) {
+            bloodUnits = bloodUnitRepository.findByStatusInOrderByBloodIdDesc(statuses, pageable);
+        }
+
+        // 5. Only bloodType
+        else if (hasBloodType) {
+            bloodUnits = bloodUnitRepository.findByBloodTypeOrderByBloodIdDesc(bloodType, pageable);
+        }
+
+        // 6. Only fullName
+        else if (hasFullName) {
+            bloodUnits = bloodUnitRepository.findByFullNameLikeIgnoreCase(
+                    fullName, pageable);
+        }
+
+        // 6. No filters: lấy tất cả
+        else {
+            bloodUnits = bloodUnitRepository.findAllByOrderByBloodIdDesc(pageable);
+        }
+
+
+        return bloodUnits.map(bloodUnit -> {
+            BloodUnitResponse response = bloodUnitMapper.toBloodUnitResponse(bloodUnit);
+            response.setUserResponse(userMapper.toUserResponse(
+                    bloodUnit.getBloodDonateForm().getUser()));
+            return response;
+        });
+    }
+
+
 
     public Page<BloodUnitResponse> getAllBloodUnitType(String bloodType, Pageable pageable) {
         updateExpiryNotes();

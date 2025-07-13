@@ -39,7 +39,9 @@ public enum ErrorCode {
     NOT_ELIGIBLE_TO_REGISTER_RECEIVE(1029, "User is not eligible to register blood receive form", HttpStatus.BAD_REQUEST),
     USERNAME_EXISTED(1030, "Username already existed", HttpStatus.BAD_REQUEST),
     INVALID_MODE(1031, "Mode must be one of: day, month, year", HttpStatus.BAD_REQUEST),
-
+    RECEIVE_FORM_NOT_EXISTED(1032, "Receive form not existed", HttpStatus.BAD_REQUEST),
+    BLOOD_UNIT_ALREADY_USED_OR_INVALID(1033, "Blood unit already used or invalid", HttpStatus.BAD_REQUEST),
+    BLOOD_COMPONENT_ALREADY_USED_OR_INVALID(1033, "Blood component unit already used or invalid", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;
