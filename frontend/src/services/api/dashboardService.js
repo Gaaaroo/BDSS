@@ -145,3 +145,14 @@ export const statusComponent = async () => {
     console.log('err statusComponent', error);
   }
 };
+
+// count blog
+export const countAllBlog = async () => {
+  try {
+    const res = await axiosClient.get('/blog/count');
+    console.log('blog', res);
+    return res;
+  } catch (error) {
+    console.log('err countAllBlog', error);
+  }
+};

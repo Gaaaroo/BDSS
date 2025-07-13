@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import TotalCard from '../components/TotalCard';
 import ComponentChart from '../components/ComponentChart';
 import {
+  countAllBlog,
   countAllDonors,
   countAllReceive,
   countDonorsByBloodType,
@@ -21,6 +22,7 @@ export default function Dashboard() {
   const [totalDonorsToday, setTotalDonorsToday] = useState();
   const [totalSeekersToday, setTotalSeekersToday] = useState();
   const [totalWhole, setTotalWhole] = useState();
+  const [totalBlogs, setTotalBlogs] = useState();
 
   useEffect(() => {
     const fetchAllDashboardData = async () => {
@@ -29,6 +31,7 @@ export default function Dashboard() {
           totalDonorsRes,
           totalSeekersRes,
           totalWholesRes,
+          totalBlogsRes,
           donorsTodayRes,
           seekersTodayRes,
           bloodCountsRes,
@@ -36,6 +39,7 @@ export default function Dashboard() {
           countAllDonors(),
           countAllReceive(),
           countWholeBloodUnit(),
+          countAllBlog(),
           countDonorsToday(),
           countSeekersToday(),
           countDonorsByBloodType(),
@@ -46,6 +50,7 @@ export default function Dashboard() {
         setTotalDonorsToday(donorsTodayRes);
         setTotalSeekersToday(seekersTodayRes);
         setTotalWhole(totalWholesRes);
+        setTotalBlogs(totalBlogsRes);
 
         const formattedBlood = Object.entries(bloodCountsRes).map(
           ([key, value]) => ({
@@ -86,26 +91,31 @@ export default function Dashboard() {
       <div className="flex-1 p-3 bg-gray-100">
         <div className="grid grid-cols-4 gap-4 mb-6">
           <TotalCard
-            title="Total Donors"
+            title="Total Blood Donors"
             total={totalDonors}
-            totalToday={totalDonorsToday}
+            totalToday={`Today: ${totalDonorsToday}`}
             data={donorsByBloodType}
             color="bg-blue-100"
           />
           <TotalCard
-            title="Total Seekers"
+            title="Total Blood Seekers"
             total={totalSeekers}
-            totalToday={totalSeekersToday}
+            totalToday={`Today: ${totalSeekersToday}`}
             data={[]}
             color="bg-pink-100"
           />
           <TotalCard
-            title="Total Whole"
+            title="Total Whole Blood"
             total={totalWhole}
             data={[]}
             color="bg-green-100"
           />
-          <TotalCard title="Blogs" total={10} data={[]} color="bg-amber-100" />
+          <TotalCard
+            title="Total Blogs"
+            total={totalBlogs}
+            data={[]}
+            color="bg-amber-100"
+          />
         </div>
         <div className="grid grid-cols-2 gap-4 mb-5">
           <StaticsFormChart />
