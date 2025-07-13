@@ -1,8 +1,5 @@
 import { useState } from 'react';
-import {
-  separateBloodUnit,
-  updateBloodStatus,
-} from '../services/api/inventoryService';
+import { separateBloodUnit } from '../services/api/inventoryService';
 import { toast } from 'react-toastify';
 import InventoryDetail from './InventoryDetail';
 import CustomModal from './CustomModal';
@@ -24,7 +21,6 @@ export default function ListBloodType({ list, fetchList }) {
       console.log('cpn', selectedComponents);
       await Promise.all([
         separateBloodUnit(selectedBloodId, selectedComponents),
-        updateBloodStatus('Separated', selectedBloodId),
       ]);
       toast.success(`Blood separated successfully!`);
       //Cập nhật lại danh sách
