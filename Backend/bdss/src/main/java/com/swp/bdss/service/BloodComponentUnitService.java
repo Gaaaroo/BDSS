@@ -50,7 +50,9 @@ public class BloodComponentUnitService {
                 bloodComponentUnit.setNote("");
                 bloodComponentUnit.setBloodUnit(bloodUnit);
             }
+            bloodUnit.setStatus("Separated");
             bloodComponentUnitRepository.save(bloodComponentUnit);
+            bloodUnitRepository.save(bloodUnit);
         }
         return "Separate successful";
     }
