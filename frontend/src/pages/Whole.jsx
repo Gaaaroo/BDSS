@@ -31,7 +31,7 @@ export default function Whole() {
         try {
           const [unitRes, requestRes] = await Promise.all([
             countBloodUnit(type),
-            countRequest(type, ''),
+            countRequest(type, 'Whole'),
           ]);
           results[type] = {
             units: unitRes ?? 0,

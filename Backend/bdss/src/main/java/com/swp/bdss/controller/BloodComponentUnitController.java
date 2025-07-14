@@ -142,6 +142,15 @@ public class BloodComponentUnitController {
                 .build();
     }
 
+    // GET: /bloodComponentUnit/count/bloodType
+    @GetMapping("/count/bloodType")
+    public ApiResponse<Map<String, Long>> countAllComponentUnitsByBloodType() {
+        return ApiResponse.<Map<String, Long>>builder()
+                .code(1000)
+                .data(bloodComponentUnitService.countAllComponentUnitsByBloodType())
+                .build();
+    }
+
     // GET: /bdss/bloodComponentUnit/count/by-bloodType
     @GetMapping("/count/by-bloodType")
     public ApiResponse<Map<String, Long>> countByBloodTypeWithStoredStatus() {
