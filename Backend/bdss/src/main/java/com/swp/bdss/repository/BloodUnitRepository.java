@@ -88,5 +88,19 @@ public interface BloodUnitRepository extends JpaRepository<BloodUnit, Integer> {
                 GROUP BY b.bloodType, b.volume
             """)
     List<Object[]> countStoredWholeByBloodTypeAndVolume();
+
+    @Query("""
+                SELECT bu FROM BloodUnit bu
+                JOIN bu.bloodDonateForm bdf
+                JOIN bdf.user u
+                WHERE bu.bloodType = :bloodType
+                AND LOWER(u.fullName) LIKE LOWER(CONCAT('%', :fullName, '%'))
+                ORDER BY bu.bloodId DESC
+            """)
+    Page<BloodUnit> findByBloodTypeAndFullNameLikeIgnoreCase(
+            @Param("bloodType") String bloodType,
+            @Param("fullName") String fullName,
+            Pageable pageable
+    );
 }
 

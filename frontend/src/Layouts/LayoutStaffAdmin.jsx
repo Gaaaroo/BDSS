@@ -2,7 +2,7 @@ import React from 'react';
 import Sidebar from './Sidebar';
 import { Outlet } from 'react-router';
 
-export default function LayoutStaff() {
+export default function LayoutStaffAdmin() {
   return (
     <div className="flex h-screen">
       <div className="w-64 bg-gray-800 text-white fixed h-full">

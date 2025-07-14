@@ -54,6 +54,24 @@ public class BloodComponentUnitController {
                 .build();
     }
 
+    @GetMapping("/filter")
+    public ApiResponse<Page<BloodComponentUnitResponse>> getFilteredBloodComponentUnits(
+            @RequestParam(required = false) String bloodType,
+            @RequestParam(required = false) List<String> statuses,
+            @RequestParam(required = false) String fullName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<BloodComponentUnitResponse> result = bloodComponentUnitService.getFilteredBloodComponentUnits(
+                bloodType, statuses, fullName, pageable);
+
+        return ApiResponse.<Page<BloodComponentUnitResponse>>builder()
+                .code(1000)
+                .data(result)
+                .build();
+    }
+
     // http://localhost:8080/bdss/bloodComponentUnit/status?status=Stored&page=0&size=5
     @GetMapping("/status")
     public ApiResponse<Page<BloodComponentUnitResponse>> getAllBloodComponentUnitsByStatus(

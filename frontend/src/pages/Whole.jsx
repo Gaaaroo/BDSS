@@ -1,13 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import BloodCard from '../components/BloodCard';
 import {
-  bloodUnitByFS,
-  bloodUnitByS,
-  bloodUnitByTFS,
-  bloodUnitByTS,
+  filterBloodUnits,
   countBloodUnit,
   countRequest,
-  listBloodUnits,
 } from '../services/api/inventoryService';
 import ListBloodType from '../components/ListBloodType';
 import BloodCardGrid from '../components/BloodCardGrid';
@@ -16,6 +12,7 @@ import Pagination from '../components/Pagination';
 
 export default function Whole() {
   const bloodGroups = ['O+', 'A+', 'B+', 'AB+', 'O-', 'A-', 'B-', 'AB-'];
+  const statusOptions = ['Stored', 'Separated', 'Used', 'Expired'];
   const [bloodData, setBloodData] = useState({});
   const [list, setList] = useState([]);
   //Page
@@ -26,8 +23,6 @@ export default function Whole() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState([]);
   const [bloodType, setBloodType] = useState('All');
-  const statusOptions = ['Stored', 'Separated'];
-
   //Count -> set in bloodCart
   const fetchBloodData = async () => {
     const results = {};
@@ -36,9 +31,8 @@ export default function Whole() {
         try {
           const [unitRes, requestRes] = await Promise.all([
             countBloodUnit(type),
-            countRequest(type, ''), // khác whole
+            countRequest(type, ''),
           ]);
-
           results[type] = {
             units: unitRes ?? 0,
             requests: requestRes ?? 0,
@@ -52,51 +46,18 @@ export default function Whole() {
         }
       })
     );
-    console.log('meo:', results);
     setBloodData(results);
   };
 
   const fetchAPI = async () => {
     try {
-      let res = await listBloodUnits(page, 10);
-
-      const hasSearch = searchTerm.trim() !== '';
-      const hasStatus = statusFilter.length > 0;
-      const hasType = bloodType !== 'All';
-
-      if (hasSearch || hasStatus || hasType) {
-        const effectiveStatusFilter = hasStatus
-          ? statusFilter
-          : ['Stored', 'Separated'];
-        const effectiveBloodType = hasType ? bloodType : '';
-
-        if (hasSearch && !hasType) {
-          res = await bloodUnitByFS(
-            effectiveStatusFilter,
-            searchTerm,
-            page,
-            10
-          );
-        } else if (!hasSearch && hasType && hasStatus) {
-          res = await bloodUnitByTS(
-            effectiveBloodType,
-            effectiveStatusFilter,
-            page,
-            10
-          );
-        } else if (hasSearch && hasType && hasStatus) {
-          // Gọi API filter theo Type + Fullname + Status
-          res = await bloodUnitByTFS(
-            effectiveBloodType,
-            effectiveStatusFilter,
-            searchTerm,
-            page,
-            10
-          );
-        } else {
-          res = await bloodUnitByS(effectiveStatusFilter, page, 10);
-        }
-      }
+      const res = await filterBloodUnits({
+        bloodType: bloodType !== 'All' ? bloodType : undefined,
+        statuses: statusFilter,
+        fullName: searchTerm.trim() !== '' ? searchTerm : undefined,
+        page,
+        size: 10,
+      });
 
       if (res?.content) {
         setList(res.content);
@@ -117,6 +78,12 @@ export default function Whole() {
   }, []);
 
   useEffect(() => {
+    console.log('Calling API with:', {
+      bloodType,
+      statuses: statusFilter,
+      fullName: searchTerm.trim(),
+      page,
+    });
     fetchAPI();
   }, [page, searchTerm, statusFilter, bloodType]);
 

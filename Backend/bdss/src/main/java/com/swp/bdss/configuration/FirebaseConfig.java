@@ -1,3 +1,4 @@
+// này chạy cho local
 //package com.swp.bdss.configuration;
 //
 //import com.google.auth.oauth2.GoogleCredentials;
@@ -25,6 +26,8 @@
 //    }
 //}
 
+
+//bên dới này chạy cho deploy
 package com.swp.bdss.configuration;
 
 import com.google.auth.oauth2.GoogleCredentials;

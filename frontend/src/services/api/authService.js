@@ -88,18 +88,10 @@ export const forgotPassword = async (email) => {
 //reset pw
 export const resetPassword = async (token, newPassword) => {
   try {
-    const res = await axiosClient.post(
-      '/auth/reset-password',
-      {
-        token,
-        newPassword,
-      },
-      {
-        headers: {
-          Authorization: '', //xoá Authorization để tránh interceptor thêm vào
-        },
-      }
-    );
+    const res = await axiosClient.post('/auth/reset-password', {
+      token,
+      newPassword,
+    });
     return res;
   } catch (err) {
     console.log('error when reset pw: ', err);

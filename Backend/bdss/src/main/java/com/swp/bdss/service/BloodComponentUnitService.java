@@ -57,6 +57,55 @@ public class BloodComponentUnitService {
         return "Separate successful";
     }
 
+    public Page<BloodComponentUnitResponse> getFilteredBloodComponentUnits(
+            String bloodType,
+            List<String> statuses,
+            String fullName,
+            Pageable pageable
+    ) {
+        updateExpiredBloodComponentUnits();
+        updateExpiryNotesForComponentUnits();
+
+        Page<BloodComponentUnit> componentUnits;
+
+        boolean hasBloodType = bloodType != null && !bloodType.isBlank();
+        boolean hasStatus = statuses != null && !statuses.isEmpty();
+        boolean hasFullName = fullName != null && !fullName.isBlank();
+
+        if (hasBloodType && hasStatus && hasFullName) {
+            componentUnits = bloodComponentUnitRepository
+                    .findByBloodTypeAndStatusInAndFullNameLikeIgnoreCase(bloodType, statuses, fullName, pageable);
+        } else if (hasBloodType && hasStatus) {
+            componentUnits = bloodComponentUnitRepository
+                    .findByBloodTypeAndStatusInOrderByComponentIdDesc(bloodType, statuses, pageable);
+        } else if (!hasBloodType && hasStatus && hasFullName) {
+            componentUnits = bloodComponentUnitRepository
+                    .findByStatusInAndFullNameLikeIgnoreCase(statuses, fullName, pageable);
+        } else if (hasBloodType && hasFullName) {
+            componentUnits = bloodComponentUnitRepository
+                    .findByBloodTypeAndFullNameLikeIgnoreCase(bloodType, fullName, pageable);
+        } else if (hasStatus) {
+            componentUnits = bloodComponentUnitRepository
+                    .findByStatusInOrderByComponentIdDesc(statuses, pageable);
+        } else if (hasBloodType) {
+            componentUnits = bloodComponentUnitRepository
+                    .findByBloodTypeOrderByComponentIdDesc(bloodType, pageable);
+        } else if (hasFullName) {
+            componentUnits = bloodComponentUnitRepository
+                    .findByFullNameLikeIgnoreCase(fullName, pageable);
+        } else {
+            componentUnits = bloodComponentUnitRepository
+                    .findAllByOrderByComponentIdDesc(pageable);
+        }
+
+        return componentUnits.map(component -> {
+            BloodComponentUnitResponse response = bloodComponentUnitMapper.toBloodComponentUnitResponse(component);
+            response.setUserResponse(
+                    userMapper.toUserResponse(component.getBloodUnit().getBloodDonateForm().getUser()));
+            return response;
+        });
+    }
+
     public Page<BloodComponentUnitResponse> getAllBloodComponentUnits(Pageable pageable) {
         updateExpiredBloodComponentUnits();
         updateExpiryNotesForComponentUnits();
@@ -196,7 +245,7 @@ public class BloodComponentUnitService {
         List<String> allBloodTypes = List.of("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-");
         List<Object[]> result = bloodComponentUnitRepository.countStoredComponentUnitsByBloodType();
 
-        Map<String, Long> resultMap = new LinkedHashMap<>(); // Dùng LinkedHashMap để giữ thứ tự nhóm máu
+        Map<String, Long> resultMap = new LinkedHashMap<>();
 
         // Khởi tạo tất cả nhóm máu có count = 0
         for (String bloodType : allBloodTypes) {

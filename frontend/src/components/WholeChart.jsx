@@ -7,7 +7,9 @@ import {
   Tooltip,
   Legend,
 } from 'chart.js';
+import { useEffect, useState } from 'react';
 import { Bar } from 'react-chartjs-2';
+import { wholeChartData } from '../services/api/dashboardService';
 
 ChartJS.register(
   CategoryScale,
@@ -19,12 +21,24 @@ ChartJS.register(
 );
 
 export default function WholeChart() {
+  const [wholeData, setWholeData] = useState();
+
+  const fetchWholeChartData = async () => {
+    const res = await wholeChartData();
+    setWholeData(res);
+    try {
+    } catch (error) {
+      console.log(' err wwhen fetchWholeChartData', error);
+    }
+  };
+
+  const bloodTypes = ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'];
   const data = {
-    labels: ['O-', 'O+', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+'],
+    labels: bloodTypes,
     datasets: [
       {
         label: 'Whole Blood Units',
-        data: [10, 25, 15, 20, 5, 18, 3, 4],
+        data: bloodTypes.map((type) => wholeData?.[type] ?? 0),
         backgroundColor: [
           '#EF4444',
           '#F59E0B',
@@ -59,8 +73,12 @@ export default function WholeChart() {
     },
   };
 
+  useEffect(() => {
+    fetchWholeChartData();
+  }, []);
+
   return (
-    <div className="bg-white p-4 rounded shadow">
+    <div className="bg-white p-4 rounded-xl shadow">
       <Bar data={data} options={options} />
     </div>
   );

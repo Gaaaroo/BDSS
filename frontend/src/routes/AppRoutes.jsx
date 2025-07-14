@@ -16,7 +16,7 @@ import OTP from '../pages/OTP';
 import MyPosts from '../pages/MyPosts';
 import Blog from '../pages/Blog';
 import RequestManagement from '../pages/RequestManagement';
-import Dashboard from '../pages/Dashboard';
+import DashboardAdmin from '../pages/DashboardAdmin';
 import Whole from '../pages/Whole';
 import MemberManagement from '../pages/MemberManagement';
 import ProtectedRoute from './ProtectedRoute';
@@ -25,9 +25,11 @@ import BlogManagement from '../pages/BlogManagement';
 import ReceiveDetail from '../components/ReceiveDetail';
 import DonationDetail from '../components/DonationDetail';
 import Components from '../pages/Components';
-import LayoutStaff from '../Layouts/LayoutStaff';
+import LayoutStaffAdmin from '../Layouts/LayoutStaffAdmin';
 import ForgotPassword from '../pages/ForgotPassword';
 import ResetPassword from '../pages/ResetPassword';
+import DashboardStaff from '../pages/DashboardStaff';
+import DashboardRedirect from '../components/DashboardRedirect';
 
 export default function AppRoutes() {
   const { role } = useApp();
@@ -47,19 +49,36 @@ export default function AppRoutes() {
       <Route path="/blog" element={<Blog />} />
       <Route path="/blood-compatibility" element={<BloodCompatibility />} />
       <Route path="*" element={<NotFound />} />
-      {/* Admin & Staff */}
-      <Route
-        element={
-          <ProtectedRoute allowedRoles={['ADMIN', 'STAFF']} role={role} />
-        }
-      >
-        <Route path="/dashboard" element={<LayoutStaff />}>
-          <Route index element={<Dashboard />} />
+
+      <Route path="/dashboard" element={<LayoutStaffAdmin />}>
+        {/* Redirect theo role (chỉ định route con khác nhau) */}
+        <Route index element={<DashboardRedirect role={role} />} />
+
+        {/* Staff , Admin*/}
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={['STAFF', 'ADMIN']} role={role} />
+          }
+        >
           <Route path="request-management" element={<RequestManagement />} />
           <Route path="inventory/whole" element={<Whole />} />
           <Route path="inventory/components" element={<Components />} />
-          <Route path="member-management" element={<MemberManagement />} />
           <Route path="blog-management" element={<BlogManagement />} />
+        </Route>
+
+        {/* Staff */}
+        <Route
+          element={<ProtectedRoute allowedRoles={['STAFF']} role={role} />}
+        >
+          <Route path="staff-home" element={<DashboardStaff />} />
+        </Route>
+
+        {/* Admin */}
+        <Route
+          element={<ProtectedRoute allowedRoles={['ADMIN']} role={role} />}
+        >
+          <Route path="admin-home" element={<DashboardAdmin />} />
+          <Route path="member-management" element={<MemberManagement />} />
         </Route>
       </Route>
 
