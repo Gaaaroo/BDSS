@@ -54,15 +54,23 @@ export default function AppRoutes() {
         {/* Redirect theo role (chỉ định route con khác nhau) */}
         <Route index element={<DashboardRedirect role={role} />} />
 
+        {/* Staff , Admin*/}
+        <Route
+          element={
+            <ProtectedRoute allowedRoles={['STAFF', 'ADMIN']} role={role} />
+          }
+        >
+          <Route path="request-management" element={<RequestManagement />} />
+          <Route path="inventory/whole" element={<Whole />} />
+          <Route path="inventory/components" element={<Components />} />
+          <Route path="blog-management" element={<BlogManagement />} />
+        </Route>
+
         {/* Staff */}
         <Route
           element={<ProtectedRoute allowedRoles={['STAFF']} role={role} />}
         >
           <Route path="staff-home" element={<DashboardStaff />} />
-          <Route path="request-management" element={<RequestManagement />} />
-          <Route path="inventory/whole" element={<Whole />} />
-          <Route path="inventory/components" element={<Components />} />
-          <Route path="blog-management" element={<BlogManagement />} />
         </Route>
 
         {/* Admin */}

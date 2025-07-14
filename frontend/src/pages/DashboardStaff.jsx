@@ -9,11 +9,15 @@ import {
   countDonorsToday,
   countSeekersToday,
   countWholeBloodUnit,
+  recentDonors,
+  recentSeekers,
 } from '../services/api/dashboardService';
 import SeekerComponentChart from '../components/SeekercomponentChart';
 import StaticsFormChart from '../components/StaticsFormChart';
 import StatusWholeChart from '../components/StatusWholeChart';
 import StatusComponentChart from '../components/StatusComponentChart';
+import RecentList from '../components/RecentDonors';
+import WholeChart from '../components/WholeChart';
 
 export default function DashboardStaff() {
   const [data, setData] = useState([]);
@@ -23,6 +27,8 @@ export default function DashboardStaff() {
   const [totalSeekersToday, setTotalSeekersToday] = useState();
   const [totalWhole, setTotalWhole] = useState();
   const [totalBlogs, setTotalBlogs] = useState();
+  const [recentDataDonors, setRecentDataDonors] = useState([]);
+  const [recentDataSeekers, setRecentDataSeekrs] = useState([]);
 
   useEffect(() => {
     const fetchAllDashboardData = async () => {
@@ -35,6 +41,8 @@ export default function DashboardStaff() {
           donorsTodayRes,
           seekersTodayRes,
           bloodCountsRes,
+          recentDonorsRes,
+          recentSeekersRes,
         ] = await Promise.all([
           countAllDonors(),
           countAllReceive(),
@@ -43,15 +51,15 @@ export default function DashboardStaff() {
           countDonorsToday(),
           countSeekersToday(),
           countDonorsByBloodType(),
+          recentDonors(),
+          recentSeekers(),
         ]);
-
         setTotalDonors(totalDonorsRes);
         setTotalSeekers(totalSeekersRes);
         setTotalDonorsToday(donorsTodayRes);
         setTotalSeekersToday(seekersTodayRes);
         setTotalWhole(totalWholesRes);
         setTotalBlogs(totalBlogsRes);
-
         const formattedBlood = Object.entries(bloodCountsRes).map(
           ([key, value]) => ({
             label: key,
@@ -59,6 +67,22 @@ export default function DashboardStaff() {
           })
         );
         setData(formattedBlood);
+        const formattedRecentDonors = Object.entries(recentDonorsRes).map(
+          ([name, info]) => ({
+            name, // key
+            bloodType: info.bloodType,
+            requestDate: info.requestDate,
+          })
+        );
+        setRecentDataDonors(formattedRecentDonors);
+        const formattedRecentSeekers = Object.entries(recentSeekersRes).map(
+          ([name, info]) => ({
+            name, // key
+            bloodType: info.bloodType,
+            requestDate: info.requestDate,
+          })
+        );
+        setRecentDataSeekrs(formattedRecentSeekers);
       } catch (error) {
         console.error('Error loading dashboard data:', error);
       }
@@ -66,25 +90,6 @@ export default function DashboardStaff() {
 
     fetchAllDashboardData();
   }, []);
-
-  const donorsByBloodType = data;
-
-  const donors = [
-    {
-      name: 'Basil Mathews',
-      date: '17 May 2020',
-      bloodType: 'O+',
-      image:
-        'https://down-vn.img.susercontent.com/file/4ecc0b21d86d2ff90688c0c28cc6ad0a',
-    },
-    {
-      name: 'Elizabeth Olsen',
-      date: '17 May 2020',
-      bloodType: 'B-',
-      image:
-        'https://i.pinimg.com/736x/60/4b/fd/604bfd3d032a0b0b4be92c859a982129.jpg',
-    },
-  ];
 
   return (
     <div className="flex min-h-screen">
@@ -94,7 +99,7 @@ export default function DashboardStaff() {
             title="Total Blood Donors"
             total={totalDonors}
             totalToday={`Today: ${totalDonorsToday}`}
-            data={donorsByBloodType}
+            data={data}
             color="bg-blue-100"
           />
           <TotalCard
@@ -121,14 +126,29 @@ export default function DashboardStaff() {
           <StaticsFormChart />
           <SeekerComponentChart />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-4 gap-6 mb-5">
+          <div className="col-span-1">
+            <RecentList
+              list={recentDataDonors}
+              title="Recent Blood Donors"
+              color="bg-rose-100"
+            />
+          </div>
+          <div className="col-span-1">
+            <RecentList
+              list={recentDataSeekers}
+              title="Recent Blood Seekers"
+              color="bg-blue-100"
+            />
+          </div>
+          <div className="col-span-2">
+            <WholeChart />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4 mb-5">
           <StatusWholeChart />
           <StatusComponentChart />
-          {/* <WholeChart /> */}
         </div>
-        {/* <div className="grid grid-cols-2 gap-6">
-          <RecentDonors donors={donors} />
-        </div> */}
         <div className="my-5">
           <ComponentChart />
         </div>

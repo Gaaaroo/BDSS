@@ -152,3 +152,23 @@ export const countAllBlog = async () => {
     console.log('err countAllBlog', error);
   }
 };
+
+//Recent donnor with name
+export const recentDonors = async () => {
+  try {
+    const res = await axiosClient.get('/donate-form/list-with-name');
+    return res;
+  } catch (error) {
+    console.error('err recentDonors', error);
+  }
+};
+
+//Recent receive with name
+export const recentSeekers = async () => {
+  try {
+    const res = await axiosClient.get('/receive-form/list-with-name');
+    return res;
+  } catch (error) {
+    console.error('err recentDonors', error);
+  }
+};
