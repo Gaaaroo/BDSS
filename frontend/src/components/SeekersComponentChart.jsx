@@ -12,7 +12,7 @@ import { listReceiveByBloodTypeAndComponentType } from '../services/api/dashboar
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-export default function SeekerComponentChart() {
+export default function SeekersComponentChart() {
   const [chartData, setChartData] = useState(null);
 
   const COLORS = {
