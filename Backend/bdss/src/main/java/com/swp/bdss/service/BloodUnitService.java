@@ -143,6 +143,12 @@ public class BloodUnitService {
                     statuses, fullName, pageable);
         }
 
+        // 4b. bloodType + fullName (no status)
+        else if (hasBloodType && hasFullName) {
+            bloodUnits = bloodUnitRepository.findByBloodTypeAndFullNameLikeIgnoreCase(
+                    bloodType, fullName, pageable);
+        }
+
         // 4. Only status
         else if (hasStatus) {
             bloodUnits = bloodUnitRepository.findByStatusInOrderByBloodIdDesc(statuses, pageable);

@@ -68,6 +68,60 @@ public interface BloodComponentUnitRepository extends JpaRepository<BloodCompone
             Pageable pageable
     );
 
+    @Query("""
+    SELECT bcu FROM BloodComponentUnit bcu
+    JOIN bcu.bloodUnit bu
+    WHERE bu.bloodType = :bloodType
+    AND bcu.status IN :statuses
+    ORDER BY bcu.componentId DESC
+""")
+    Page<BloodComponentUnit> findByBloodTypeAndStatusInOrderByComponentIdDesc(
+            @Param("bloodType") String bloodType,
+            @Param("statuses") List<String> statuses,
+            Pageable pageable
+    );
+
+    @Query("""
+        SELECT bcu FROM BloodComponentUnit bcu
+        JOIN bcu.bloodUnit bu
+        JOIN bu.bloodDonateForm bdf
+        JOIN bdf.user u
+        WHERE bu.bloodType = :bloodType
+        AND LOWER(u.fullName) LIKE LOWER(CONCAT('%', :fullName, '%'))
+        ORDER BY bcu.componentId DESC
+    """)
+    Page<BloodComponentUnit> findByBloodTypeAndFullNameLikeIgnoreCase(
+            @Param("bloodType") String bloodType,
+            @Param("fullName") String fullName,
+            Pageable pageable
+    );
+
+    @Query("""
+        SELECT bcu FROM BloodComponentUnit bcu
+        JOIN bcu.bloodUnit bu
+        WHERE bu.bloodType = :bloodType
+        ORDER BY bcu.componentId DESC
+    """)
+    Page<BloodComponentUnit> findByBloodTypeOrderByComponentIdDesc(
+            @Param("bloodType") String bloodType,
+            Pageable pageable
+    );
+
+    @Query("""
+        SELECT bcu FROM BloodComponentUnit bcu
+        JOIN bcu.bloodUnit bu
+        JOIN bu.bloodDonateForm bdf
+        JOIN bdf.user u
+        WHERE LOWER(u.fullName) LIKE LOWER(CONCAT('%', :fullName, '%'))
+        ORDER BY bcu.componentId DESC
+    """)
+    Page<BloodComponentUnit> findByFullNameLikeIgnoreCase(
+            @Param("fullName") String fullName,
+            Pageable pageable
+    );
+
+    Page<BloodComponentUnit> findByStatusInOrderByComponentIdDesc(List<String> statuses, Pageable pageable);
+
     @Query("SELECT b.status, COUNT(b) FROM BloodComponentUnit b GROUP BY b.status")
     List<Object[]> countBloodComponentUnitsGroupedByStatus();
 
