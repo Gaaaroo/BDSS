@@ -12,7 +12,7 @@ import {
   recentDonors,
   recentSeekers,
 } from '../services/api/dashboardService';
-import SeekerComponentChart from '../components/SeekercomponentChart';
+import SeekersComponentChart from '../components/SeekersComponentChart';
 import StaticsFormChart from '../components/StaticsFormChart';
 import StatusWholeChart from '../components/StatusWholeChart';
 import StatusComponentChart from '../components/StatusComponentChart';
@@ -124,7 +124,7 @@ export default function DashboardStaff() {
         </div>
         <div className="grid grid-cols-2 gap-4 mb-5">
           <StaticsFormChart />
-          <SeekerComponentChart />
+          <SeekersComponentChart />
         </div>
         <div className="grid grid-cols-4 gap-6 mb-5">
           <div className="col-span-1">
