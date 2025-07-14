@@ -26,9 +26,7 @@ export default function MemberManagement() {
     const fetchAllUsersProfile = async () => {
       try {
         const res = await getAllUserProfile();
-        setUser(
-          res?.length ? res.filter((user) => user.role === 'MEMBER') : []
-        );
+        setUser(res);
         // console.log('data user:', res);
       } catch (err) {
         console.log('Error when get all user:', err);

@@ -3,118 +3,115 @@ import {
   CategoryScale,
   LinearScale,
   BarElement,
-  LineElement,
-  PointElement,
   Title,
   Tooltip,
   Legend,
-  Filler,
 } from 'chart.js';
-import { Chart } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
+import { useEffect, useState } from 'react';
+import { wholeComponentChart } from '../services/api/dashboardService';
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
-  LineElement,
-  PointElement,
   Title,
   Tooltip,
-  Legend,
-  Filler
+  Legend
 );
 
 export default function ComponentChart() {
-  const labels = [
-    'Dec 01',
-    'Dec 02',
-    'Dec 03',
-    'Dec 04',
-    'Dec 05',
-    'Dec 06',
-    'Dec 07',
-  ];
+  const [chartData, setChartData] = useState(null);
 
-  const data = {
-    labels,
-    datasets: [
-      {
-        type: 'bar',
-        label: 'Requested',
-        data: [12, 19, 14, 10, 17, 13, 15],
-        backgroundColor: '#3b82f6',
-        borderRadius: 4,
-      },
-      {
-        type: 'line',
-        label: 'Plasma',
-        data: [20, 25, 22, 24, 28, 26, 23],
-        borderColor: '#06b6d4',
-        backgroundColor: 'rgba(6, 182, 212, 0.2)',
-        fill: true,
-        tension: 0.4,
-        pointRadius: 2,
-      },
-      {
-        type: 'line',
-        label: 'RBCs',
-        data: [30, 35, 40, 38, 33, 36, 34],
-        borderColor: '#10b981',
-        backgroundColor: 'rgba(16, 185, 129, 0.2)',
-        fill: true,
-        tension: 0.4,
-        pointRadius: 2,
-      },
-      {
-        type: 'line',
-        label: 'WBCs',
-        data: [18, 20, 19, 22, 21, 23, 20],
-        borderColor: '#8b5cf6',
-        fill: false,
-        tension: 0.4,
-        borderDash: [5, 5],
-        pointRadius: 2,
-      },
-      {
-        type: 'line',
-        label: 'Platelets',
-        data: [25, 27, 26, 30, 29, 28, 26],
-        borderColor: '#f59e0b',
-        fill: false,
-        tension: 0.4,
-        pointRadius: 3,
-        borderWidth: 3,
-      },
-    ],
+  const colors = {
+    Whole: ['#fecaca', '#f87171', '#b91c1c'],
+    Plasma: ['#bae6fd', '#60a5fa', '#1d4ed8'],
+    RBCs: ['#bbf7d0', '#34d399', '#065f46'],
+    WBCs: ['#ddd6fe', '#8b5cf6', '#4c1d95'],
+    Platelets: ['#fef9c3', '#facc15', '#ca8a04'],
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await wholeComponentChart();
+        const raw = res ?? [];
+
+        const bloodTypes = raw.map((item) => item.bloodType);
+        const datasets = [];
+
+        raw.forEach((item, idx) => {
+          const bloodTypeIndex = idx;
+
+          for (const component in item) {
+            if (component === 'bloodType') continue;
+
+            const volumes = item[component];
+            const colorSet = colors[component] || ['#ccc'];
+
+            Object.entries(volumes).forEach(([volume, value], i) => {
+              const label = `${component} ${volume}`;
+              const color = colorSet[i] || colorSet[colorSet.length - 1];
+
+              let dataset = datasets.find((ds) => ds.label === label);
+              if (!dataset) {
+                dataset = {
+                  label,
+                  data: Array(bloodTypes.length).fill(0),
+                  backgroundColor: color,
+                  stack: component,
+                };
+                datasets.push(dataset);
+              }
+
+              dataset.data[bloodTypeIndex] = value;
+            });
+          }
+        });
+
+        setChartData({
+          labels: bloodTypes,
+          datasets,
+        });
+      } catch (err) {
+        console.error('Error loading component chart:', err);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const options = {
     responsive: true,
-    maintainAspectRatio: false,
     plugins: {
-      title: {
-        display: true,
-        text: 'Blood Component Levels & Requests',
-      },
       legend: {
         position: 'top',
+        labels: {
+          boxWidth: 20,
+          padding: 12,
+        },
+      },
+      title: {
+        display: true,
+        text: 'Blood Inventory by Type, Component, and Volume',
       },
     },
     scales: {
+      x: { stacked: true },
       y: {
+        stacked: true,
         beginAtZero: true,
-        title: {
-          display: true,
-          text: 'Units',
-        },
+        title: { display: true, text: 'Units' },
       },
     },
   };
 
+  if (!chartData) return null;
+
   return (
-    <div className="bg-white p-6 rounded shadow w-full max-w-[1200px] mx-auto">
-      <div className="relative h-[500px]">
-        <Chart type="bar" data={data} options={options} />
+    <div className="bg-white p-6 rounded-xl shadow w-full mx-auto">
+      <div className="h-[600px] flex justify-center items-center">
+        <Bar data={chartData} options={options} />
       </div>
     </div>
   );
