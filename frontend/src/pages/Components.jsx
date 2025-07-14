@@ -1,12 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
-  componentByFS,
-  componentByS,
-  componentByTFS,
-  componentByTS,
   countBloodUnit,
   countRequest,
-  listBloodComponentUnits,
+  filterBloodComponentUnits,
 } from '../services/api/inventoryService';
 import Pagination from '../components/Pagination';
 import InventoryDetail from '../components/InventoryDetail';
@@ -17,7 +13,7 @@ export default function Components() {
   // Card blood
   const bloodGroups = ['O+', 'A+', 'B+', 'AB+', 'O-', 'A-', 'B-', 'AB-'];
   const [bloodData, setBloodData] = useState({});
-  const [requestData, setRequestData] = useState({});
+  //const [requestData, setRequestData] = useState({});
   //List component
   const [list, setList] = useState([]);
   //Page
@@ -61,43 +57,17 @@ export default function Components() {
 
   const fetchAPI = async () => {
     try {
-      let res = await listBloodComponentUnits(page, 10);
-      // Nếu người dùng có filter, thì gọi API lọc
-      const hasSearch = searchTerm.trim() !== '';
-      const hasStatus = statusFilter.length > 0;
-      const hasType = bloodType !== 'All';
-      if (hasSearch || hasStatus || hasType) {
-        const effectiveStatusFilter = hasStatus
-          ? statusFilter
-          : ['Stored', 'Used', 'Expired'];
-        const effectiveBloodType = hasType ? bloodType : '';
-        const statusString = effectiveStatusFilter.join(',');
+      const effectiveStatusFilter =
+        statusFilter.length > 0 ? statusFilter : ['Stored', 'Used', 'Expired'];
+      const effectiveBloodType = bloodType !== 'All' ? bloodType : '';
 
-        if (hasSearch && !hasType) {
-          // Chỉ search theo fullName + status
-          res = await componentByFS(
-            effectiveStatusFilter,
-            searchTerm,
-            page,
-            10
-          );
-        } else if (!hasSearch && hasType && statusString) {
-          // Chỉ lọc theo type + status
-          res = await componentByTS(effectiveBloodType, statusString, page, 10);
-        } else if (hasSearch && hasType && hasStatus) {
-          // fullName + type + status
-          res = await componentByTFS(
-            effectiveBloodType,
-            effectiveStatusFilter,
-            searchTerm,
-            page,
-            10
-          );
-        } else {
-          //status
-          res = await componentByS(statusString, page, 10);
-        }
-      }
+      const res = await filterBloodComponentUnits({
+        bloodType: effectiveBloodType,
+        statuses: effectiveStatusFilter,
+        fullName: searchTerm.trim(),
+        page,
+        size: 10,
+      });
 
       if (res?.content) {
         setList(res.content);

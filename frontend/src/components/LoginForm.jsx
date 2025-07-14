@@ -57,6 +57,7 @@ const LoginForm = () => {
       setIsLogged(true);
       await getUserRoleAndNavigate();
     } catch (error) {
+      console.error(error);
       setError('Google authentication failed');
     }
   };
