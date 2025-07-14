@@ -25,8 +25,8 @@ public interface BloodReceiveFormRepository extends JpaRepository<BloodReceiveFo
 
     List<BloodReceiveForm> findAllByBloodTypeAndComponentTypeNotAndStatus(String bloodType, String componentType, String status);
 
-    long countByBloodTypeAndComponentTypeAndStatus(String bloodType, String componentType, String status);
-    long countByBloodTypeAndComponentTypeNotAndStatus(String bloodType, String componentType, String status);
+    long countByBloodTypeAndComponentTypeAndStatusIn(String bloodType, String componentType, List<String> statuses);
+    long countByBloodTypeAndComponentTypeNotAndStatusIn(String bloodType, String componentType, List<String> statuses);
 
     Long countByRequestDateBetween(LocalDateTime startDate, LocalDateTime endDate);
     List<BloodReceiveForm> findAllByRequestDateBetween(LocalDateTime startDate, LocalDateTime endDate);

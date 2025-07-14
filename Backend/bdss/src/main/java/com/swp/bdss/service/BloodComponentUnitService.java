@@ -262,6 +262,25 @@ public class BloodComponentUnitService {
         return resultMap;
     }
 
+    public Map<String, Long> countAllComponentUnitsByBloodType() {
+        List<String> allBloodTypes = List.of("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-");
+        List<Object[]> result = bloodComponentUnitRepository.countAllComponentUnitsByBloodType();
+
+        Map<String, Long> resultMap = new LinkedHashMap<>();
+
+        for (String bloodType : allBloodTypes) {
+            resultMap.put(bloodType, 0L);
+        }
+
+        for (Object[] row : result) {
+            String bloodType = (String) row[0];
+            Long count = (Long) row[1];
+            resultMap.put(bloodType, count);
+        }
+
+        return resultMap;
+    }
+
     public Map<String, Map<String, Object>> countStoredComponentTypeByBloodType() {
         List<String> bloodTypes = List.of("A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-");
         List<String> componentTypes = List.of("Plasma", "Platelets", "RBCs", "WBCs");
