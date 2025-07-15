@@ -12,6 +12,15 @@ export const countBloodUnit = async (type) => {
   }
 };
 
+export const countBloodComponentUnit = async () => {
+  try {
+    const res = await axiosClient.get('/bloodComponentUnit/count/bloodType');
+    return res;
+  } catch (error) {
+    console.error('Error fetching blood component counts by bloodType:', error);
+  }
+};
+
 export const countRequest = async (type, componentType) => {
   try {
     const res = await axiosClient.get('/receive-form/count-request', {

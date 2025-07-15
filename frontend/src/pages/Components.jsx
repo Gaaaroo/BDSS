@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  countBloodUnit,
+  countBloodComponentUnit,
   countRequest,
   filterBloodComponentUnits,
 } from '../services/api/inventoryService';
@@ -29,30 +29,28 @@ export default function Components() {
   const [selectedItem, setSelectedItem] = useState(null);
 
   const fetchBloodData = async () => {
-    const results = {};
-    await Promise.all(
-      bloodGroups.map(async (type) => {
-        try {
-          const [unitRes, requestRes] = await Promise.all([
-            countBloodUnit(type),
-            countRequest(type, ''), // khác whole
-          ]);
+    try {
+      const [unitRes, requestCounts] = await Promise.all([
+        countBloodComponentUnit(), // gọi 1 lần
+        Promise.all(
+          bloodGroups.map(
+            (type) => countRequest(type, 'Platelet') // vẫn phải gọi riêng từng nhóm vì request không gom
+          )
+        ),
+      ]);
 
-          results[type] = {
-            units: unitRes ?? 0,
-            requests: requestRes ?? 0,
-          };
-        } catch (error) {
-          console.error(`Error fetching data for ${type}:`, error);
-          results[type] = {
-            units: 0,
-            requests: 0,
-          };
-        }
-      })
-    );
-    console.log('meo:', results);
-    setBloodData(results);
+      const results = {};
+      bloodGroups.forEach((type, index) => {
+        results[type] = {
+          units: unitRes?.[type] ?? 0,
+          requests: requestCounts[index] ?? 0,
+        };
+      });
+
+      setBloodData(results);
+    } catch (error) {
+      console.error('Error fetching blood component data:', error);
+    }
   };
 
   const fetchAPI = async () => {

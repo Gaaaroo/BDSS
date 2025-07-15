@@ -243,16 +243,17 @@ public class BloodReceiveFormService {
     }
 
     public long countBloodReceiveFormByBloodTypeAndComponentTypeAndStatus(String bloodType, String componentType) {
+        List<String> statuses = List.of("PROCESSING", "PENDING");
         long count;
         if (componentType.equalsIgnoreCase("Whole")) {
-            count = bloodReceiveFormRepository.countByBloodTypeAndComponentTypeAndStatus(
-                    bloodType, componentType, "PROCESSING"
+            count = bloodReceiveFormRepository.countByBloodTypeAndComponentTypeAndStatusIn(
+                    bloodType, componentType, statuses
             );
             log.info("Whole count: " + count);
         } else {
             // Đếm những đơn có componentType khác "Whole"
-            count = bloodReceiveFormRepository.countByBloodTypeAndComponentTypeNotAndStatus(
-                    bloodType, "Whole", "PROCESSING"
+            count = bloodReceiveFormRepository.countByBloodTypeAndComponentTypeNotAndStatusIn(
+                    bloodType, "Whole", statuses
             );
             log.info("Not Whole count: " + count);
         }
