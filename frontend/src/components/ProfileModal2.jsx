@@ -11,7 +11,7 @@ export default function ExampleProfileModal({ request }) {
       <div className="flex items-center justify-center gap-2">
         <button title="Profile">
           <BiUserCircle
-            className="text-2xl text-gray-600 hover:text-gray-900 transition"
+            className="text-cyan-500 hover:text-cyan-700 text-2xl transition"
             onClick={() => setOpenProfile(true)}
           />
         </button>
