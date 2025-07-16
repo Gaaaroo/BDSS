@@ -12,6 +12,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +45,7 @@ public class UserService {
         User user = userMapper.toUser(request);
 
         user.setRole("MEMBER");
-        user.setStatus("pending");
+        user.setStatus("PENDING");
         user.setLat(null);
         user.setLng(null);
 
@@ -51,8 +53,16 @@ public class UserService {
         return userMapper.toUserResponse(savedUser);
     }
 
-    public List<UserResponse> getUsers(){
-        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
+    public Page<UserResponse> getUsers(String keyword, Pageable pageable) {
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return userRepository
+                    .findByUsernameNot("admin", pageable)
+                    .map(userMapper::toUserResponse);
+        }
+
+        return userRepository
+                .searchUsersExcludingAdmin("admin", keyword.trim(), pageable)
+                .map(userMapper::toUserResponse);
     }
 
     public UserResponse getUserById(int userId){

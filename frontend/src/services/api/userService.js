@@ -51,12 +51,42 @@ export const getNearbyUsersWithBloodType = async (
   return response;
 };
 
-export const getAllUserProfile = async () => {
+export const getAllUserProfile = async (
+  page = 0,
+  size = 10,
+  searchTerm = ''
+) => {
   try {
-    const res = await axiosClient.get('/users');
-    // console.log('User list: ', res);
+    const res = await axiosClient.get('/users', {
+      params: {
+        page,
+        size,
+        keyword: searchTerm,
+      },
+    });
     return res;
   } catch (err) {
-    console.log('Error when get all userProfile:', err);
+    console.log('Error when getting all user profiles:', err);
+  }
+};
+
+export const countAllUsers = async () => {
+  try {
+    const res = await axiosClient.get('/users/count-all');
+    return res;
+  } catch (err) {
+    console.log('Error when counting all users:', err);
+  }
+};
+
+export const banUser = async (userId) => {
+  try {
+    const res = await axiosClient.put('/users/ban-user', null, {
+      params: { userId },
+    });
+    return res;
+  } catch (err) {
+    console.error('Error banning user:', err);
+    throw err;
   }
 };
