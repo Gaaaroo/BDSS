@@ -127,63 +127,6 @@ public class BloodComponentUnitService {
         return "update status successful";
     }
 
-    public Page<BloodComponentUnitResponse> getAllBloodComponentUnitsByStatus(String status, Pageable pageable) {
-        updateExpiredBloodComponentUnits();
-        updateExpiryNotesForComponentUnits();
-
-        return bloodComponentUnitRepository.findByStatusOrderByComponentIdDesc(status, pageable)
-                .map(bloodComponentUnit -> {
-                    BloodComponentUnitResponse response = bloodComponentUnitMapper.toBloodComponentUnitResponse(bloodComponentUnit);
-                    User user = bloodComponentUnit.getBloodUnit().getBloodDonateForm().getUser();
-                    response.setUserResponse(userMapper.toUserResponse(user));
-                    return response;
-                });
-    }
-
-    public Page<BloodComponentUnitResponse> getAllBloodComponentUnitsByTypeAndStatus(String bloodType, String status, Pageable pageable) {
-        updateExpiredBloodComponentUnits();
-        updateExpiryNotesForComponentUnits();
-
-        return bloodComponentUnitRepository.findByBloodTypeAndStatusOrderByComponentIdDesc(bloodType, status, pageable)
-                .map(bloodComponentUnit -> {
-                    BloodComponentUnitResponse response = bloodComponentUnitMapper.toBloodComponentUnitResponse(bloodComponentUnit);
-                    User user = bloodComponentUnit.getBloodUnit().getBloodDonateForm().getUser();
-                    response.setUserResponse(userMapper.toUserResponse(user));
-                    return response;
-                });
-    }
-
-    public Page<BloodComponentUnitResponse> getAllBloodComponentUnitsByStatusAndFullName(
-            List<String> status, String fullName, Pageable pageable) {
-
-        updateExpiredBloodComponentUnits();
-        updateExpiryNotesForComponentUnits();
-
-        return bloodComponentUnitRepository.findByStatusInAndFullNameLikeIgnoreCase(status, fullName, pageable)
-                .map(component -> {
-                    BloodComponentUnitResponse response = bloodComponentUnitMapper.toBloodComponentUnitResponse(component);
-                    response.setUserResponse(userMapper.toUserResponse(
-                            component.getBloodUnit().getBloodDonateForm().getUser()));
-                    return response;
-                });
-    }
-
-    public Page<BloodComponentUnitResponse> getAllBloodComponentUnitsByTypeAndStatusAndFullName(
-            String bloodType, List<String> status, String fullName, Pageable pageable) {
-
-        updateExpiredBloodComponentUnits();
-        updateExpiryNotesForComponentUnits();
-
-        return bloodComponentUnitRepository.findByBloodTypeAndStatusInAndFullNameLikeIgnoreCase(bloodType, status, fullName, pageable)
-                .map(component -> {
-                    BloodComponentUnitResponse response = bloodComponentUnitMapper.toBloodComponentUnitResponse(component);
-                    response.setUserResponse(userMapper.toUserResponse(
-                            component.getBloodUnit().getBloodDonateForm().getUser()));
-                    return response;
-                });
-    }
-
-
     @Transactional
     public void updateExpiredBloodComponentUnits() {
         LocalDateTime now = LocalDateTime.now();
