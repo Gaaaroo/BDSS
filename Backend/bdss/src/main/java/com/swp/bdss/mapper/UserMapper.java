@@ -18,6 +18,7 @@ public interface UserMapper {
     @Mapping(target = "lng", ignore = true)
     User toUser(UserCreationRequest request);
 
+    @Mapping(source = "userId", target = "userId")
     UserResponse toUserResponse(User user);
 
     @Mapping(target = "role", ignore = true)
