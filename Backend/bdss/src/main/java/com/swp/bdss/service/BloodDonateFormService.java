@@ -6,12 +6,14 @@ import com.swp.bdss.dto.response.BloodDonateFormResponse;
 import com.swp.bdss.dto.response.UserResponse;
 import com.swp.bdss.entities.BloodDonateForm;
 import com.swp.bdss.entities.BloodUnit;
+import com.swp.bdss.entities.Notification;
 import com.swp.bdss.entities.User;
 import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
 import com.swp.bdss.mapper.BloodDonateFormMapper;
 import com.swp.bdss.mapper.UserMapper;
 import com.swp.bdss.repository.BloodDonateFormRepository;
+import com.swp.bdss.repository.NotificationRepository;
 import com.swp.bdss.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +38,7 @@ public class BloodDonateFormService {
     BloodDonateFormRepository bloodDonateFormRepository;
     BloodDonateFormMapper bloodDonateFormMapper;
     UserMapper userMapper;
+    NotificationRepository notificationRepository;
 
     private static final List<String> BLOOD_TYPES = Arrays.asList("A+", "B+", "O+", "AB+", "A-", "B-", "O-", "AB-");
 
@@ -92,6 +95,14 @@ public class BloodDonateFormService {
 
 //        //set user cho response tại vì user nằm ở user và mapstruct ko lấy trường này -> null hoặc sai
          bloodDonateFormResponse.setUserResponse(userResponse);
+        // Ghi notification sau khi tạo form thành công
+        Notification notification = Notification.builder()
+                .user(user)
+                .content("You have successfully registered to donate blood.")
+                .createdDate(LocalDateTime.now())
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
         return bloodDonateFormResponse;
     }
 

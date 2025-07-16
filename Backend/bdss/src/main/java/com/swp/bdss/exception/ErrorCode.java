@@ -42,6 +42,7 @@ public enum ErrorCode {
     RECEIVE_FORM_NOT_EXISTED(1032, "Receive form not existed", HttpStatus.BAD_REQUEST),
     BLOOD_UNIT_ALREADY_USED_OR_INVALID(1033, "Blood unit already used or invalid", HttpStatus.BAD_REQUEST),
     BLOOD_COMPONENT_ALREADY_USED_OR_INVALID(1033, "Blood component unit already used or invalid", HttpStatus.BAD_REQUEST),
+    NOTIFICATION_NOT_FOUND(1034, "Notification not exist", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;
