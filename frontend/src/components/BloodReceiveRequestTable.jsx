@@ -91,6 +91,13 @@ export default function BloodReceiveRequestTable({
 
   const filteredRequests = receiveRequests;
 
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      fetchRequests();
+    }, 400);
+    return () => clearTimeout(timeout);
+  }, [selectedStatus, keyword, triggerReloadCount]);
+
   // Modal handler for long hospital address
   const handleShowModal = (content) => {
     setModalContent(splitByLength(content, 50) || 'NO ADDRESS');

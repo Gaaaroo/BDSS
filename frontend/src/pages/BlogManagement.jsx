@@ -14,6 +14,7 @@ import Pagination from '../components/Pagination';
 import CustomModal from '../components/CustomModal';
 import { blogSchema } from '../Validations/blogValidation';
 import { toast } from 'react-toastify';
+import MySearch from '../components/MySearch';
 
 export default function BlogManagement() {
   const [blogs, setBlogs] = useState([]);
@@ -26,7 +27,7 @@ export default function BlogManagement() {
   const [viewBlog, setViewBlog] = useState(null);
   //confirm delete
   const [showModal, setShowModal] = useState(false);
-  const [deleteTarget, setDeleteTarget] = useState({blogId: null});
+  const [deleteTarget, setDeleteTarget] = useState({ blogId: null });
 
   useEffect(() => {
     fetchData();
@@ -107,30 +108,30 @@ export default function BlogManagement() {
   };
 
   const handleConfirmDelete = async (blogId) => {
-      try {
-        await deleteBlog(blogId);
+    try {
+      await deleteBlog(blogId);
 
-        setShowModal(false);
-        setDeleteTarget({postId: null});
-        // Nếu trang hiện tại có 1 blog duy nhất, sau khi xóa thì chuyển về trang trước
-        if (blogs.length === 1 && page > 0) {
-          setPage((prev) => prev - 1); // sẽ tự trigger useEffect
-        } else {
-          // GỌI trực tiếp luôn fetchData
-          fetchData(); // KHÔNG dùng await ở đây vì không cần đợi
-        }
-      } catch (error) {
-        console.error('Error deleting blog:', error);
+      setShowModal(false);
+      setDeleteTarget({ postId: null });
+      // Nếu trang hiện tại có 1 blog duy nhất, sau khi xóa thì chuyển về trang trước
+      if (blogs.length === 1 && page > 0) {
+        setPage((prev) => prev - 1); // sẽ tự trigger useEffect
+      } else {
+        // GỌI trực tiếp luôn fetchData
+        fetchData(); // KHÔNG dùng await ở đây vì không cần đợi
       }
+    } catch (error) {
+      console.error('Error deleting blog:', error);
+    }
   };
   return (
     <div className="flex">
       {/* Nội dung bên phải */}
       <div className="flex-1 min-h-screen p-4 bg-white">
-        {/* Logo ở giữa đầu trang */}
+        {/* Logo ở giữa đầu trang
         <div className="flex justify-center mb-6">
           <img src={logo} alt="Logo" className="h-40 w-auto" />
-        </div>
+        </div> */}
 
         {/* Tiêu đề */}
         <div className="flex justify-center items-center mb-4">
@@ -140,21 +141,9 @@ export default function BlogManagement() {
         </div>
         {/* Nút thêm blog */}
         <div className="flex justify-between mb-4">
-          <div>
-            <input
-              type="text"
-              placeholder="Search by username"
-              value={searchUsername}
-              onChange={(e) => setSearchUsername(e.target.value)}
-              className="border px-15 py-1 rounded shadow-sm"
-            />
-            <button
-              onClick={handleSearch}
-              className="bg-red-500 text-white px-4 py-1 rounded hover:bg-red-600"
-            >
-              Search
-            </button>
-          </div>
+
+
+          <MySearch searchTerm={searchUsername} setSearchTerm={setSearchUsername} placeholder="Search by username"/>
 
           <button
             onClick={handleAddClick}
@@ -166,98 +155,86 @@ export default function BlogManagement() {
 
         {/* Bảng hiển thị blog */}
         <div className="overflow-x-auto">
-          <table className="min-w-full border border-red-300 text-sm">
-            <thead className="bg-red-500">
+          <table className="min-w-full table-auto border border-gray-300 rounded-lg">
+            <thead className="bg-red-600 text-white">
               <tr>
-                <th className="border border-black px-2 py-1 text-white">#</th>
-                <th className="border border-black px-2 py-1 text-white">
-                  Image
-                </th>
-                <th className="border border-black px-2 py-1 text-white">
-                  User Create
-                </th>
-                <th className="border border-black px-2 py-1 text-white">
-                  User Update
-                </th>
-                <th className="border border-black px-2 py-1 text-white">
-                  Created Date
-                </th>
-                <th className="border border-black px-2 py-1 text-white">
-                  Update Date
-                </th>
-                <th className="border border-black px-2 py-1 text-white">
-                  Title
-                </th>
-                <th className="border border-black px-2 py-1 text-white">
-                  First Content
-                </th>
-                <th className="border border-black px-2 py-1 text-white">
-                  Action
-                </th>
+                <th className="py-2 px-4 text-left">No.</th>
+                <th className="py-2 px-4 text-center">Image</th>
+                <th className="py-2 px-4 text-center">Created By</th>
+                <th className="py-2 px-4 text-center">Updated By</th>
+                <th className="py-2 px-4 text-center">Created At</th>
+                <th className="py-2 px-4 text-center">Updated At</th>
+                <th className="py-2 px-4 text-center w-[150px]">Title</th>
+                <th className="py-2 px-4 text-center">First Content</th>
+                <th className="py-2 px-4 text-center w-[100px]">Action</th>
               </tr>
             </thead>
             <tbody>
-              {blogs.map((blog, index) => (
-                <tr key={blog.blogId} className="border-t hover:bg-gray-50">
-                  <td className="border px-2 py-1 text-center">
-                    {page * 7 + index + 1}
-                  </td>
-                  <td className="border px-2 py-1 text-center">
-                    <img
-                      src={blog.imageLink}
-                      alt="blog"
-                      className="w-24 h-16 object-cover rounded"
-                    />
-                  </td>
-                  <td className="border px-2 py-1 text-center">
-                    {blog.userCreate}
-                  </td>
-                  <td className="border px-2 py-1 text-center">
-                    {blog.userUpdate || 'not update'}
-                  </td>
-                  <td className="border px-2 py-1 text-center">
-                    {blog.createdDate}
-                  </td>
-                  <td className="border px-2 py-1 text-center">
-                    {blog.updateDate || 'not update'}
-                  </td>
-                  <td className="border px-2 py-1">{blog.title}</td>
-                  <td className="border px-2 py-1m max-w-xs">
-                    <div className="line-clamp-2">
-                      {blog.sections && blog.sections.length > 0
-                        ? blog.sections[0].content
-                        : ''}
-                    </div>
-                  </td>
-                  <td className="border px-2 py-1">
-                    <div className="flex justify-center items-center space-x-2 whitespace-nowrap">
-                      <button
-                        onClick={() => handleUpdateClick(blog)}
-                        className="text-red-500 hover:text-red-700"
-                        title="Update"
-                      >
-                        <Pencil size={15} />
-                      </button>
-
-                      <button
-                        onClick={() => handleViewClick(blog)}
-                        className="text-green-500 hover:text-green-700"
-                        title="View"
-                      >
-                        <Eye size={15} />
-                      </button>
-
-                      <button
-                        onClick={() => handleDeleteClick(blog.blogId)}
-                        className="text-red-700 hover:text-red-900"
-                        title="Delete"
-                      >
-                        <Trash2 size={15} />
-                      </button>
-                    </div>
+              {blogs.length === 0 ? (
+                <tr>
+                  <td colSpan={9} className="py-2 text-center text-red-500">
+                    No information found.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                blogs.map((blog, index) => (
+                  <tr key={blog.blogId} className="even:bg-red-50 odd:bg-white">
+                    <td className="py-2 px-4 text-left">
+                      {page * 7 + index + 1}
+                    </td>
+                    <td className="py-2 px-4 text-center">
+                      <img
+                        src={blog.imageLink}
+                        alt="blog"
+                        className="w-24 h-16 object-cover rounded"
+                      />
+                    </td>
+                    <td className="py-2 px-4 text-center">{blog.userCreate}</td>
+                    <td className="py-2 px-4 text-center">
+                      {blog.userUpdate || 'not update'}
+                    </td>
+                    <td className="py-2 px-4 text-center">
+                      {blog.createdDate}
+                    </td>
+                    <td className="py-2 px-4 text-center">
+                      {blog.updateDate || 'not update'}
+                    </td>
+                    <td className="py-2 px-4 text-center">{blog.title}</td>
+                    <td className="py-2 px-4 text-center max-w-[250px]">
+                      <div className="line-clamp-2">
+                        {blog.sections && blog.sections.length > 0
+                          ? blog.sections[0].content
+                          : ''}
+                      </div>
+                    </td>
+                    <td className="py-2 px-4 text-center">
+                      <div className="flex justify-center items-center space-x-2 whitespace-nowrap">
+                        <button
+                          onClick={() => handleUpdateClick(blog)}
+                          className="text-red-500 hover:text-red-700"
+                          title="Update"
+                        >
+                          <Pencil size={15} />
+                        </button>
+                        <button
+                          onClick={() => handleViewClick(blog)}
+                          className="text-green-500 hover:text-green-700"
+                          title="View"
+                        >
+                          <Eye size={15} />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteClick(blog.blogId)}
+                          className="text-red-700 hover:text-red-900"
+                          title="Delete"
+                        >
+                          <Trash2 size={15} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -316,9 +293,7 @@ export default function BlogManagement() {
             setShowModal(false);
             setDeleteTarget({ postId: null, commentId: null });
           }}
-          onOk={() =>
-            handleConfirmDelete(deleteTarget.blogId)
-          }
+          onOk={() => handleConfirmDelete(deleteTarget.blogId)}
           okLable="Delete"
         >
           <p className="text-gray-700 mb-6">

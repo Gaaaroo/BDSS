@@ -6,7 +6,6 @@ import { Send } from 'lucide-react';
 import { LayoutDashboard } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-
 function WidgetChatAdmin() {
   const [conversations, setConversations] = useState([]);
 
@@ -73,6 +72,9 @@ function WidgetChatAdmin() {
       date: Date.now(),
     };
     push(ref(db, `conversations/${selectedRoom.id}/messages`), newMessage);
+    set(ref(db, `conversations/${selectedRoom.id}/lastMessage`), message);
+    set(ref(db, `conversations/${selectedRoom.id}/date`), Date.now());
+
     setMessage('');
     scrollToBottom();
   };
@@ -103,7 +105,7 @@ function WidgetChatAdmin() {
     if (selectedRoom?.id === conversationId) setSelectedRoom(null);
   };
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   return (
     <div className="flex w-full h-[100vh] max-h-[100vh] border-r overflow-y-auto bg-[#2e2e2e] ">
@@ -114,10 +116,13 @@ function WidgetChatAdmin() {
       >
         <div className="flex items-center mb-2 mt-2 pl-3 justify-between">
           <h2 className="font-bold text-3xl text-white mr-2">Inbox</h2>
-          <LayoutDashboard size={28} className="text-gray-400 mr-4 focus:outline-none cursor-pointer
-          hover: transform hover:scale-110 transition-transform duration-200 hover: font-semibold" 
-          onClick={() => navigate('/dashboard')}
-          title="Go to dashboard"/>
+          <LayoutDashboard
+            size={28}
+            className="text-gray-400 mr-4 focus:outline-none cursor-pointer
+          hover: transform hover:scale-110 transition-transform duration-200 hover: font-semibold"
+            onClick={() => navigate('/dashboard')}
+            title="Go to dashboard"
+          />
         </div>
         {conversations.map((conversation) => (
           <div
