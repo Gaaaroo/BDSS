@@ -193,60 +193,6 @@ public class BloodUnitService {
                 });
     }
 
-    public Page<BloodUnitResponse> getAllBloodUnitsByStatus(List<String> statuses, Pageable pageable) {
-        updateExpiryNotes();
-        updateExpiredBloodUnits();
-
-        return bloodUnitRepository.findByStatusInOrderByBloodIdDesc(statuses, pageable)
-                .map(bloodUnit -> {
-                    BloodUnitResponse response = bloodUnitMapper.toBloodUnitResponse(bloodUnit);
-                    response.setUserResponse(userMapper.toUserResponse(
-                            bloodUnit.getBloodDonateForm().getUser()));
-                    return response;
-                });
-    }
-
-    // search blood unit theo fullName
-    public Page<BloodUnitResponse> getAllBloodUnitsByStatusAndFullNameDB(List<String> statuses, String fullName, Pageable pageable) {
-        updateExpiryNotes();
-        updateExpiredBloodUnits();
-
-        return bloodUnitRepository.findByStatusInAndFullNameLikeIgnoreCase(statuses, fullName, pageable)
-                .map(unit -> {
-                    BloodUnitResponse response = bloodUnitMapper.toBloodUnitResponse(unit);
-                    response.setUserResponse(userMapper.toUserResponse(unit.getBloodDonateForm().getUser()));
-                    return response;
-                });
-    }
-
-
-
-    //search blood unit theo username và type
-    public Page<BloodUnitResponse> getAllBloodUnitTypeByStatus(String bloodType, List<String> statuses, Pageable pageable) {
-        updateExpiryNotes();
-        updateExpiredBloodUnits();
-
-        return bloodUnitRepository.findByBloodTypeAndStatusInOrderByBloodIdDesc(bloodType, statuses, pageable)
-                .map(bloodUnit -> {
-                    BloodUnitResponse response = bloodUnitMapper.toBloodUnitResponse(bloodUnit);
-                    response.setUserResponse(userMapper.toUserResponse(
-                            bloodUnit.getBloodDonateForm().getUser()));
-                    return response;
-                });
-    }
-
-    public Page<BloodUnitResponse> getAllBloodUnitTypeByStatusAndFullNameDB(String bloodType, List<String> statuses, String fullName, Pageable pageable) {
-        updateExpiryNotes();
-        updateExpiredBloodUnits();
-
-        return bloodUnitRepository.findByBloodTypeAndStatusInAndFullNameLikeIgnoreCase(bloodType, statuses, fullName, pageable)
-                .map(unit -> {
-                    BloodUnitResponse response = bloodUnitMapper.toBloodUnitResponse(unit);
-                    response.setUserResponse(userMapper.toUserResponse(unit.getBloodDonateForm().getUser()));
-                    return response;
-                });
-    }
-
     public String updateBloodUnitStatus(String status, int bloodId) {
         BloodUnit bloodUnit = bloodUnitRepository.findById(bloodId)
                 .orElseThrow(() -> new AppException(ErrorCode.BLOOD_UNIT_NOT_EXIST));

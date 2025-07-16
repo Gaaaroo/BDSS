@@ -72,66 +72,6 @@ public class BloodComponentUnitController {
                 .build();
     }
 
-    // http://localhost:8080/bdss/bloodComponentUnit/status?status=Stored&page=0&size=5
-    @GetMapping("/status")
-    public ApiResponse<Page<BloodComponentUnitResponse>> getAllBloodComponentUnitsByStatus(
-            @RequestParam String status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.<Page<BloodComponentUnitResponse>>builder()
-                .code(1000)
-                .data(bloodComponentUnitService.getAllBloodComponentUnitsByStatus(status, pageable))
-                .build();
-    }
-
-    //http://localhost:8080/bdss/bloodComponentUnit/type-status?bloodType=A%2B&status=Stored&page=0&size=10
-    @GetMapping("/type-status")
-    public ApiResponse<Page<BloodComponentUnitResponse>> getAllBloodComponentUnitsByTypeAndStatus(
-            @RequestParam String bloodType,
-            @RequestParam String status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.<Page<BloodComponentUnitResponse>>builder()
-                .code(1000)
-                .data(bloodComponentUnitService.getAllBloodComponentUnitsByTypeAndStatus(bloodType, status, pageable))
-                .build();
-    }
-
-    // http://localhost:8080/bdss/bloodComponentUnit/status/searchByFullName?status=Stored&fullName=cam&page=0&size=10
-    @GetMapping("/status/searchByFullName")
-    public ApiResponse<Page<BloodComponentUnitResponse>> getComponentByStatusAndFullName(
-            @RequestParam List<String> status,
-            @RequestParam String fullName,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.<Page<BloodComponentUnitResponse>>builder()
-                .code(1000)
-                .data(bloodComponentUnitService.getAllBloodComponentUnitsByStatusAndFullName(status, fullName, pageable))
-                .build();
-    }
-
-
-    // http://localhost:8080/bdss/bloodComponentUnit/type-status/searchByFullName?bloodType=A%2B&status=Stored&fullName=long&page=0&size=10
-    @GetMapping("/type-status/searchByFullName")
-    public ApiResponse<Page<BloodComponentUnitResponse>> filterComponentByTypeStatusAndFullName(
-            @RequestParam String bloodType,
-            @RequestParam List<String> status,
-            @RequestParam String fullName,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.<Page<BloodComponentUnitResponse>>builder()
-                .code(1000)
-                .data(bloodComponentUnitService.getAllBloodComponentUnitsByTypeAndStatusAndFullName(bloodType, status, fullName, pageable))
-                .build();
-    }
 
     // GET: /bloodComponentUnit/count/by-status
     @GetMapping("/count/by-status")

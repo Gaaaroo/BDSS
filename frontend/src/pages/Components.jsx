@@ -31,7 +31,7 @@ export default function Components() {
   const fetchBloodData = async () => {
     try {
       const [unitRes, requestCounts] = await Promise.all([
-        countBloodComponentUnit(), // gọi 1 lần
+        countBloodComponentUnit(),
         Promise.all(
           bloodGroups.map(
             (type) => countRequest(type, 'Platelet') // vẫn phải gọi riêng từng nhóm vì request không gom
