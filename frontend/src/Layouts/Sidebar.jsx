@@ -18,7 +18,7 @@ import { useApp } from '../Contexts/AppContext';
 import CustomModal from '../components/CustomModal';
 
 export default function Sidebar() {
-  const { role } = useApp();
+  const { role, profile } = useApp();
   const navigate = useNavigate();
   const { logout } = useApp();
   const [showModal, setShowModal] = useState(false);
@@ -52,9 +52,6 @@ export default function Sidebar() {
         </div>
         {/* Icons */}
         <div className="flex items-center gap-4 justify-between">
-          <Link to="/">
-            <Home className="w-7 h-7 text-pink-500" />
-          </Link>
           <Link to="/forum">
             <MessagesSquare className="w-7 h-7 text-pink-500" />
           </Link>
@@ -65,11 +62,25 @@ export default function Sidebar() {
         {/* Staff label */}
         <div className="w-58 mb-8 mt-5 ">
           <div className="w-full h-12 py-2 rounded-full bg-[#F76C6C] text-white font-bold text-2xl flex items-center justify-center shadow gap-5">
-            <img
-              src={Logo} // đổi avatar staff ở đây nè
-              alt="Donate Blood"
-              className="w-10 h-10 rounded-full border border-black shadow"
-            />
+            {role === 'STAFF' || role === 'ADMIN' ? (
+              profile && profile.avatar ? (
+                <img
+                  src={profile.avatar}
+                  alt="Avatar"
+                  className="w-8 h-8 rounded-full shadow-lg border-2 border-white object-cover"
+                />
+              ) : (
+                <div className="w-9 h-9 rounded-full bg-white text-[#F76C6C] flex items-center justify-center font-bold shadow-lg text-xl border-2 border-white">
+                  {role === 'STAFF' ? 'S' : 'A'}
+                </div>
+              )
+            ) : (
+              <img
+                src={Logo}
+                alt="Donate Blood"
+                className="w-10 h-10 rounded-full shadow-lg border-2 border-white"
+              />
+            )}
             {role === 'STAFF' ? 'Staff' : 'Admin'}
           </div>
         </div>

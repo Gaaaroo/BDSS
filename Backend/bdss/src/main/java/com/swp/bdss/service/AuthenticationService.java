@@ -350,7 +350,7 @@ public class AuthenticationService {
         resetToken.setExpiryTime(LocalDateTime.now().plusMinutes(5));
         passwordResetTokenRepository.save(resetToken);
 
-        String resetUrl = "http://localhost:5173/reset-password?token=" + token;
+        String resetUrl = "https://frontend-production-58e6.up.railway.app/reset-password?token=" + token;
         emailService.sendResetPasswordEmail(user.getEmail(), resetUrl);
 
     }
