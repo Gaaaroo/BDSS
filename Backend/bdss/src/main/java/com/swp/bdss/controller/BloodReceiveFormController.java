@@ -12,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -34,11 +36,14 @@ public class BloodReceiveFormController {
                 .build();
     }
 
-    @GetMapping
-    ApiResponse<List<BloodReceiveFormResponse>> getAllBloodReceiveForm () {
-        return ApiResponse.<List<BloodReceiveFormResponse>>builder()
+    @GetMapping("/all")
+    ApiResponse<Page<BloodReceiveFormResponse>> getAllBloodReceiveForm (
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page, size);
+        return ApiResponse.<Page<BloodReceiveFormResponse>>builder()
                 .code(1000)
-                .data(bloodReceiveFormService.getAllBloodReceiveForm())
+                .data(bloodReceiveFormService.getAllBloodReceiveForm(pageable))
                 .build();
     }
 
@@ -100,29 +105,42 @@ public class BloodReceiveFormController {
 
     // Get all receive blood forms by status
     @GetMapping("/by-status")
-    ApiResponse<List<BloodReceiveFormResponse>> getBloodDonateFormsByStatus(@RequestParam String status) {
-        return ApiResponse.<List<BloodReceiveFormResponse>>builder()
+    ApiResponse<Page<BloodReceiveFormResponse>> getBloodDonateFormsByStatus(
+            @RequestParam String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ApiResponse.<Page<BloodReceiveFormResponse>>builder()
                 .code(1000)
-                .data(bloodReceiveFormService.getBloodReceiveFormByStatus(status))
+                .data(bloodReceiveFormService.getBloodReceiveFormByStatus(status, pageable))
                 .message("Get blood receive forms by status successfully")
                 .build();
     }
 
     @GetMapping("/search")
-    ApiResponse<List<BloodReceiveFormResponse>> searchBloodDonateFormByKeyword(@RequestParam String keyword){
-        return ApiResponse.<List<BloodReceiveFormResponse>>builder()
+    ApiResponse<Page<BloodReceiveFormResponse>> searchBloodDonateFormByKeyword(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size){
+        Pageable pageable = PageRequest.of(page, size);
+        return ApiResponse.<Page<BloodReceiveFormResponse>>builder()
                 .code(1000)
-                .data(bloodReceiveFormService.searchBloodReceiveFormByKeyWord(keyword))
+                .data(bloodReceiveFormService.searchBloodReceiveFormByKeyWord(keyword, pageable))
                 .message("Search blood receive form by keyword successfully")
                 .build();
     }
 
     @GetMapping("/by-priority")
-    ApiResponse<List<BloodReceiveFormResponse>> getBloodReceiveFormWithPriority(@RequestParam String priority,
-                                                                                @RequestParam(required = false) String status) {
-        return ApiResponse.<List<BloodReceiveFormResponse>>builder()
+    ApiResponse<Page<BloodReceiveFormResponse>> getBloodReceiveFormWithPriority(
+            @RequestParam String priority,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ApiResponse.<Page<BloodReceiveFormResponse>>builder()
                 .code(1000)
-                .data(bloodReceiveFormService.getBloodReceiveFormByPriorityAndOptionalStatus(priority, status))
+                .data(bloodReceiveFormService.getBloodReceiveFormByPriorityAndOptionalStatus(priority, status, pageable))
                 .message("Get blood receive forms with priority successfully")
                 .build();
     }

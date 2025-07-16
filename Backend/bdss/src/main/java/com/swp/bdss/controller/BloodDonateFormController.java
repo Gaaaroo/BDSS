@@ -9,6 +9,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -48,10 +51,14 @@ public class BloodDonateFormController {
     }
 
     @GetMapping("/all")
-    ApiResponse<List<BloodDonateFormResponse>> getAllUserBloodDonateForm() {
-        return ApiResponse.<List<BloodDonateFormResponse>>builder()
+    ApiResponse<Page<BloodDonateFormResponse>> getAllUserBloodDonateForm(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ApiResponse.<Page<BloodDonateFormResponse>>builder()
                 .code(1000)
-                .data(bloodDonateFormService.getAllUserBloodDonateForm())
+                .data(bloodDonateFormService.getAllUserBloodDonateForm(pageable))
                 .build();
     }
 
@@ -73,10 +80,15 @@ public class BloodDonateFormController {
     }
 
     @GetMapping("/search")
-    ApiResponse<List<BloodDonateFormResponse>> searchBloodDonateFormByKeyword(@RequestParam String keyword){
-        return ApiResponse.<List<BloodDonateFormResponse>>builder()
+    ApiResponse<Page<BloodDonateFormResponse>> searchBloodDonateFormByKeyword(
+            @RequestParam String keyword,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ApiResponse.<Page<BloodDonateFormResponse>>builder()
                 .code(1000)
-                .data(bloodDonateFormService.searchBloodDonateFormByKeyWord(keyword))
+                .data(bloodDonateFormService.searchBloodDonateFormByKeyWord(keyword, pageable))
                 .message("Search blood donate form by keyword successfully")
                 .build();
     }
@@ -92,10 +104,15 @@ public class BloodDonateFormController {
 
     // Get all blood donate forms by status
     @GetMapping("/by-status")
-    ApiResponse<List<BloodDonateFormResponse>> getBloodDonateFormsByStatus(@RequestParam String status) {
-        return ApiResponse.<List<BloodDonateFormResponse>>builder()
+    ApiResponse<Page<BloodDonateFormResponse>> getBloodDonateFormsByStatus(
+            @RequestParam String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size);
+        return ApiResponse.<Page<BloodDonateFormResponse>>builder()
                 .code(1000)
-                .data(bloodDonateFormService.getBloodDonateFormByStatus(status))
+                .data(bloodDonateFormService.getBloodDonateFormByStatus(status, pageable))
                 .message("Get blood donate forms by status successfully")
                 .build();
     }

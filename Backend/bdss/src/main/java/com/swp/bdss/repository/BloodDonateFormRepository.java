@@ -1,6 +1,8 @@
 package com.swp.bdss.repository;
 
 import com.swp.bdss.entities.BloodDonateForm;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,9 +14,11 @@ import java.util.List;
 public interface BloodDonateFormRepository extends JpaRepository<BloodDonateForm, Integer> {
     List<BloodDonateForm> findAllBloodDonateFormByUserUsername(String username);
 
-    List<BloodDonateForm> findByUserFullNameContainingIgnoreCaseOrUserPhoneContainingIgnoreCase(String fullName, String phone);
+    Page<BloodDonateForm> findByUserFullNameContainingIgnoreCaseOrUserPhoneContainingIgnoreCase(String fullName, String phone, Pageable pageable);
 
-    List<BloodDonateForm> findAllByStatus(String status);
+    Page<BloodDonateForm> findAllByStatus(String status, Pageable pageable);
+
+    Page<BloodDonateForm> findAll(Pageable pageable);
 
     Long countByUserBloodTypeAndStatus(String bloodType, String status);
 
