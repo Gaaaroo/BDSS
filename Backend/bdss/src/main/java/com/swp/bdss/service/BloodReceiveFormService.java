@@ -7,10 +7,7 @@ import com.swp.bdss.entities.*;
 import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
 import com.swp.bdss.mapper.*;
-import com.swp.bdss.repository.BloodComponentUnitRepository;
-import com.swp.bdss.repository.BloodReceiveFormRepository;
-import com.swp.bdss.repository.BloodUnitRepository;
-import com.swp.bdss.repository.UserRepository;
+import com.swp.bdss.repository.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -41,6 +38,7 @@ public class BloodReceiveFormService {
     BloodComponentUnitRepository bloodComponentUnitRepository;
     BloodUnitMapper bloodUnitMapper;
     BloodComponentUnitMapper bloodComponentUnitMapper;
+    NotificationRepository notificationRepository;
 
     private static final List<String> BLOOD_TYPES = Arrays.asList("A+", "B+", "O+", "AB+", "A-", "B-", "O-", "AB-");
     private static final List<String> COMPONENT_TYPES = Arrays.asList("Whole", "Plasma", "Platelets", "RBC", "WBC");
@@ -110,6 +108,15 @@ public class BloodReceiveFormService {
         if (!canRegister) {
             throw new AppException(ErrorCode.NOT_ELIGIBLE_TO_REGISTER_RECEIVE);
         }
+
+        //Ghi notification sau khi tạo form thành công
+        Notification notification = Notification.builder()
+                .user(user)
+                .content("You have successfully registered to receive blood.")
+                .createdDate(LocalDateTime.now())
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
 
 
         bloodReceiveForm.setBloodType(request.getBloodType());

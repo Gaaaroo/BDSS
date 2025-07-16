@@ -3,10 +3,12 @@ package com.swp.bdss.service;
 import com.swp.bdss.dto.request.UserCreationRequest;
 import com.swp.bdss.dto.request.UserUpdateRequest;
 import com.swp.bdss.dto.response.UserResponse;
+import com.swp.bdss.entities.Notification;
 import com.swp.bdss.entities.User;
 import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
 import com.swp.bdss.mapper.UserMapper;
+import com.swp.bdss.repository.NotificationRepository;
 import com.swp.bdss.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -26,6 +29,7 @@ import java.util.List;
 public class UserService {
     UserMapper userMapper;
     UserRepository userRepository;
+    NotificationRepository notificationRepository;
 
     public UserResponse createUserForLoginGoogle(String email, String username, String image_link) {
 
@@ -121,6 +125,14 @@ public class UserService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         user.setStatus("BANNED");
         userRepository.save(user);
+
+        Notification notification = Notification.builder()
+                .user(user)
+                .content("Your account has been banned. Please contact the system administrator for more information.")
+                .createdDate(LocalDateTime.now())
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
     }
 
     public List<UserResponse> findUserNearby(double lat, double lng, double radiusKm) {
