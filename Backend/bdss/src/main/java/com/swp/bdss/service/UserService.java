@@ -30,6 +30,8 @@ public class UserService {
     UserMapper userMapper;
     UserRepository userRepository;
     NotificationRepository notificationRepository;
+    NotificationService notificationService;
+
 
     public UserResponse createUserForLoginGoogle(String email, String username, String image_link) {
 
@@ -185,4 +187,7 @@ public class UserService {
         return userRepository.count();
     }
 
+    public void sendNotiToUser(int userId) {
+        notificationService.createNotificationByUserId(userId, "We urgently need your help for a blood donation. If you have time, please come and donate as soon as possible. Your contribution can save lives!");
+    }
 }

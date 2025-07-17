@@ -79,7 +79,7 @@ export default function FindSuitableBlood({ receiveId }) {
   return (
     <>
       <button
-        className="mt-4 px-4 py-6 hover:bg-red-600 bg-[#F76C6C] hover:scale-105 transition-transform duration-200 text-white rounded-full font-semibold block mx-auto"
+        className="mt-4 px-3 py-2 hover:bg-text-red-600 bg-[#F76C6C] hover:scale-105 transition-transform duration-200 hover:text-white text-white rounded-[50px] font-semibold block mx-auto"
         onClick={handleOpenPopup}
       >
         Find Blood From Inventory

@@ -1,9 +1,20 @@
 import axiosClient from './axiosClient';
 
-export const sendInviteRequest = async () => {
-  //const token = localStorage.getItem('authToken');
-  const response = await axiosClient.get('/users/myProfile');
-  return response;
+export const sendInviteRequest = async (userId) => {
+  try {
+    if (!userId || isNaN(userId)) {
+      throw new Error('Invalid userId');
+    }
+    // Đảm bảo userId là số
+    const intUserId = Number(userId);
+    const response = await axiosClient.post('/users/send-to-donor', null, {
+      params: { userId: intUserId },
+    });
+    return response;
+  } catch (error) {
+    console.error(error?.response?.message || 'Error sending invite request');
+    throw error;
+  }
 };
 
 export const getUserProfile = async () => {

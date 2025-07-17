@@ -53,7 +53,7 @@ export default function ReceiveRequestProcessModal({ request, onReloadTable }) {
                   ×
                 </button>
                 <h2 className="text-2xl font-bold mb-4 text-center text-black">
-                  Donation Process
+                  Seek Process
                 </h2>
                 {/* Thông tin profile */}
                 <div className="">

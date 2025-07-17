@@ -281,7 +281,7 @@ export default function MapFinder({ onClose, initialLocation }) {
                   </div>
                 </div>
                 <button
-                  onClick={() => sendInviteRequest(selectedUser.id)}
+                  onClick={() => sendInviteRequest(selectedUser.userId)}
                   className="mt-3 px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition"
                 >
                   Invite to donate
