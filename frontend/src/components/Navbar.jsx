@@ -6,6 +6,7 @@ import { Link as ScrollLink } from 'react-scroll';
 import { useApp } from '../Contexts/AppContext';
 import CustomModal from './CustomModal';
 import NotiPopup from './NotiPopup';
+import { getNotifications } from '../services/api/notiService';
 
 // LogoNavbar
 function LogoNavbar() {
@@ -173,6 +174,16 @@ function Icon() {
 // Noti-Icon
 function NotiIcon() {
   const [open, setOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    getNotifications().then((res) => {
+      // Nếu backend trả về { code, data }
+      const notifications = res || [];
+      const unread = notifications.filter((n) => !n.read).length;
+      setUnreadCount(unread);
+    });
+  }, []);
 
   return (
     <>
@@ -200,12 +211,18 @@ function NotiIcon() {
         </svg>
         {/* Icon Bell */}
         <Bell className="relative w-7 h-7 text-gray-700" strokeWidth={2.5} />
+
+        {unreadCount > 0 && !open && (
+          <span className="absolute top-[-5px] right-[0px] bg-red-500 text-white text-xs font-bold rounded-full px-2 py-0.5 min-w-[22px] text-center">
+            {unreadCount}
+          </span>
+        )}
       </span>
-      
+
       {open && (
-      <div className="absolute top-12 right-0 z-10">
-        <NotiPopup setOpen={setOpen}/>
-      </div>
+        <div className="absolute top-12 right-0 z-10">
+          <NotiPopup setOpen={setOpen} setUnreadCount={setUnreadCount} />
+        </div>
       )}
     </>
   );
