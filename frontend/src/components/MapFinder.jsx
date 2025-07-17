@@ -7,7 +7,10 @@ import {
   DirectionsService,
   DirectionsRenderer,
 } from '@react-google-maps/api';
-import { getNearbyUsersWithBloodType } from '../services/api/userService';
+import {
+  getNearbyUsersWithBloodType,
+  sendInviteRequest,
+} from '../services/api/userService';
 
 const containerStyle = {
   width: '100%',
@@ -277,6 +280,12 @@ export default function MapFinder({ onClose, initialLocation }) {
                     <div>{distanceText}</div>
                   </div>
                 </div>
+                <button
+                  onClick={() => sendInviteRequest(selectedUser.id)}
+                  className="mt-3 px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition"
+                >
+                  Invite to donate
+                </button>
               </div>
             </InfoWindow>
           )}
