@@ -57,8 +57,17 @@ export default function ProfileUpdate({
       setProfile(res);
       onSaveSuccess();
     } catch (error) {
-      const errors = {};
-      if (error.inner) {
+      // Trường hợp lỗi từ server (ví dụ username đã tồn tại)
+      if (error.response && error.response.data) {
+        const { code, message } = error.response.data;
+        if (code === 1030) {
+          setFormError((prev) => ({ ...prev, username: message }));
+          toast.error(message);
+        } else {
+          toast.error(message || 'Failed to update profile.');
+        }
+      } else if (error.inner) {
+        const errors = {};
         error.inner.forEach((e) => {
           errors[e.path] = e.message;
         });
