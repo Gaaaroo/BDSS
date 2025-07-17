@@ -13,6 +13,8 @@ export const AppProvider = ({ children }) => {
   //'Staff' 'Admin' 'Member'
   const [role, setRole] = useState(null);
   const [loadingRole, setLoadingRole] = useState(true);
+  const [activeWidget, setActiveWidget] = useState(null);
+
   const navigate = useNavigate();
   useEffect(() => {
     const authToken = localStorage.getItem('authToken');
@@ -100,6 +102,8 @@ export const AppProvider = ({ children }) => {
         loadingRole,
         getUserRoleAndNavigate,
         role,
+        activeWidget,
+        setActiveWidget,
       }}
     >
       {children}
