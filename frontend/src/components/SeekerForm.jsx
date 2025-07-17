@@ -5,10 +5,12 @@ import { useNavigate } from 'react-router';
 import { receiveForm } from '../services/api/bloodFormService';
 import CustomModal from './CustomModal';
 import { toast } from 'react-toastify';
+import { seekerFormSchema } from '../Validations/formValidate';
 export default function SeekerForm() {
   const { profile } = useApp(); //lấy profile từ context
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
   const handleCancel = () => {
     setShowModal(false);
     navigate('/');
@@ -30,6 +32,7 @@ export default function SeekerForm() {
     type: '',
     quantity: '',
     hospitalAddress: '',
+    requiredDate: '',
   });
   function isProfileIncomplete(profile) {
     return (
@@ -65,6 +68,8 @@ export default function SeekerForm() {
   const handleSeekerRegister = async (e) => {
     e.preventDefault();
     try {
+      await seekerFormSchema.validate(formData, { abortEarly: false });
+
       const res = await receiveForm({
         volume: formData.volume,
         bloodType: formData.bloodType,
@@ -72,12 +77,21 @@ export default function SeekerForm() {
         componentType: formData.type,
         quantity: formData.quantity,
         hospitalAddress: formData.hospitalAddress,
+        requiredDate: formData.requiredDate,
       });
       console.log('Detail receive form:', res);
       toast.success('Register successful!');
       navigate('/');
     } catch (error) {
-      toast.error('Register failed');
+      if (error.inner) {
+        const errors = {};
+        error.inner.forEach((e) => {
+          errors[e.path] = e.message;
+        });
+        toast.error('Please fix the highlighted fields.');
+      } else {
+        toast.error('Register failed');
+      }
     }
   };
 
@@ -211,15 +225,37 @@ export default function SeekerForm() {
               <option value="Platelets">WBCs</option>
             </select>
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Quantity
+            </label>
+            <select
+              label="Quantity"
+              name="quantity"
+              value={formData.quantity || ''}
+              onChange={handleChange}
+              required
+              className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
+            >
+              <option value="">Select blood component type</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </div>
           <TextInput
-            label="Quantity"
-            name="quantity"
-            type="number"
-            placeholder="Enter quantity"
-            value={formData.quantity || ''}
+            label="Required Date"
+            name="requiredDate"
+            type="date"
+            value={formData.requiredDate || ''}
             onChange={handleChange}
-            required
           />
+          {formErrors.requiredDate && (
+            <p className="text-sm text-red-600 mt-1">
+              {formErrors.requiredDate}
+            </p>
+          )}
         </div>
       </div>
       <div className="flex justify-center">

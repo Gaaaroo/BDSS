@@ -94,21 +94,23 @@ export default function Sidebar() {
             <LayoutDashboard className="w-5 h-5" />
             Dashboard
           </Link>
-          <button
-            onClick={handleInventoryClick}
-            className="w-59 h-11 p-2 text-white bg-transparent hover:bg-[#F76C6C] transition-all hover:font-bold
+          {role === 'STAFF' && (
+            <button
+              onClick={handleInventoryClick}
+              className="w-59 h-11 p-2 text-white bg-transparent hover:bg-[#F76C6C] transition-all hover:font-bold
             flex justify-between items-center text-2xl font-semibold hover:transform hover:scale-108 shadow rounded-sm"
-          >
-            <span className="flex items-center gap-2">
-              <Boxes className="w-5 h-5" />
-              Inventory
-            </span>
-            {showInventorySubmenu ? (
-              <ChevronDown className="w-5 h-5" />
-            ) : (
-              <ChevronRight className="w-5 h-5" />
-            )}
-          </button>
+            >
+              <span className="flex items-center gap-2">
+                <Boxes className="w-5 h-5" />
+                Inventory
+              </span>
+              {showInventorySubmenu ? (
+                <ChevronDown className="w-5 h-5" />
+              ) : (
+                <ChevronRight className="w-5 h-5" />
+              )}
+            </button>
+          )}
           {showInventorySubmenu && (
             <div className="ml-6 mt-2 flex flex-col border-l border-white/30 pl-4 space-y-2 transition-all duration-300">
               <Link
@@ -137,25 +139,29 @@ export default function Sidebar() {
               Member
             </Link>
           )}
-          <Link
-            to="/dashboard/request-management"
-            className="w-59 h-11 p-2 text-white bg-transparent hover:bg-[#F76C6C] transition-all  hover:font-bold
+          {role === 'STAFF' && (
+            <Link
+              to="/dashboard/request-management"
+              className="w-59 h-11 p-2 text-white bg-transparent hover:bg-[#F76C6C] transition-all  hover:font-bold
             flex justify-start items-center text-2xl font-semibold
             hover:transform hover:scale-108 shadow rounded-sm gap-2"
-          >
-            <ClipboardList className="w-5 h-5" />
-            Request
-          </Link>
-          <Link
-            to="/dashboard/blog-management"
-            className="w-59 h-11 p-2 text-white bg-transparent hover:bg-[#F76C6C] transition-all hover:font-bold
+            >
+              <ClipboardList className="w-5 h-5" />
+              Request
+            </Link>
+          )}
+          {role === 'STAFF' && (
+            <Link
+              to="/dashboard/blog-management"
+              className="w-59 h-11 p-2 text-white bg-transparent hover:bg-[#F76C6C] transition-all hover:font-bold
             flex justify-start items-center
             text-2xl font-semibold
             hover:transform hover:scale-108 shadow rounded-sm gap-2"
-          >
-            <Newspaper className="w-5 h-5" />
-            Blog
-          </Link>
+            >
+              <Newspaper className="w-5 h-5" />
+              Blog
+            </Link>
+          )}
           <Link
             to="/login" //Không dùng trực tiếp, dùng để hợp chuẩn
             onClick={handleClick}
