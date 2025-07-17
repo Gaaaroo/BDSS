@@ -1,5 +1,11 @@
 import axiosClient from './axiosClient';
 
+export const sendInviteRequest = async () => {
+  //const token = localStorage.getItem('authToken');
+  const response = await axiosClient.get('/users/myProfile');
+  return response;
+};
+
 export const getUserProfile = async () => {
   //const token = localStorage.getItem('authToken');
   const response = await axiosClient.get('/users/myProfile');
