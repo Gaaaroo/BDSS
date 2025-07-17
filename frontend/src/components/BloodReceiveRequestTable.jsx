@@ -46,25 +46,13 @@ export default function BloodReceiveRequestTable({
   const fetchRequests = useCallback(async () => {
     try {
       console.log('Search keyword:', keyword);
-      let data;
-      if (showUrgent) {
-        data = await getReceiveRequestByPriority(
-          'Urgent',
-          selectedStatus ? selectedStatus : undefined,
-          page,
-          size
-        );
-        console.log('đây nbef', data);
-      } else if (keyword.trim() === '') {
-        if (selectedStatus) {
-          data = await getReceiveRequestByStatus(selectedStatus, page, size);
-        } else {
-          data = await getAllBloodReceiveRequests(page, size);
-        }
-        console.log('Fetching all posts:', data);
-      } else {
-        data = await searchBloodReceiveRequests(keyword.trim(), page, size);
-      }
+      let data = await searchBloodReceiveRequests(
+        keyword.trim(),
+        page,
+        size,
+        selectedStatus ? selectedStatus : undefined,
+        showUrgent ? 'Urgent' : undefined
+      );
       // setReceiveRequests(
       //   data.map((request) => ({
       //     ...request,
@@ -153,7 +141,6 @@ export default function BloodReceiveRequestTable({
     }`}
               onClick={() => {
                 setShowUrgent(true);
-                setKeyword('');
                 setPage(0);
                 setInputPage(1);
               }}

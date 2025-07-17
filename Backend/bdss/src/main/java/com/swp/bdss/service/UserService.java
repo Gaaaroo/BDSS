@@ -88,6 +88,15 @@ public class UserService {
         int userId = Integer.parseInt(context.getAuthentication().getName());
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if(userRepository.findByEmail(request.getEmail()).isPresent()){
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+        }
+
+        if(userRepository.findByUsername(request.getUsername()).isPresent()){
+            throw new AppException(ErrorCode.USERNAME_EXISTED);
+        }
+
         userMapper.updateUser(user, request);
 
         if (request.getBloodType() == null) {

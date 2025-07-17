@@ -50,7 +50,7 @@ export default function BloodRequestTable({
         }
         console.log('Fetching all posts:', data);
       } else {
-        data = await searchBloodDonateRequests(keyword.trim(), page, size);
+        data = await searchBloodDonateRequests(keyword.trim(), page, size, selectedStatus);
       }
       // setDonateRequests(
       //   data.map((request) => ({

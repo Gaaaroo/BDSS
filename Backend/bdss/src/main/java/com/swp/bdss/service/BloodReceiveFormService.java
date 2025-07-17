@@ -208,9 +208,9 @@ public class BloodReceiveFormService {
         });
     }
 
-    public Page<BloodReceiveFormResponse> searchBloodReceiveFormByKeyWord(String keyword, Pageable pageable) {
+    public Page<BloodReceiveFormResponse> searchBloodReceiveFormByKeyWord(String keyword, Pageable pageable, String status, String priority) {
         Page<BloodReceiveForm> page = bloodReceiveFormRepository
-                .findByUserFullNameContainingOrUserPhoneContainingOrUserBloodTypeContaining(keyword, keyword, keyword, pageable);
+                .searchByKeywordAndStatus(keyword, status, priority, pageable);
 
         if (page.isEmpty()) {
             throw new AppException(ErrorCode.NO_BLOOD_RECEIVE_FORM);

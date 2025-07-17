@@ -8,12 +8,17 @@ export const getUserProfile = async () => {
 
 // Cập nhật thông tin người dùng
 export const updateUserProfile = async (updatedData) => {
-  //const token = localStorage.getItem('authToken');
-  const response = await axiosClient.put(
-    '/users/myProfile/update',
-    updatedData
-  );
-  return response;
+  try {
+    //const token = localStorage.getItem('authToken');
+    const response = await axiosClient.put(
+      '/users/myProfile/update',
+      updatedData
+    );
+    return response;
+  } catch (error) {
+    console.error(error?.response?.message || 'Error updating user profile');
+    throw error;
+  }
 };
 
 export const getNearbyUsers = async (lat, lng, radius = 5) => {

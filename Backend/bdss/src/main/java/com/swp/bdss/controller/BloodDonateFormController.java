@@ -83,12 +83,13 @@ public class BloodDonateFormController {
     ApiResponse<Page<BloodDonateFormResponse>> searchBloodDonateFormByKeyword(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String status
     ) {
         Pageable pageable = PageRequest.of(page, size);
         return ApiResponse.<Page<BloodDonateFormResponse>>builder()
                 .code(1000)
-                .data(bloodDonateFormService.searchBloodDonateFormByKeyWord(keyword, pageable))
+                .data(bloodDonateFormService.searchBloodDonateFormByKeyWord(keyword, pageable, status))
                 .message("Search blood donate form by keyword successfully")
                 .build();
     }
