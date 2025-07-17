@@ -202,9 +202,9 @@ function NotiIcon() {
         <Bell className="relative w-7 h-7 text-gray-700" strokeWidth={2.5} />
       </span>
       
-      {!open && (
+      {open && (
       <div className="absolute top-12 right-0 z-10">
-        <NotiPopup />
+        <NotiPopup setOpen={setOpen}/>
       </div>
       )}
     </>
