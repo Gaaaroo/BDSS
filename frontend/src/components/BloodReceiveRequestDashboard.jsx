@@ -21,9 +21,9 @@ export default function BloodReceiveRequestDashboard() {
 
   return (
     <>
-      {/* <div className="text-center text-2xl font-bold text-red-500">
+      <div className="text-center text-2xl font-bold text-red-500 mb-5">
         Receive Blood Request
-      </div> */}
+      </div>
       <StatusCard
         key="receive"
         selectedStatus={selectedStatus}

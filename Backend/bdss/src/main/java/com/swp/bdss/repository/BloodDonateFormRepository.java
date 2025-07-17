@@ -4,6 +4,8 @@ import com.swp.bdss.entities.BloodDonateForm;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -14,7 +16,11 @@ import java.util.List;
 public interface BloodDonateFormRepository extends JpaRepository<BloodDonateForm, Integer> {
     List<BloodDonateForm> findAllBloodDonateFormByUserUsername(String username);
 
-    Page<BloodDonateForm> findByUserFullNameContainingIgnoreCaseOrUserPhoneContainingIgnoreCase(String fullName, String phone, Pageable pageable);
+    @Query("SELECT d FROM BloodDonateForm d WHERE " +
+            "(LOWER(d.user.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(d.user.phone) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+            "AND (:status IS NULL OR d.status = :status)")
+    Page<BloodDonateForm> searchByKeywordAndStatus(@Param("keyword") String keyword, @Param("status") String status, Pageable pageable);
 
     Page<BloodDonateForm> findAllByStatus(String status, Pageable pageable);
 

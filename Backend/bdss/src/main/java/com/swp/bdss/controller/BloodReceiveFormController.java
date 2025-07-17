@@ -119,13 +119,16 @@ public class BloodReceiveFormController {
 
     @GetMapping("/search")
     ApiResponse<Page<BloodReceiveFormResponse>> searchBloodDonateFormByKeyword(
-            @RequestParam String keyword,
+            @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size){
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String priority
+    ) {
         Pageable pageable = PageRequest.of(page, size);
         return ApiResponse.<Page<BloodReceiveFormResponse>>builder()
                 .code(1000)
-                .data(bloodReceiveFormService.searchBloodReceiveFormByKeyWord(keyword, pageable))
+                .data(bloodReceiveFormService.searchBloodReceiveFormByKeyWord(keyword, pageable, status, priority))
                 .message("Search blood receive form by keyword successfully")
                 .build();
     }

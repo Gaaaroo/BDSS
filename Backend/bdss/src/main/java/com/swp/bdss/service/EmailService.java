@@ -84,7 +84,7 @@ public class EmailService {
                     Thank you for joining <b>BDSS</b>. We’re excited to have you on board!
                 </p>
                 <div style="text-align: center;">
-                                  <a href="http://localhost:5173/" style="background: #F76C6C; color: #fff; padding: 12px 28px; border-radius: 24px; text-decoration: none; font-weight: bold; display: inline-block;">
+                                  <a href="https://frontend-production-58e6.up.railway.app/" style="background: #F76C6C; color: #fff; padding: 12px 28px; border-radius: 24px; text-decoration: none; font-weight: bold; display: inline-block;">
                                     Get Started
                                   </a>
                                 </div>

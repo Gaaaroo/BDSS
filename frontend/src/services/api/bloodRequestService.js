@@ -35,10 +35,10 @@ export const getAllBloodReceiveRequests = async (page = 0, size = 10) => {
 };
 
 //search blood donate requests
-export const searchBloodDonateRequests = async (keyword, page = 0, size) => {
+export const searchBloodDonateRequests = async (keyword, page = 0, size, status) => {
   try {
     const response = await axiosClient.get('/donate-form/search', {
-      params: { keyword, page, size },
+      params: { keyword, page, size, status },
     });
     return response;
   } catch (error) {
@@ -160,11 +160,12 @@ export const getReceiveRequestByStatus = async (status, page = 0, size = 10) => 
 export const searchBloodReceiveRequests = async (
   keyword,
   page = 0,
-  size = 10
+  size = 10,
+  status, priority
 ) => {
   try {
     const response = await axiosClient.get('/receive-form/search', {
-      params: { keyword, page, size },
+      params: { keyword, page, size, status, priority },
     });
     return response;
   } catch (error) {

@@ -11,7 +11,7 @@ export default function BloodRequestDashboard() {
 
   return (
     <>
-      <div className="text-center text-2xl font-bold text-red-500">
+      <div className="text-center text-2xl font-bold text-red-500 mb-5">
         Donate Blood Request
       </div>
       <StatusCard

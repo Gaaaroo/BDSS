@@ -4,6 +4,7 @@ import com.swp.bdss.dto.request.UserCreationRequest;
 import com.swp.bdss.dto.request.UserUpdateRequest;
 import com.swp.bdss.dto.response.ApiResponse;
 import com.swp.bdss.dto.response.UserResponse;
+import com.swp.bdss.service.NotificationService;
 import com.swp.bdss.service.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -129,6 +130,15 @@ public class UserController {
                 .code(1000)
                 .data(userService.countAll())
                 .message("Count of all users retrieved successfully")
+                .build();
+    }
+
+    @PostMapping("/send-to-donor")
+    public ApiResponse<Void> sendNotificationByUserId(@RequestParam int userId) {
+        userService.sendNotiToUser(userId);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .message("Notification sent to userId " + userId)
                 .build();
     }
 }
