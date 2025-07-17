@@ -1,18 +1,29 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from '../assets/images/logo.jpg';
-import { CircleUser, HeartHandshake, House } from 'lucide-react';
+import { CircleUser, HeartHandshake, House, Bell } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Link as ScrollLink } from 'react-scroll';
 import { useApp } from '../Contexts/AppContext';
 import CustomModal from './CustomModal';
+import NotiPopup from './NotiPopup';
 
 // LogoNavbar
 function LogoNavbar() {
   const navigate = useNavigate();
+  const { role } = useApp();
+
+  const handleClick = () => {
+    if (role === 'MEMBER' || role === 'GUEST') {
+      navigate('/');
+    } else if (role === 'STAFF') {
+      navigate('/dashboard/staff-home');
+    }
+  };
+
   return (
     <div
       className="flex items-center justify-center space-x-2 text-2xl"
-      onClick={() => navigate('/')}
+      onClick={handleClick}
     >
       <img src={logo} alt="Logo" className="h-16 w-auto" />
       <h1 className="text-red-700 font-bold">BDSS</h1>
@@ -159,6 +170,47 @@ function Icon() {
   );
 }
 
+// Noti-Icon
+function NotiIcon() {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <>
+      <span
+        className="relative flex items-center justify-center w-[51px] h-[51px] cursor-pointer"
+        onClick={() => setOpen((prev) => !prev)}
+      >
+        {/* Vòng tròn ngoài */}
+        <svg
+          className="absolute"
+          width={51}
+          height={51}
+          viewBox="0 0 51 51"
+          fill="none"
+        >
+          <circle
+            cx="25.5"
+            cy="25.5"
+            r="22.5"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            fill="white"
+            className="text-gray-700"
+          />
+        </svg>
+        {/* Icon Bell */}
+        <Bell className="relative w-7 h-7 text-gray-700" strokeWidth={2.5} />
+      </span>
+      
+      {open && (
+      <div className="absolute top-12 right-0 z-10">
+        <NotiPopup setOpen={setOpen}/>
+      </div>
+      )}
+    </>
+  );
+}
+
 // Navbar
 export default function Navbar({ mode }) {
   const navigate = useNavigate();
@@ -176,7 +228,10 @@ export default function Navbar({ mode }) {
           <>
             <LogoNavbar />
             <Menu />
-            <UserIcon />
+            <div className="flex items-center gap-2">
+              <NotiIcon />
+              <UserIcon />
+            </div>
           </>
         );
       case 'guest':

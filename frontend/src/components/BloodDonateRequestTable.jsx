@@ -3,10 +3,13 @@ import { useEffect, useState, useCallback } from 'react';
 import {
   getAllBloodDonateRequests,
   searchBloodDonateRequests,
+  getDonateRequestByStatus,
 } from '../services/api/bloodRequestService';
 import dayjs from 'dayjs';
 import ProfileModal from './ProfileModal';
 import DonateRequestProcessPanel from './DonateRequestProcessModal';
+import Pagination from './Pagination';
+import MySearch from './MySearch';
 
 function getStatusColor(status) {
   switch (status) {
@@ -29,29 +32,46 @@ export default function BloodRequestTable({
   const [keyword, setKeyword] = useState('');
   const [donateRequests, setDonateRequests] = useState([]);
 
+  const [page, setPage] = useState(0);
+  const [size] = useState(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [inputPage, setInputPage] = useState(1);
+
   // view all donate request and search posts by keyword
   const fetchRequests = useCallback(async () => {
     try {
       console.log('Search keyword:', keyword);
       let data;
       if (keyword.trim() === '') {
-        data = await getAllBloodDonateRequests();
+        if (selectedStatus) {
+          data = await getDonateRequestByStatus(selectedStatus, page, size);
+        } else {
+          data = await getAllBloodDonateRequests(page, size);
+        }
         console.log('Fetching all posts:', data);
       } else {
-        data = await searchBloodDonateRequests(keyword.trim());
+        data = await searchBloodDonateRequests(keyword.trim(), page, size);
       }
+      // setDonateRequests(
+      //   data.map((request) => ({
+      //     ...request,
+      //     id: request.donateId,
+      //   }))
+      // );
+
       setDonateRequests(
-        data.map((request) => ({
+        (data.content || []).map((request) => ({
           ...request,
           id: request.donateId,
         }))
       );
       console.log('Posts fetched successfully', data);
+      setTotalPages(data.totalPages);
     } catch (error) {
       console.error('Error fetching posts:', error);
       setDonateRequests([]);
     }
-  }, [keyword]);
+  }, [keyword, page, size, selectedStatus]);
 
   // Fetch all requests on initial load
   useEffect(() => {
@@ -61,30 +81,30 @@ export default function BloodRequestTable({
     return () => clearTimeout(timeout);
   }, [selectedStatus, keyword, triggerReloadCount]);
 
-  const filteredRequests = selectedStatus
-    ? donateRequests.filter((req) => req.status === selectedStatus)
-    : donateRequests;
+  const filteredRequests = donateRequests;
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+    setInputPage(newPage + 1);
+  };
+  const handleGoToPage = () => {
+    let p = Number(inputPage) - 1;
+    if (p >= 0 && p < totalPages) setPage(p);
+  };
 
   return (
     <div className="w-full flex justify-center items-center">
-      <div className="overflow-hidden bg-white rounded-xl pt-5 p-3 shadow border
-       w-full border-gray-200 mt-10 m-5">
+      <div
+        className="overflow-hidden bg-white rounded-xl pt-5 p-3 shadow border
+       w-full border-gray-200 mt-10 m-5"
+      >
         {/* Search and filter */}
         <div className="flex items-center justify-between mb-4">
-          <div className="relative w-80">
-            <input
-              type="text"
-              placeholder="Search by fullname, phone"
-              className="border border-[#F9B3B3] rounded-full pl-4 pr-9 py-2 outline-none
-      text-gray-700 w-full text-sm h-8
-      bg-pink-50 focus:ring-2 focus:ring-[#F9B3B3] transition"
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-            />
-            <div className="absolute right-2 top-1 text-[#F9B3B3] text-lg pointer-events-none">
-              🔍
-            </div>
-          </div>
+          <MySearch
+            searchTerm={keyword}
+            setSearchTerm={setKeyword}
+            placeholder="Search by fullname, phone, blood type"
+          />
           <div className="flex items-center gap-2 mr-2">
             <button
               className="rounded-full px-3 text-sm h-7 flex items-center justify-center
@@ -94,6 +114,8 @@ export default function BloodRequestTable({
               onClick={() => {
                 setKeyword('');
                 if (onClearStatus) onClearStatus();
+                setPage(0);
+                setInputPage(1);
               }}
             >
               All Requests
@@ -102,72 +124,75 @@ export default function BloodRequestTable({
         </div>
 
         <div className="overflow-x-auto">
-          <table className="min-w-full rounded-lg bg-[#F9B3B3]">
-            <thead className="bg-[#F76C6C]">
-              <tr className="text-white text-center font-semibold h-8 text-[16px]">
-                <th className="px-3 w-12 text-center whitespace-nowrap">RequestId</th>
-                <th className="px-3 w-48 text-left whitespace-nowrap">Fullname</th>
-                <th className="px-3 w-10 text-center whitespace-nowrap">Gender</th>
-                <th className="px-3 w-30 text-center whitespace-nowrap">Blood type</th>
-                <th className="px-3 w-12 text-center whitespace-nowrap">Volume</th>
-                <th className="px-3 w-12 text-left whitespace-nowrap">Phone</th>
-                <th className="px-3 w-40 text-center whitespace-nowrap">Request date</th>
-                <th className="px-3 w-10 text-center whitespace-nowrap">Status</th>
-                <th className="px-3 w-15 text-center whitespace-nowrap">Action</th>
+          <table className="min-w-full table-auto border border-gray-300 rounded-lg">
+            <thead className="bg-red-600 text-white">
+              <tr>
+                <th className="py-2 text-center">No.</th>
+                <th className="py-2 text-center">Full Name</th>
+                <th className="py-2 text-center">Gender</th>
+                <th className="py-2 text-center">Blood Type</th>
+                <th className="py-2 text-center">Volume</th>
+                <th className="py-2 text-center">Phone</th>
+                <th className="py-2 text-center">Request Date</th>
+                <th className="py-2 text-center">Status</th>
+                <th className="py-2 text-center">Actions</th>
               </tr>
             </thead>
-            <tbody className="">
+            <tbody>
               {filteredRequests.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="text-center text-gray-500 py-4">
+                  <td colSpan={9} className="py-2 text-center text-red-500">
                     There's no donation request at this status.
                   </td>
                 </tr>
               ) : (
                 filteredRequests.map((request, idx) => (
-                  <tr key={idx} className=" border-[#f9b3b3] ">
-                    <td className="px-3 py-2 w-12 text-center">
-                      {request.donateId}
+                  <tr
+                    key={request.donateId || idx}
+                    className="even:bg-red-50 odd:bg-white"
+                  >
+                    <td className="py-2 text-center">
+                      {page * size + idx + 1}
                     </td>
-                    <td className="px-3 w-48 text-left">
+                    <td className="py-2 text-center">
                       {request.userResponse.fullName}
                     </td>
-                    <td className="px-3 w-10 text-center">
+                    <td className="py-2 text-center">
                       {request.userResponse.gender}
                     </td>
-                    <td className="px-3 w-30 text-center">
+                    <td className="py-2 text-center">
                       {request.userResponse.bloodType}
                     </td>
-                    <td className="px-3 w-12 text-center">
-                      {request.bloodUnitResponse?.volume ? request.bloodUnitResponse.volume : 'Updating...'}
+                    <td className="py-2 text-center">
+                      {request.bloodUnitResponse?.volume
+                        ? request.bloodUnitResponse.volume
+                        : 'Updating...'}
                     </td>
-                    <td className="px-3 w-12 text-left">
+                    <td className="py-2 text-center">
                       {request.userResponse.phone}
                     </td>
-                    <td className="px-3 text-center ">
+                    <td className="py-2 text-center">
                       {dayjs(request.requestDate).format('HH:mm DD/MM/YYYY')}
                     </td>
-                    <td className="px-3 text-center w-[95px]">
+                    <td className="py-2 text-center">
                       <span
                         className={`
-                                w-[95px] 
-                                inline-block 
-                                px-0 py-1 
-                                rounded-full 
-                                text-xs 
-                                font-semibold 
-                                text-center 
-                                ${getStatusColor(request.status)}
-                              `}
+                  w-[95px]
+                  inline-block
+                  px-0 py-1
+                  rounded-full
+                  text-xs
+                  font-semibold
+                  text-center
+                  ${getStatusColor(request.status)}
+                `}
                       >
                         {request.status}
                       </span>
                     </td>
-                    <td className="px-3 text-center">
+                    <td className="py-2 text-center space-x-1">
                       <span className="flex items-center justify-center gap-2">
-                        {/* Open profile modal */}
                         <ProfileModal user={request} />
-                        {/* Open process modal */}
                         <DonateRequestProcessPanel
                           request={request}
                           onReloadTable={triggerReloadCount}
@@ -180,6 +205,14 @@ export default function BloodRequestTable({
             </tbody>
           </table>
         </div>
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          inputPage={inputPage}
+          setInputPage={setInputPage}
+          onGoToPage={handleGoToPage}
+        />
       </div>
     </div>
   );

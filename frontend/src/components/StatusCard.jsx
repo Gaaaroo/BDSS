@@ -23,7 +23,7 @@ export default function StatusCard({
   if (!statusCount) return <LoadingPage />;
 
   return (
-    <div className="flex gap-8 mt-8 justify-center items-center">
+    <div className="flex gap-8 justify-center items-center">
       <div
         className={`bg-[#F9B3B3] rounded-lg px-8 py-4 flex flex-col items-center shadow cursor-pointer
                   hover:transform hover:scale-105 transition-transform duration-300

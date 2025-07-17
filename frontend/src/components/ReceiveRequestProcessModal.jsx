@@ -30,7 +30,7 @@ export default function ReceiveRequestProcessModal({ request, onReloadTable }) {
       {/* Icon note */}
       <div className="flex items-center justify-center gap-2">
         <button title="View & update process" onClick={handleOpenModal}>
-          <BiNote className="text-2xl text-blue-500 hover:text-blue-700 transition" />
+          <BiNote className="text-yellow-500 hover:text-yellow-700 text-2xl transition" />
         </button>
       </div>
 

@@ -6,17 +6,21 @@ import com.swp.bdss.dto.response.BloodDonateFormResponse;
 import com.swp.bdss.dto.response.UserResponse;
 import com.swp.bdss.entities.BloodDonateForm;
 import com.swp.bdss.entities.BloodUnit;
+import com.swp.bdss.entities.Notification;
 import com.swp.bdss.entities.User;
 import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
 import com.swp.bdss.mapper.BloodDonateFormMapper;
 import com.swp.bdss.mapper.UserMapper;
 import com.swp.bdss.repository.BloodDonateFormRepository;
+import com.swp.bdss.repository.NotificationRepository;
 import com.swp.bdss.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -36,6 +40,7 @@ public class BloodDonateFormService {
     BloodDonateFormRepository bloodDonateFormRepository;
     BloodDonateFormMapper bloodDonateFormMapper;
     UserMapper userMapper;
+    NotificationRepository notificationRepository;
 
     private static final List<String> BLOOD_TYPES = Arrays.asList("A+", "B+", "O+", "AB+", "A-", "B-", "O-", "AB-");
 
@@ -92,25 +97,32 @@ public class BloodDonateFormService {
 
 //        //set user cho response tại vì user nằm ở user và mapstruct ko lấy trường này -> null hoặc sai
          bloodDonateFormResponse.setUserResponse(userResponse);
+        // Ghi notification sau khi tạo form thành công
+        Notification notification = Notification.builder()
+                .user(user)
+                .content("You have successfully registered to donate blood.")
+                .createdDate(LocalDateTime.now())
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
         return bloodDonateFormResponse;
     }
 
 
 
     //get all donate form of all user and form details (ADMIN)
-    public List<BloodDonateFormResponse> getAllUserBloodDonateForm() {
-        List<BloodDonateFormResponse> list = new ArrayList<>();
-        list = bloodDonateFormRepository.findAll().stream()
-                .map(bloodDonateForm -> {
-                    BloodDonateFormResponse response = bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateForm);
-
-                    User user = bloodDonateForm.getUser();
-                    UserResponse userResponse = userMapper.toUserResponse(user);
-                    response.setUserResponse(userResponse);
-                    return response;
-                })
-                .toList();
-        return list;
+    public Page<BloodDonateFormResponse> getAllUserBloodDonateForm(Pageable pageable) {
+        Page<BloodDonateForm> page = bloodDonateFormRepository.findAll(pageable);
+        if (page.isEmpty()) {
+            throw new AppException(ErrorCode.NO_BLOOD_DONATE_FORM);
+        }
+        return page.map(bloodDonateForm -> {
+            BloodDonateFormResponse response = bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateForm);
+            User user = bloodDonateForm.getUser();
+            UserResponse userResponse = userMapper.toUserResponse(user);
+            response.setUserResponse(userResponse);
+            return response;
+        });
     }
 
     //get all donate form of 1 user and form details (USER)
@@ -163,21 +175,25 @@ public class BloodDonateFormService {
         return bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateFormRepository.save(bloodDonateForm));
     }
 
-    public List<BloodDonateFormResponse> searchBloodDonateFormByKeyWord(String keyword) {
+    public Page<BloodDonateFormResponse> searchBloodDonateFormByKeyWord(String keyword, Pageable pageable) {
 
         log.info(keyword);
         if (keyword == null || keyword.trim().isEmpty()) {
             log.info("Keyword is null or empty");
         }
-        List<BloodDonateFormResponse> list = bloodDonateFormRepository.findByUserFullNameContainingIgnoreCaseOrUserPhoneContainingIgnoreCase(keyword, keyword)
-                .stream().map(bloodDonateFormMapper::toBloodDonateFormResponse)
-                .toList();
+        Page<BloodDonateForm> page = bloodDonateFormRepository.findByUserFullNameContainingIgnoreCaseOrUserPhoneContainingIgnoreCase(keyword, keyword, pageable);
 
-        if(list.isEmpty()){
+        if(page.isEmpty()){
             throw new AppException(ErrorCode.NO_BLOOD_DONATE_FORM);
         }
 
-        return list;
+        return page.map(bloodDonateForm -> {
+            BloodDonateFormResponse response = bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateForm);
+            User user = bloodDonateForm.getUser();
+            UserResponse userResponse = userMapper.toUserResponse(user);
+            response.setUserResponse(userResponse);
+            return response;
+        });
     }
 
     public Map<String, Long> countDonateRequestsByStatus() {
@@ -189,11 +205,18 @@ public class BloodDonateFormService {
                 ));
     }
 
-    public List<BloodDonateFormResponse> getBloodDonateFormByStatus(String status){
-        List<BloodDonateFormResponse> list = bloodDonateFormRepository.findAllByStatus(status)
-                .stream().map(bloodDonateFormMapper::toBloodDonateFormResponse)
-                .toList();
-        return list;
+    public Page<BloodDonateFormResponse> getBloodDonateFormByStatus(String status, Pageable pageable){
+        Page<BloodDonateForm> page = bloodDonateFormRepository.findAllByStatus(status, pageable);
+        if (page.isEmpty()) {
+            throw new AppException(ErrorCode.NO_BLOOD_DONATE_FORM);
+        }
+        return page.map(bloodDonateForm -> {
+            BloodDonateFormResponse response = bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateForm);
+            User user = bloodDonateForm.getUser();
+            UserResponse userResponse = userMapper.toUserResponse(user);
+            response.setUserResponse(userResponse);
+            return response;
+        });
     }
 
     public Long countBloodDonateFormByBloodType(String bloodType) {

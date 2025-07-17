@@ -18,7 +18,7 @@ export default function WidgetChat() {
   const [messages, setMessages] = useState([]);
 
   // Require fullName
-  const { profile } = useApp();
+  const { profile, activeWidget, setActiveWidget } = useApp();
 
   const [requireName, setRequireName] = useState(false);
   const [tempName, setTempName] = useState('');
@@ -32,6 +32,12 @@ export default function WidgetChat() {
     }
     return id;
   });
+
+  useEffect(() => {
+    if (activeWidget !== 'chat') {
+      setOpen(false);
+    }
+  }, [activeWidget]);
 
   useEffect(() => {
     const conversationsRef = ref(db, `conversations/${roomId}`);
@@ -135,6 +141,7 @@ export default function WidgetChat() {
       return;
     }
     setOpen(true);
+    setActiveWidget('chat'); // 👈 set active
     scrollToBottom();
 
     // Send an automatic message if no messages exist
@@ -209,21 +216,19 @@ export default function WidgetChat() {
     return msg.userId === myId;
   };
 
-  // Close the chat widget
   const handleCloseChat = () => {
-    if (messages.length > 0) {
-      messages.forEach((msg) => {
-        if (
-          msg.name === 'Admin' &&
-          msg.content === 'Hello! How can we help you?'
-        ) {
-          // Xóa message này khỏi Firebase
-          remove(ref(db, `conversations/${roomId}/messages/${msg.id}`));
-        }
-      });
+    // Tìm auto-message
+    const autoMessage = messages.find(
+      (msg) =>
+        msg.name === 'Admin' && msg.content === 'Hello! How can we help you?'
+    );
+
+    if (autoMessage) {
+      // Xóa auto-message
+      remove(ref(db, `conversations/${roomId}/messages/${autoMessage.id}`));
     }
 
-    // Lọc tin nhắn vs name (Auto-msg)
+    // Kiểm tra xem còn tin nhắn thực hay không
     const realMessages = messages.filter(
       (msg) =>
         !(
@@ -231,17 +236,20 @@ export default function WidgetChat() {
         ) && msg.name !== 'Auto-msg'
     );
 
-    // Nếu chưa có tin nhắn nào thì xóa room
+    // Nếu không còn tin nhắn thực → xóa toàn bộ room
     if (selectedRoom.id && realMessages.length === 0) {
       remove(ref(db, `conversations/${roomId}`));
       setSelectedRoom({});
     }
 
+    // Nếu user chưa login → xóa local roomId
     if (!profile) {
       localStorage.removeItem('roomId');
     }
 
+    // 👇 Đóng UI chat và cập nhật context
     setOpen(false);
+    setActiveWidget(null);
   };
 
   // Handle Enter key to send message

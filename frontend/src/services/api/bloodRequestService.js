@@ -1,13 +1,30 @@
 import axiosClient from './axiosClient';
 
-export const getAllBloodDonateRequests = async () => {
-  const response = await axiosClient.get('/donate-form/all');
-  return response;
+export const getAllBloodDonateRequests = async (page = 0, size = 10) => {
+  try{
+    const response = await axiosClient.get('/donate-form/all', {
+      params: {
+        page,
+        size,
+      },
+    });
+    return response;
+  }catch (error) {
+    console.error(
+      error?.response?.message || 'Error fetching all blood donate requests'
+    );
+    throw error;
+  }
 };
 
-export const getAllBloodReceiveRequests = async () => {
+export const getAllBloodReceiveRequests = async (page = 0, size = 10) => {
   try {
-    const response = await axiosClient.get('/receive-form');
+    const response = await axiosClient.get('/receive-form/all', {
+      params: {
+        page,
+        size,
+      },
+    });
     return response;
   } catch (error) {
     console.error(
@@ -18,10 +35,10 @@ export const getAllBloodReceiveRequests = async () => {
 };
 
 //search blood donate requests
-export const searchBloodDonateRequests = async (keyword) => {
+export const searchBloodDonateRequests = async (keyword, page = 0, size) => {
   try {
     const response = await axiosClient.get('/donate-form/search', {
-      params: { keyword },
+      params: { keyword, page, size },
     });
     return response;
   } catch (error) {
@@ -71,10 +88,10 @@ export const countDonateRequestByStatus = async () => {
 };
 
 //get donate request by status
-export const getDonateRequestByStatus = async (status) => {
+export const getDonateRequestByStatus = async (status, page = 0, size) => {
   try {
     const response = await axiosClient.get('/donate-form/by-status', {
-      params: { status },
+      params: { status, page, size },
     });
     return response;
   } catch (error) {
@@ -125,10 +142,10 @@ export const countReceiveRequestByStatus = async () => {
 };
 
 //get donate request by status
-export const getReceiveRequestByStatus = async (status) => {
+export const getReceiveRequestByStatus = async (status, page = 0, size = 10) => {
   try {
     const response = await axiosClient.get('/receive-form/by-status', {
-      params: { status },
+      params: { status, page, size },
     });
     return response;
   } catch (error) {
@@ -140,10 +157,14 @@ export const getReceiveRequestByStatus = async (status) => {
 };
 
 //search blood receive requests by
-export const searchBloodReceiveRequests = async (keyword) => {
+export const searchBloodReceiveRequests = async (
+  keyword,
+  page = 0,
+  size = 10
+) => {
   try {
     const response = await axiosClient.get('/receive-form/search', {
-      params: { keyword },
+      params: { keyword, page, size },
     });
     return response;
   } catch (error) {
@@ -179,10 +200,15 @@ export const getReceiveRequestById = async (receiveId) => {
 };
 
 //get receive request by priority
-export const getReceiveRequestByPriority = async (priority, status) => {
+export const getReceiveRequestByPriority = async (
+  priority,
+  status,
+  page = 0,
+  size = 10
+) => {
   try {
     const response = await axiosClient.get('/receive-form/by-priority', {
-      params: { priority, status },
+      params: { priority, status, page, size },
     });
     return response;
   } catch (error) {

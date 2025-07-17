@@ -10,12 +10,14 @@ import com.swp.bdss.dto.response.AuthenticationResponse;
 import com.swp.bdss.dto.response.IntrospectResponse;
 import com.swp.bdss.dto.response.UserResponse;
 import com.swp.bdss.entities.InvalidatedToken;
+import com.swp.bdss.entities.Notification;
 import com.swp.bdss.entities.PasswordResetToken;
 import com.swp.bdss.entities.User;
 import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
 import com.swp.bdss.mapper.UserMapper;
 import com.swp.bdss.repository.InvalidatedTokenRepository;
+import com.swp.bdss.repository.NotificationRepository;
 import com.swp.bdss.repository.PasswordResetTokenRepository;
 import com.swp.bdss.repository.UserRepository;
 import lombok.AccessLevel;
@@ -46,6 +48,7 @@ public class AuthenticationService {
     OtpCodeService otpCodeService;
     UserService userService;
     PasswordResetTokenRepository passwordResetTokenRepository;
+    NotificationRepository notificationRepository;
 
     @NonFinal
     @Value("${jwt.signerKey}") // spring injects giá trị lúc runtime nên ko dc là FINAL
@@ -143,6 +146,14 @@ public class AuthenticationService {
 
         //send welcome email
         emailService.sendWelcomeEmail(updatedUser.getEmail());
+
+        Notification notification = Notification.builder()
+                .user(updatedUser)
+                .content("Welcome " + user.getUsername() + " to our blood donation system! Thank you for joining and helping save lives.")
+                .createdDate(LocalDateTime.now())
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
 
         return userMapper.toUserResponse(updatedUser);
     }
@@ -339,7 +350,7 @@ public class AuthenticationService {
         resetToken.setExpiryTime(LocalDateTime.now().plusMinutes(5));
         passwordResetTokenRepository.save(resetToken);
 
-        String resetUrl = "http://localhost:5173/reset-password?token=" + token;
+        String resetUrl = "https://frontend-production-58e6.up.railway.app/reset-password?token=" + token;
         emailService.sendResetPasswordEmail(user.getEmail(), resetUrl);
 
     }
