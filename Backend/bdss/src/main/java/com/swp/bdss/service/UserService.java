@@ -91,13 +91,13 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        if(userRepository.findByEmail(request.getEmail()).isPresent()){
-            throw new AppException(ErrorCode.EMAIL_EXISTED);
-        }
+        userRepository.findByEmail(request.getEmail())
+                .filter(u -> u.getUserId() != userId)
+                .ifPresent(u -> { throw new AppException(ErrorCode.EMAIL_EXISTED); });
 
-        if(userRepository.findByUsername(request.getUsername()).isPresent()){
-            throw new AppException(ErrorCode.USERNAME_EXISTED);
-        }
+        userRepository.findByUsername(request.getUsername())
+                .filter(u -> u.getUserId() != userId)
+                .ifPresent(u -> { throw new AppException(ErrorCode.USERNAME_EXISTED); });
 
         userMapper.updateUser(user, request);
 

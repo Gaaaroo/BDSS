@@ -30,6 +30,7 @@ public class ReceivingProcessService {
     ReceivingProcessRepository receivingProcessRepository;
     BloodReceiveFormRepository bloodReceiveFormRepository;
     ReceivingProcessMapper receivingProcessMapper;
+    NotificationService notificationService;
 
     //updateReceivingProcessStep
     public UpdateReceivingProcessStepResponse updateReceivingStep(UpdateReceivingProcessStepRequest request){
@@ -85,6 +86,17 @@ public class ReceivingProcessService {
         currentStep.setUpdatedBy(staff);
         receivingProcessRepository.save(currentStep);
 
+        // Send notification about step update
+        int receiverId = bloodReceiveForm.getUser().getUserId();
+        String message = String.format(
+                "Your receiving process (ID: %d) has been updated to step %d: %s.",
+                bloodReceiveForm.getReceiveId(),
+                currentStep.getStepNumber(),
+                currentStep.getStatus()
+        );
+        notificationService.createNotificationByUserId(receiverId, message);
+
+
         // nếu các bước trước là DONE thì cập nhật trạng thái của đơn hiến máu
         steps = receivingProcessRepository.findAllByBloodReceiveFormReceiveId(bloodReceiveForm.getReceiveId());
         boolean allPreviousStepsDone = steps.stream()
@@ -93,6 +105,13 @@ public class ReceivingProcessService {
         if(allPreviousStepsDone) {
             bloodReceiveForm.setStatus("APPROVED");
             bloodReceiveFormRepository.save(bloodReceiveForm);
+
+            String messageA = String.format(
+                    "Your blood receiving form (ID: %d) has been %s.",
+                    bloodReceiveForm.getReceiveId(),
+                    bloodReceiveForm.getStatus()
+            );
+            notificationService.createNotificationByUserId(receiverId, messageA);
         }else {
             bloodReceiveForm.setStatus("PROCESSING");
             bloodReceiveFormRepository.save(bloodReceiveForm);
@@ -104,6 +123,13 @@ public class ReceivingProcessService {
         if(anyStepFailed) {
             bloodReceiveForm.setStatus("REJECTED");
             bloodReceiveFormRepository.save(bloodReceiveForm);
+
+            String messageR = String.format(
+                    "Your blood receiving form (ID: %d) has been %s.",
+                    bloodReceiveForm.getReceiveId(),
+                    bloodReceiveForm.getStatus()
+            );
+            notificationService.createNotificationByUserId(receiverId, messageR);
         }
 
         UpdateReceivingProcessStepResponse response = receivingProcessMapper.toUpdateReceivingProcessStepResponse(currentStep);

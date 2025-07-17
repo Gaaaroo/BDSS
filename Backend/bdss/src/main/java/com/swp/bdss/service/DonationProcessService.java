@@ -31,6 +31,7 @@ public class DonationProcessService {
     DonationProcessRepository donationProcessRepository;
     BloodDonateFormRepository bloodDonateFormRepository;
     DonationProcessMapper donationProcessMapper;
+    NotificationService notificationService;
 
 
     // updateDonationProcessStep
@@ -92,12 +93,27 @@ public class DonationProcessService {
         stepToUpdate.setUpdatedBy(staff);
         donationProcessRepository.save(stepToUpdate);
 
+        int donorId = bloodDonateForm.getUser().getUserId();
+        String message = String.format(
+                "Your donation process (ID: %d) has been updated to step %d: %s.",
+                bloodDonateForm.getDonateId(),
+                stepToUpdate.getStepNumber(),
+                stepToUpdate.getStatus()
+        );
+        notificationService.createNotificationByUserId(donorId, message);
+
         // nếu các bước trước là DONE thì cập nhật trạng thái của đơn hiến máu
         steps = donationProcessRepository.findAllByBloodDonateFormDonateId(bloodDonateForm.getDonateId());
         boolean allStepsDone = steps.stream().allMatch(step -> "DONE".equalsIgnoreCase(step.getStatus()));
         if(allStepsDone){
             bloodDonateForm.setStatus("APPROVED");
             bloodDonateFormRepository.save(bloodDonateForm);
+            String messageD = String.format(
+                    "Your blood donation form (ID: %d) has been %s.",
+                    bloodDonateForm.getDonateId(),
+                    bloodDonateForm.getStatus()
+            );
+            notificationService.createNotificationByUserId(donorId, messageD);
         }else{
             bloodDonateForm.setStatus("PROCESSING");
             bloodDonateFormRepository.save(bloodDonateForm);
@@ -109,6 +125,12 @@ public class DonationProcessService {
         if(anyStepFailed) {
             bloodDonateForm.setStatus("REJECTED");
             bloodDonateFormRepository.save(bloodDonateForm);
+            String messageD = String.format(
+                    "Your blood donation form (ID: %d) has been %s.",
+                    bloodDonateForm.getDonateId(),
+                    bloodDonateForm.getStatus()
+            );
+            notificationService.createNotificationByUserId(donorId, messageD);
         }
 
         UpdateDonationProcessStepResponse response = donationProcessMapper.toUpdateDonationProcessStepResponse(stepToUpdate);
