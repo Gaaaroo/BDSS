@@ -242,6 +242,7 @@ export default function StepProgress({
                       className="px-4 py-1 text-white rounded font-semibold w-20 flex items-center justify-center
                       bg-[#F76C6C] hover:scale-105 transition-transform duration-200 cursor-pointer"
                       onClick={handleAddBloodUnit}
+                      disabled={!!bloodUnit?.volume}
                     >
                       Confirm
                     </button>
