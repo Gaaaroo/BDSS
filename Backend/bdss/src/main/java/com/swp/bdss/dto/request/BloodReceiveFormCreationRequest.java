@@ -18,5 +18,5 @@ public class BloodReceiveFormCreationRequest {
     int volume;
     String hospitalAddress;
     String priority;
-    LocalDate requiredDate;
+//    LocalDate requiredDate;
 }
