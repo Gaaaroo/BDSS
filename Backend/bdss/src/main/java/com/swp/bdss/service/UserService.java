@@ -30,6 +30,8 @@ public class UserService {
     UserMapper userMapper;
     UserRepository userRepository;
     NotificationRepository notificationRepository;
+    NotificationService notificationService;
+
 
     public UserResponse createUserForLoginGoogle(String email, String username, String image_link) {
 
@@ -88,6 +90,15 @@ public class UserService {
         int userId = Integer.parseInt(context.getAuthentication().getName());
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        userRepository.findByEmail(request.getEmail())
+                .filter(u -> u.getUserId() != userId)
+                .ifPresent(u -> { throw new AppException(ErrorCode.EMAIL_EXISTED); });
+
+        userRepository.findByUsername(request.getUsername())
+                .filter(u -> u.getUserId() != userId)
+                .ifPresent(u -> { throw new AppException(ErrorCode.USERNAME_EXISTED); });
+
         userMapper.updateUser(user, request);
 
         if (request.getBloodType() == null) {
@@ -176,4 +187,7 @@ public class UserService {
         return userRepository.count();
     }
 
+    public void sendNotiToUser(int userId) {
+        notificationService.createNotificationByUserId(userId, "We urgently need your help for a blood donation. If you have time, please come and donate as soon as possible. Your contribution can save lives!");
+    }
 }

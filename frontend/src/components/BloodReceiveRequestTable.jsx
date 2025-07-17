@@ -46,25 +46,13 @@ export default function BloodReceiveRequestTable({
   const fetchRequests = useCallback(async () => {
     try {
       console.log('Search keyword:', keyword);
-      let data;
-      if (showUrgent) {
-        data = await getReceiveRequestByPriority(
-          'Urgent',
-          selectedStatus ? selectedStatus : undefined,
-          page,
-          size
-        );
-        console.log('đây nbef', data);
-      } else if (keyword.trim() === '') {
-        if (selectedStatus) {
-          data = await getReceiveRequestByStatus(selectedStatus, page, size);
-        } else {
-          data = await getAllBloodReceiveRequests(page, size);
-        }
-        console.log('Fetching all posts:', data);
-      } else {
-        data = await searchBloodReceiveRequests(keyword.trim(), page, size);
-      }
+      let data = await searchBloodReceiveRequests(
+        keyword.trim(),
+        page,
+        size,
+        selectedStatus ? selectedStatus : undefined,
+        showUrgent ? 'Urgent' : undefined
+      );
       // setReceiveRequests(
       //   data.map((request) => ({
       //     ...request,
@@ -96,7 +84,7 @@ export default function BloodReceiveRequestTable({
       fetchRequests();
     }, 400);
     return () => clearTimeout(timeout);
-  }, [selectedStatus, keyword, triggerReloadCount]);
+  }, [selectedStatus, keyword, triggerReloadCount, page]);
 
   // Modal handler for long hospital address
   const handleShowModal = (content) => {
@@ -153,7 +141,6 @@ export default function BloodReceiveRequestTable({
     }`}
               onClick={() => {
                 setShowUrgent(true);
-                setKeyword('');
                 setPage(0);
                 setInputPage(1);
               }}
@@ -193,7 +180,7 @@ export default function BloodReceiveRequestTable({
                 <th className="py-2 text-center">Volume</th>
                 <th className="py-2 text-center">Hospital Address</th>
                 <th className="py-2 text-center">Priority</th>
-                <th className="py-2 text-center">Require Day</th>
+                {/* <th className="py-2 text-center">Require Day</th> */}
                 <th className="py-2 text-center">Status</th>
                 <th className="py-2 text-center">Action</th>
               </tr>
@@ -230,11 +217,11 @@ export default function BloodReceiveRequestTable({
                       {request.hospitalAddress}
                     </td>
                     <td className="py-2 text-center">{request.priority}</td>
-                    <td className="py-2 text-center">
+                    {/* <td className="py-2 text-center">
                       {request.requireDate
                         ? dayjs(request.requireDate).format('DD/MM/YYYY')
                         : ''}
-                    </td>
+                    </td> */}
                     <td className="py-2 text-center">
                       <span
                         className={`

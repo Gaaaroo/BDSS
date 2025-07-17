@@ -3,6 +3,9 @@ package com.swp.bdss.dto.request;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+import java.util.Date;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,4 +18,5 @@ public class BloodReceiveFormCreationRequest {
     int volume;
     String hospitalAddress;
     String priority;
+    LocalDate requiredDate;
 }

@@ -44,6 +44,29 @@ public class NotificationService {
                 .collect(Collectors.toList());
     }
 
+    public void createNotification(User user, String content) {
+        Notification notification = Notification.builder()
+                .user(user)
+                .content(content)
+                .createdDate(java.time.LocalDateTime.now())
+                .isRead(false)
+                .build();
+
+        notificationRepository.save(notification);
+    }
+
+    public void createNotificationByUserId(int userId, String content) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        createNotification(user, content);
+    }
+
+    public void createNotificationByUsername(String username, String content) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        createNotification(user, content);
+    }
+
     @Transactional
     public void markNotificationAsRead(int noticeId) {
         Notification notification = notificationRepository.findById(noticeId)

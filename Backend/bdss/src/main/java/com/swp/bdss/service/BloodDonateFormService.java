@@ -175,13 +175,13 @@ public class BloodDonateFormService {
         return bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateFormRepository.save(bloodDonateForm));
     }
 
-    public Page<BloodDonateFormResponse> searchBloodDonateFormByKeyWord(String keyword, Pageable pageable) {
+    public Page<BloodDonateFormResponse> searchBloodDonateFormByKeyWord(String keyword, Pageable pageable, String status) {
 
         log.info(keyword);
         if (keyword == null || keyword.trim().isEmpty()) {
             log.info("Keyword is null or empty");
         }
-        Page<BloodDonateForm> page = bloodDonateFormRepository.findByUserFullNameContainingIgnoreCaseOrUserPhoneContainingIgnoreCase(keyword, keyword, pageable);
+        Page<BloodDonateForm> page = bloodDonateFormRepository.searchByKeywordAndStatus(keyword, status, pageable);
 
         if(page.isEmpty()){
             throw new AppException(ErrorCode.NO_BLOOD_DONATE_FORM);

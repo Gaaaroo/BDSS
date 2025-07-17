@@ -50,7 +50,7 @@ export default function BloodRequestTable({
         }
         console.log('Fetching all posts:', data);
       } else {
-        data = await searchBloodDonateRequests(keyword.trim(), page, size);
+        data = await searchBloodDonateRequests(keyword.trim(), page, size, selectedStatus);
       }
       // setDonateRequests(
       //   data.map((request) => ({
@@ -77,9 +77,9 @@ export default function BloodRequestTable({
   useEffect(() => {
     const timeout = setTimeout(() => {
       fetchRequests();
-    }, 400); // Debounce search input by 400ms
+    }, 0); // Debounce search input by 400ms
     return () => clearTimeout(timeout);
-  }, [selectedStatus, keyword, triggerReloadCount]);
+  }, [selectedStatus, keyword, triggerReloadCount, page]);
 
   const filteredRequests = donateRequests;
 
