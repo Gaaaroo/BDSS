@@ -1,6 +1,11 @@
 import axiosClient from './axiosClient';
 
-export const fetchAllRequests = async (keyword, status, page = 0, size = 10) => {
+export const fetchAllRequests = async (
+  keyword,
+  status,
+  page = 0,
+  size = 10
+) => {
   try {
     const response = await axiosClient.get('/donate-form', {
       params: { keyword, status, page, size },
@@ -13,7 +18,6 @@ export const fetchAllRequests = async (keyword, status, page = 0, size = 10) => 
     throw error;
   }
 };
-
 
 export const getAllBloodReceiveRequests = async (page = 0, size = 10) => {
   try {
@@ -70,7 +74,6 @@ export const countDonateRequestByStatus = async () => {
   }
 };
 
-
 /////////////////////////////--RECEIVE--/////////////////////////////////////
 
 // Find suitabe blood by receiveId
@@ -96,6 +99,59 @@ export const getSuitableBloodByReceiveId = async (
   }
 };
 
+///
+// export const fetchAllSeekRequests = async (
+//   keyword,
+//   status,
+//   priority,
+//   page = 0,
+//   size = 10
+// ) => {
+//   try {
+//     const params = {};
+//     if (keyword && keyword.trim() !== '') params.keyword = keyword;
+//     if (status && status.trim() !== '') params.status = status;
+//     if (priority && typeof priority === 'string' && priority.trim() !== '')
+//       params.priority = priority;
+//     params.page = page;
+//     params.size = size;
+
+//     const response = await axiosClient.get('/receive-form', { params });
+//     return response;
+//   } catch (error) {
+//     console.error(
+//       error?.response?.message || 'Error fetching blood seek requests'
+//     );
+//     throw error;
+//   }
+// };
+
+export const fetchAllSeekRequests = async (
+  keyword,
+  status,
+  priority,
+  page = 0,
+  size = 10
+) => {
+  try {
+    const response = await axiosClient.get('/receive-form', {
+      params: {
+        keyword,
+        status,
+        priority,
+        page,
+        size,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error(
+      error?.response?.message || 'Error fetching blood seek requests'
+    );
+    throw error;
+  }
+};
+
 // count receive request by status
 export const countReceiveRequestByStatus = async () => {
   try {
@@ -111,7 +167,11 @@ export const countReceiveRequestByStatus = async () => {
 };
 
 //get donate request by status
-export const getReceiveRequestByStatus = async (status, page = 0, size = 10) => {
+export const getReceiveRequestByStatus = async (
+  status,
+  page = 0,
+  size = 10
+) => {
   try {
     const response = await axiosClient.get('/receive-form/by-status', {
       params: { status, page, size },
@@ -130,7 +190,8 @@ export const searchBloodReceiveRequests = async (
   keyword,
   page = 0,
   size = 10,
-  status, priority
+  status,
+  priority
 ) => {
   try {
     const response = await axiosClient.get('/receive-form/search', {

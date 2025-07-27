@@ -178,57 +178,6 @@ public class BloodDonateFormService {
         });
     }
 
-    public Page<BloodDonateFormResponse> searchBloodDonateFormByKeyWord(String keyword, Pageable pageable, String status) {
-
-        log.info(keyword);
-        if (keyword == null || keyword.trim().isEmpty()) {
-            log.info("Keyword is null or empty");
-        }
-        Page<BloodDonateForm> page = bloodDonateFormRepository.searchByKeywordAndStatus(keyword, status, pageable);
-
-        if(page.isEmpty()){
-            throw new AppException(ErrorCode.NO_BLOOD_DONATE_FORM);
-        }
-
-        return page.map(bloodDonateForm -> {
-            BloodDonateFormResponse response = bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateForm);
-            User user = bloodDonateForm.getUser();
-            UserResponse userResponse = userMapper.toUserResponse(user);
-            response.setUserResponse(userResponse);
-            return response;
-        });
-    }
-
-    //get all donate form of all user and form details (ADMIN)
-    public Page<BloodDonateFormResponse> getAllUserBloodDonateForm(Pageable pageable) {
-        Page<BloodDonateForm> page = bloodDonateFormRepository.findAll(pageable);
-        if (page.isEmpty()) {
-            throw new AppException(ErrorCode.NO_BLOOD_DONATE_FORM);
-        }
-        return page.map(bloodDonateForm -> {
-            BloodDonateFormResponse response = bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateForm);
-            User user = bloodDonateForm.getUser();
-            UserResponse userResponse = userMapper.toUserResponse(user);
-            response.setUserResponse(userResponse);
-            return response;
-        });
-    }
-
-
-    public Page<BloodDonateFormResponse> getBloodDonateFormByStatus(String status, Pageable pageable){
-        Page<BloodDonateForm> page = bloodDonateFormRepository.findAllByStatus(status, pageable);
-        if (page.isEmpty()) {
-            throw new AppException(ErrorCode.NO_BLOOD_DONATE_FORM);
-        }
-        return page.map(bloodDonateForm -> {
-            BloodDonateFormResponse response = bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateForm);
-            User user = bloodDonateForm.getUser();
-            UserResponse userResponse = userMapper.toUserResponse(user);
-            response.setUserResponse(userResponse);
-            return response;
-        });
-    }
-    /// //////////////////////////////
 
     public Map<String, Long> countDonateRequestsByStatus() {
         List<BloodDonateForm> forms = bloodDonateFormRepository.findAll();

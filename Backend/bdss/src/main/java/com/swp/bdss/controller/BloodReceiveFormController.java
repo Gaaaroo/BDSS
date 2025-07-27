@@ -4,6 +4,7 @@ import com.google.protobuf.Api;
 import com.swp.bdss.dto.request.BloodReceiveFormCreationRequest;
 import com.swp.bdss.dto.request.BloodReceiveFormUpdateStatusRequest;
 import com.swp.bdss.dto.response.ApiResponse;
+import com.swp.bdss.dto.response.BloodDonateFormResponse;
 import com.swp.bdss.dto.response.BloodReceiveFormResponse;
 import com.swp.bdss.dto.response.BloodResponse;
 import com.swp.bdss.service.BloodReceiveFormService;
@@ -33,17 +34,6 @@ public class BloodReceiveFormController {
         return ApiResponse.<BloodReceiveFormResponse>builder()
                 .code(1000)
                 .data(bloodReceiveFormService.createBloodReceiveForm(request))
-                .build();
-    }
-
-    @GetMapping("/all")
-    ApiResponse<Page<BloodReceiveFormResponse>> getAllBloodReceiveForm (
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size){
-        Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.<Page<BloodReceiveFormResponse>>builder()
-                .code(1000)
-                .data(bloodReceiveFormService.getAllBloodReceiveForm(pageable))
                 .build();
     }
 
@@ -88,11 +78,6 @@ public class BloodReceiveFormController {
     }
 
 
-    @DeleteMapping
-    String deleteBloodReceiveForm (@RequestParam String id){
-        bloodReceiveFormService.deleteBloodReceiveForm(id);
-        return "Delete successfully";
-    }
 
     @GetMapping("/count-by-status")
     ApiResponse<Map<String, Long>> countDonateRequestsByStatus(){
@@ -100,51 +85,6 @@ public class BloodReceiveFormController {
                 .code(1000)
                 .data(bloodReceiveFormService.countReceiveRequestsByStatus())
                 .message("Count receive requests by status successfully")
-                .build();
-    }
-
-    // Get all receive blood forms by status
-    @GetMapping("/by-status")
-    ApiResponse<Page<BloodReceiveFormResponse>> getBloodDonateFormsByStatus(
-            @RequestParam String status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.<Page<BloodReceiveFormResponse>>builder()
-                .code(1000)
-                .data(bloodReceiveFormService.getBloodReceiveFormByStatus(status, pageable))
-                .message("Get blood receive forms by status successfully")
-                .build();
-    }
-
-    @GetMapping("/search")
-    ApiResponse<Page<BloodReceiveFormResponse>> searchBloodDonateFormByKeyword(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String priority
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.<Page<BloodReceiveFormResponse>>builder()
-                .code(1000)
-                .data(bloodReceiveFormService.searchBloodReceiveFormByKeyWord(keyword, pageable, status, priority))
-                .message("Search blood receive form by keyword successfully")
-                .build();
-    }
-
-    @GetMapping("/by-priority")
-    ApiResponse<Page<BloodReceiveFormResponse>> getBloodReceiveFormWithPriority(
-            @RequestParam String priority,
-            @RequestParam(required = false) String status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.<Page<BloodReceiveFormResponse>>builder()
-                .code(1000)
-                .data(bloodReceiveFormService.getBloodReceiveFormByPriorityAndOptionalStatus(priority, status, pageable))
-                .message("Get blood receive forms with priority successfully")
                 .build();
     }
 
@@ -240,7 +180,24 @@ public class BloodReceiveFormController {
                 .build();
     }
 
-
+    @GetMapping()
+    public ApiResponse<Page<BloodReceiveFormResponse>> getBloodReceiveForms(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String priority,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        if (status != null && status.trim().isEmpty()) {
+            status = null;
+        }
+        Pageable pageable = PageRequest.of(page, size);
+        return ApiResponse.<Page<BloodReceiveFormResponse>>builder()
+                .code(1000)
+                .data(bloodReceiveFormService.getBloodReceiveForms(keyword, status, priority, pageable))
+                .message("Get blood seek forms successfully")
+                .build();
+    }
 
 
 }

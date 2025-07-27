@@ -44,17 +44,17 @@ public class BloodDonateFormController {
     }
 
 
-    @GetMapping("/all")
-    ApiResponse<Page<BloodDonateFormResponse>> getAllUserBloodDonateForm(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.<Page<BloodDonateFormResponse>>builder()
-                .code(1000)
-                .data(bloodDonateFormService.getAllUserBloodDonateForm(pageable))
-                .build();
-    }
+//    @GetMapping("/all")
+//    ApiResponse<Page<BloodDonateFormResponse>> getAllUserBloodDonateForm(
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size
+//    ) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        return ApiResponse.<Page<BloodDonateFormResponse>>builder()
+//                .code(1000)
+//                .data(bloodDonateFormService.getAllUserBloodDonateForm(pageable))
+//                .build();
+//    }
 
     @GetMapping("/detail")
     ApiResponse<BloodDonateFormResponse> getBloodDonateFormById(@RequestParam String id){
@@ -73,20 +73,20 @@ public class BloodDonateFormController {
                 .build();
     }
 
-    @GetMapping("/search")
-    ApiResponse<Page<BloodDonateFormResponse>> searchBloodDonateFormByKeyword(
-            @RequestParam String keyword,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String status
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.<Page<BloodDonateFormResponse>>builder()
-                .code(1000)
-                .data(bloodDonateFormService.searchBloodDonateFormByKeyWord(keyword, pageable, status))
-                .message("Search blood donate form by keyword successfully")
-                .build();
-    }
+//    @GetMapping("/search")
+//    ApiResponse<Page<BloodDonateFormResponse>> searchBloodDonateFormByKeyword(
+//            @RequestParam String keyword,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size,
+//            @RequestParam(required = false) String status
+//    ) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        return ApiResponse.<Page<BloodDonateFormResponse>>builder()
+//                .code(1000)
+//                .data(bloodDonateFormService.searchBloodDonateFormByKeyWord(keyword, pageable, status))
+//                .message("Search blood donate form by keyword successfully")
+//                .build();
+//    }
 
     @GetMapping("/count-by-status")
     ApiResponse<Map<String, Long>> countDonateRequestsByStatus(){
@@ -97,20 +97,20 @@ public class BloodDonateFormController {
                 .build();
     }
 
-    // Get all blood donate forms by status
-    @GetMapping("/by-status")
-    ApiResponse<Page<BloodDonateFormResponse>> getBloodDonateFormsByStatus(
-            @RequestParam String status,
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        Pageable pageable = PageRequest.of(page, size);
-        return ApiResponse.<Page<BloodDonateFormResponse>>builder()
-                .code(1000)
-                .data(bloodDonateFormService.getBloodDonateFormByStatus(status, pageable))
-                .message("Get blood donate forms by status successfully")
-                .build();
-    }
+//    // Get all blood donate forms by status
+//    @GetMapping("/by-status")
+//    ApiResponse<Page<BloodDonateFormResponse>> getBloodDonateFormsByStatus(
+//            @RequestParam String status,
+//            @RequestParam(defaultValue = "0") int page,
+//            @RequestParam(defaultValue = "10") int size
+//    ) {
+//        Pageable pageable = PageRequest.of(page, size);
+//        return ApiResponse.<Page<BloodDonateFormResponse>>builder()
+//                .code(1000)
+//                .data(bloodDonateFormService.getBloodDonateFormByStatus(status, pageable))
+//                .message("Get blood donate forms by status successfully")
+//                .build();
+//    }
 
     @GetMapping("/count-requests-by-blood-type")      //count blood donate forms by blood type and status = "PENDING", "PROCESSING"
     ApiResponse<Long> countBloodDonateFormByBloodType(@RequestParam String bloodType) {
