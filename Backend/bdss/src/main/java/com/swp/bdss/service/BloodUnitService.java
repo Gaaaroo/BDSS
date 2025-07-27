@@ -36,7 +36,6 @@ public class BloodUnitService {
     BloodComponentUnitRepository bloodComponentUnitRepository;
     BloodReceiveFormRepository bloodReceiveFormRepository;
     NotificationRepository notificationRepository;
-    UserRepository userRepository;
 
     public BloodUnitResponse addBloodUnit(BloodUnitRequest request) {
         BloodUnit bloodUnit = new BloodUnit();
@@ -49,10 +48,7 @@ public class BloodUnitService {
         bloodUnit.setExpiryDate(LocalDateTime.now().plusDays(56));
         bloodUnit.setNote("");
 
-        var context = SecurityContextHolder.getContext();
-        int userId = Integer.parseInt(context.getAuthentication().getName());
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user = bloodDonateForm.getUser();
 
         Notification notification = Notification.builder()
                 .user(user)
@@ -223,7 +219,7 @@ public class BloodUnitService {
     }
 
     public long countBloodUnitsByType(String bloodType) {
-        return bloodUnitRepository.countByBloodType(bloodType);
+        return bloodUnitRepository.countStoredByBloodType(bloodType);
     }
 
     public Map<String, Long> countStoredBloodUnitsGroupedByBloodTypeFull() {

@@ -11,11 +11,11 @@ export default function BloodCard({ bloodType, units, onClick, request }) {
         <div>
           <div className="text-md text-gray-800 font-medium mt-1">
             {request}
-            {request > 1 ? ' requests' : ' request'}
+            {request > 1 ? ' Requests' : ' Request'}
           </div>
           <div className="text-md text-red-800 font-medium mt-1">
             {units}
-            {units > 1 ? ' Units' : ' Unit'}
+            {units > 1 ? ' Units available' : ' Unit available'}
           </div>
         </div>
         <img
