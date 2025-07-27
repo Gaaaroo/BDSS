@@ -81,8 +81,22 @@ export default function DonorForm() {
       toast.success('Register successful!');
       navigate('/');
     } catch (error) {
-      console.log(error);
-      toast.error('Register failed');
+      if (error.response && error.response.data) {
+        const { code, message } = error.response.data;
+
+        // Hiển thị message cụ thể từ server nếu có
+        if (message) {
+          toast.error(message);
+        } else {
+          toast.error('Register failed.');
+        }
+
+        console.error(`Error ${code}: ${message}`);
+      } else {
+        // Fallback nếu không có thông tin từ server
+        toast.error('Register failed.');
+        console.error(error);
+      }
     }
   };
 

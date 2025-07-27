@@ -1,7 +1,7 @@
 import axiosClient from './axiosClient';
 
 export const getAllBloodDonateRequests = async (page = 0, size = 10) => {
-  try{
+  try {
     const response = await axiosClient.get('/donate-form/all', {
       params: {
         page,
@@ -9,7 +9,7 @@ export const getAllBloodDonateRequests = async (page = 0, size = 10) => {
       },
     });
     return response;
-  }catch (error) {
+  } catch (error) {
     console.error(
       error?.response?.message || 'Error fetching all blood donate requests'
     );
@@ -35,7 +35,12 @@ export const getAllBloodReceiveRequests = async (page = 0, size = 10) => {
 };
 
 //search blood donate requests
-export const searchBloodDonateRequests = async (keyword, page = 0, size, status) => {
+export const searchBloodDonateRequests = async (
+  keyword,
+  page = 0,
+  size,
+  status
+) => {
   try {
     const response = await axiosClient.get('/donate-form/search', {
       params: { keyword, page, size, status },
@@ -142,7 +147,11 @@ export const countReceiveRequestByStatus = async () => {
 };
 
 //get donate request by status
-export const getReceiveRequestByStatus = async (status, page = 0, size = 10) => {
+export const getReceiveRequestByStatus = async (
+  status,
+  page = 0,
+  size = 10
+) => {
   try {
     const response = await axiosClient.get('/receive-form/by-status', {
       params: { status, page, size },
@@ -161,7 +170,8 @@ export const searchBloodReceiveRequests = async (
   keyword,
   page = 0,
   size = 10,
-  status, priority
+  status,
+  priority
 ) => {
   try {
     const response = await axiosClient.get('/receive-form/search', {
@@ -219,34 +229,3 @@ export const getReceiveRequestByPriority = async (
     throw error;
   }
 };
-
-// export const createPost = async (postData) => {
-//   const response = await axiosClient.post('/forum', postData);
-//   return response;
-// };
-
-// export const getForumPosts = async () => {
-//   const response = await axiosClient.get('/forum');
-//   return response.reverse();
-// };
-
-// export const searchForumPosts = async (keyword) => {
-//   const response = await axiosClient.get('/forum/search', {
-//     params: { keyword },
-//   });
-//   return response.reverse();
-// };
-
-// export const getMyPosts = async () => {
-//   const response = await axiosClient.get('/forum/my-posts');
-//   return response.reverse();
-// };
-
-// export const deletePost = async (postId) => {
-//   const response = await axiosClient.delete('/forum/my-posts', {
-//     params: { post_id: postId },
-//     withCredentials: true,
-//   });
-
-//   return response;
-// };
