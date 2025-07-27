@@ -1,85 +1,85 @@
-import React, { useState } from "react";
-import BloodDocs from "./BloodDocs";
+import React, { useState } from 'react';
+import BloodDocs from './BloodDocs';
 
 export default function BloodCompatibilityChecker() {
-  const [recipientBloodType, setRecipientBloodType] = useState("");
-  const [transfusionType, setTransfusionType] = useState("");
+  const [recipientBloodType, setRecipientBloodType] = useState('');
+  const [transfusionType, setTransfusionType] = useState('');
   const [compatibleDonors, setCompatibleDonors] = useState([]);
 
   const bloodCompatibilityData = {
-  whole: {
-    "A+": ["A+", "A-", "O+", "O-"],
-    "A-": ["A-", "O-"],
-    "B+": ["B+", "B-", "O+", "O-"],
-    "B-": ["B-", "O-"],
-    "AB+": ["A+", "B+", "AB+", "O+", "A-", "B-", "AB-", "O-"],
-    "AB-": ["A-", "B-", "AB-", "O-"],
-    "O+": ["O+", "O-"],
-    "O-": ["O-"],
-  },
-  rbc: {
-    "A+": ["A+", "A-", "O+", "O-"],
-    "A-": ["A-", "O-"],
-    "B+": ["B+", "B-", "O+", "O-"],
-    "B-": ["B-", "O-"],
-    "AB+": ["A+", "B+", "AB+", "O+", "A-", "B-", "AB-", "O-"],
-    "AB-": ["AB-", "A-", "B-", "O-"],
-    "O+": ["O+", "O-"],
-    "O-": ["O-"],
-  },
-  plasma: {
-    "A+": ["A+", "AB+", "AB-"],
-    "A-": ["A-", "AB-"],
-    "B+": ["B+", "AB+", "AB-"],
-    "B-": ["B-", "AB-"],
-    "AB+": ["AB+"],
-    "AB-": ["AB-"],
-    "O+": ["A+", "B+", "AB+", "O+"],
-    "O-": ["A-", "B-", "AB-", "O-"],
-  },
-  platelets: {
-    "A+": ["A+", "A-", "O+", "O-"],
-    "A-": ["A-", "O-"],
-    "B+": ["B+", "B-", "O+", "O-"],
-    "B-": ["B-", "O-"],
-    "AB+": ["A+", "B+", "AB+", "O+", "A-", "B-", "AB-", "O-"],
-    "AB-": ["A-", "B-", "AB-", "O-"],
-    "O+": ["O+", "O-"],
-    "O-": ["O-"],
-  },
-  wbc: {
-    "A+": ["A+", "A-", "O+", "O-"],
-    "A-": ["A-", "O-"],
-    "B+": ["B+", "B-", "O+", "O-"],
-    "B-": ["B-", "O-"],
-    "AB+": ["A+", "B+", "AB+", "O+", "A-", "B-", "AB-", "O-"],
-    "AB-": ["A-", "B-", "AB-", "O-"],
-    "O+": ["O+", "O-"],
-    "O-": ["O-"],
-  },
-};
+    whole: {
+      'A+': ['A+', 'A-', 'O+', 'O-'],
+      'A-': ['A-', 'O-'],
+      'B+': ['B+', 'B-', 'O+', 'O-'],
+      'B-': ['B-', 'O-'],
+      'AB+': ['A+', 'B+', 'AB+', 'O+', 'A-', 'B-', 'AB-', 'O-'],
+      'AB-': ['A-', 'B-', 'AB-', 'O-'],
+      'O+': ['O+', 'O-'],
+      'O-': ['O-'],
+    },
+    rbc: {
+      'A+': ['A+', 'A-', 'O+', 'O-'],
+      'A-': ['A-', 'O-'],
+      'B+': ['B+', 'B-', 'O+', 'O-'],
+      'B-': ['B-', 'O-'],
+      'AB+': ['A+', 'B+', 'AB+', 'O+', 'A-', 'B-', 'AB-', 'O-'],
+      'AB-': ['AB-', 'A-', 'B-', 'O-'],
+      'O+': ['O+', 'O-'],
+      'O-': ['O-'],
+    },
+    plasma: {
+      'A+': ['A+', 'AB+', 'AB-'],
+      'A-': ['A-', 'AB-'],
+      'B+': ['B+', 'AB+', 'AB-'],
+      'B-': ['B-', 'AB-'],
+      'AB+': ['AB+'],
+      'AB-': ['AB-'],
+      'O+': ['A+', 'B+', 'AB+', 'O+'],
+      'O-': ['A-', 'B-', 'AB-', 'O-'],
+    },
+    platelets: {
+      'A+': ['A+', 'A-', 'O+', 'O-'],
+      'A-': ['A-', 'O-'],
+      'B+': ['B+', 'B-', 'O+', 'O-'],
+      'B-': ['B-', 'O-'],
+      'AB+': ['A+', 'B+', 'AB+', 'O+', 'A-', 'B-', 'AB-', 'O-'],
+      'AB-': ['A-', 'B-', 'AB-', 'O-'],
+      'O+': ['O+', 'O-'],
+      'O-': ['O-'],
+    },
+    wbc: {
+      'A+': ['A+', 'A-', 'O+', 'O-'],
+      'A-': ['A-', 'O-'],
+      'B+': ['B+', 'B-', 'O+', 'O-'],
+      'B-': ['B-', 'O-'],
+      'AB+': ['A+', 'B+', 'AB+', 'O+', 'A-', 'B-', 'AB-', 'O-'],
+      'AB-': ['A-', 'B-', 'AB-', 'O-'],
+      'O+': ['O+', 'O-'],
+      'O-': ['O-'],
+    },
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!recipientBloodType ) {
+    if (!recipientBloodType) {
       setCompatibleDonors([]);
-      alert("Please select blood type!");
+      alert('Please select blood type!');
       return;
     }
     if (!transfusionType) {
       setCompatibleDonors([]);
-      alert("Please select transfusion type!");
+      alert('Please select transfusion type!');
       return;
     }
     if (!recipientBloodType && !transfusionType) {
       setCompatibleDonors([]);
-      alert("Please select both blood type and transfusion type!");
+      alert('Please select both blood type and transfusion type!');
       return;
     }
     const result =
       bloodCompatibilityData[transfusionType][recipientBloodType] || [];
     setCompatibleDonors(result);
-    console.log("Compatible donors:", result);
+    console.log('Compatible donors:', result);
   };
 
   return (
@@ -97,7 +97,9 @@ export default function BloodCompatibilityChecker() {
             hover:scale-100 transition duration-300 focus:outline-none focus:underline focus:underline-offset-4 
             text-base text-[17px]"
           /> */}
-          <label className="absolute left-1/15 text-black">Choose a bloodtype:</label>
+          <label className="absolute left-1/15 text-black">
+            Choose a bloodtype:
+          </label>
           <select
             className="absolute left-4/15 p-2 rounded-[50px] w-17 
             ml-[7px] bg-[#FFA1A1]
@@ -118,7 +120,9 @@ export default function BloodCompatibilityChecker() {
             <option value="O-">O-</option>
           </select>
 
-          <label className="absolute left-6/15 text-black">Type of transfusion:</label>
+          <label className="absolute left-6/15 text-black">
+            Type of transfusion:
+          </label>
           <select
             className="absolute left-9/15 p-2 rounded-[50px] w-27 
             bg-[#FFA1A1]
@@ -151,7 +155,7 @@ export default function BloodCompatibilityChecker() {
         </h2>
       </div>
       {compatibleDonors.length === 0 ? (
-        <div className="absolute top-[267px] transform items-center">
+        <div className="absolute top-[267px] transform items-center flex flex-row ">
           <BloodDocs />
         </div>
       ) : (
@@ -172,7 +176,7 @@ export default function BloodCompatibilityChecker() {
               )}
             </ul>
           </div>
-          <div className="absolute top-[380px] transform items-center ">
+          <div className="absolute top-[380px] transform items-center flex flex-row ">
             {compatibleDonors.map((blood) => (
               <BloodDocs key={blood} bloodT={blood} />
             ))}

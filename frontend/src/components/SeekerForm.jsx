@@ -5,12 +5,12 @@ import { useNavigate } from 'react-router';
 import { receiveForm } from '../services/api/bloodFormService';
 import CustomModal from './CustomModal';
 import { toast } from 'react-toastify';
-import { seekerFormSchema } from '../Validations/formValidate';
+// import { seekerFormSchema } from '../Validations/formValidate';
 export default function SeekerForm() {
   const { profile } = useApp(); //lấy profile từ context
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const [formErrors, setFormErrors] = useState({});
+  // const [formErrors, setFormErrors] = useState({});
   const handleCancel = () => {
     setShowModal(false);
     navigate('/');
@@ -32,7 +32,7 @@ export default function SeekerForm() {
     type: '',
     quantity: '',
     hospitalAddress: '',
-    requiredDate: '',
+    // requiredDate: '',
   });
   function isProfileIncomplete(profile) {
     return (
@@ -68,7 +68,7 @@ export default function SeekerForm() {
   const handleSeekerRegister = async (e) => {
     e.preventDefault();
     try {
-      await seekerFormSchema.validate(formData, { abortEarly: false });
+      // await seekerFormSchema.validate(formData, { abortEarly: false });
 
       const res = await receiveForm({
         volume: formData.volume,
@@ -77,7 +77,7 @@ export default function SeekerForm() {
         componentType: formData.type,
         quantity: formData.quantity,
         hospitalAddress: formData.hospitalAddress,
-        requiredDate: formData.requiredDate,
+        // requiredDate: formData.requiredDate,
       });
       console.log('Detail receive form:', res);
       toast.success('Register successful!');
@@ -261,7 +261,7 @@ export default function SeekerForm() {
               <option value="4">4</option>
             </select>
           </div>
-          <TextInput
+          {/* <TextInput
             label="Required Date"
             name="requiredDate"
             type="date"
@@ -272,7 +272,7 @@ export default function SeekerForm() {
             <p className="text-sm text-red-600 mt-1">
               {formErrors.requiredDate}
             </p>
-          )}
+          )} */}
         </div>
       </div>
       <div className="flex justify-center">

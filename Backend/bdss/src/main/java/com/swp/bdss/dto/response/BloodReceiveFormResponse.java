@@ -24,6 +24,6 @@ public class BloodReceiveFormResponse {
     String priority;
     LocalDate requestDate;
     String status;
-    LocalDate requiredDate;
+//    LocalDate requiredDate;
     List<UpdateReceivingProcessStepResponse> steps;
 }
