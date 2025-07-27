@@ -1,21 +1,19 @@
 import axiosClient from './axiosClient';
 
-export const getAllBloodDonateRequests = async (page = 0, size = 10) => {
-  try{
-    const response = await axiosClient.get('/donate-form/all', {
-      params: {
-        page,
-        size,
-      },
+export const fetchAllRequests = async (keyword, status, page = 0, size = 10) => {
+  try {
+    const response = await axiosClient.get('/donate-form', {
+      params: { keyword, status, page, size },
     });
     return response;
-  }catch (error) {
+  } catch (error) {
     console.error(
-      error?.response?.message || 'Error fetching all blood donate requests'
+      error?.response?.message || 'Error fetching blood donation requests'
     );
     throw error;
   }
 };
+
 
 export const getAllBloodReceiveRequests = async (page = 0, size = 10) => {
   try {
@@ -29,21 +27,6 @@ export const getAllBloodReceiveRequests = async (page = 0, size = 10) => {
   } catch (error) {
     console.error(
       error?.response?.message || 'Error fetching all blood receive requests'
-    );
-    throw error;
-  }
-};
-
-//search blood donate requests
-export const searchBloodDonateRequests = async (keyword, page = 0, size, status) => {
-  try {
-    const response = await axiosClient.get('/donate-form/search', {
-      params: { keyword, page, size, status },
-    });
-    return response;
-  } catch (error) {
-    console.error(
-      error?.response?.message || 'Error searching blood donate requests'
     );
     throw error;
   }
@@ -87,20 +70,6 @@ export const countDonateRequestByStatus = async () => {
   }
 };
 
-//get donate request by status
-export const getDonateRequestByStatus = async (status, page = 0, size) => {
-  try {
-    const response = await axiosClient.get('/donate-form/by-status', {
-      params: { status, page, size },
-    });
-    return response;
-  } catch (error) {
-    console.error(
-      error?.response?.message || 'Error fetching donate request by status'
-    );
-    throw error;
-  }
-};
 
 /////////////////////////////--RECEIVE--/////////////////////////////////////
 
@@ -219,34 +188,3 @@ export const getReceiveRequestByPriority = async (
     throw error;
   }
 };
-
-// export const createPost = async (postData) => {
-//   const response = await axiosClient.post('/forum', postData);
-//   return response;
-// };
-
-// export const getForumPosts = async () => {
-//   const response = await axiosClient.get('/forum');
-//   return response.reverse();
-// };
-
-// export const searchForumPosts = async (keyword) => {
-//   const response = await axiosClient.get('/forum/search', {
-//     params: { keyword },
-//   });
-//   return response.reverse();
-// };
-
-// export const getMyPosts = async () => {
-//   const response = await axiosClient.get('/forum/my-posts');
-//   return response.reverse();
-// };
-
-// export const deletePost = async (postId) => {
-//   const response = await axiosClient.delete('/forum/my-posts', {
-//     params: { post_id: postId },
-//     withCredentials: true,
-//   });
-
-//   return response;
-// };

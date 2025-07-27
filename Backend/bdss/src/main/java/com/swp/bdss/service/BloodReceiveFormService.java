@@ -131,17 +131,6 @@ public class BloodReceiveFormService {
         return bloodReceiveFormResponse;
     }
 
-    public Page<BloodReceiveFormResponse> getAllBloodReceiveForm(Pageable pageable) {
-        Page<BloodReceiveForm> page = bloodReceiveFormRepository.findAll(pageable);
-        return page.map(bloodReceiveForm -> {
-            BloodReceiveFormResponse response = bloodReceiveFormMapper.toBloodReceiveFormResponse(bloodReceiveForm);
-            User user = bloodReceiveForm.getUser();
-            UserResponse userResponse = userMapper.toUserResponse(user);
-            response.setUser(userResponse);
-            return response;
-        });
-    }
-
     public BloodReceiveFormResponse getBloodReceiveFormById(int id) {
         BloodReceiveForm bloodReceiveForm = bloodReceiveFormRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_EXISTED));
@@ -199,6 +188,17 @@ public class BloodReceiveFormService {
         if (page.isEmpty()) {
             throw new AppException(ErrorCode.NO_BLOOD_RECEIVE_FORM);
         }
+        return page.map(bloodReceiveForm -> {
+            BloodReceiveFormResponse response = bloodReceiveFormMapper.toBloodReceiveFormResponse(bloodReceiveForm);
+            User user = bloodReceiveForm.getUser();
+            UserResponse userResponse = userMapper.toUserResponse(user);
+            response.setUser(userResponse);
+            return response;
+        });
+    }
+
+    public Page<BloodReceiveFormResponse> getAllBloodReceiveForm(Pageable pageable) {
+        Page<BloodReceiveForm> page = bloodReceiveFormRepository.findAll(pageable);
         return page.map(bloodReceiveForm -> {
             BloodReceiveFormResponse response = bloodReceiveFormMapper.toBloodReceiveFormResponse(bloodReceiveForm);
             User user = bloodReceiveForm.getUser();

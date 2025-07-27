@@ -44,12 +44,6 @@ public class BloodDonateFormController {
     }
 
 
-    @DeleteMapping
-    String deleteBloodDonateForm (@RequestParam String id){
-        bloodDonateFormService.deleteBloodDonateForm(id);
-        return "Delete successfully";
-    }
-
     @GetMapping("/all")
     ApiResponse<Page<BloodDonateFormResponse>> getAllUserBloodDonateForm(
             @RequestParam(defaultValue = "0") int page,
@@ -189,6 +183,24 @@ public class BloodDonateFormController {
                 .code(1000)
                 .data(bloodDonateFormService.getBloodDonateFormWithFullName())
                 .message("Get blood donate form list with name successfully")
+                .build();
+    }
+
+    @GetMapping()
+    public ApiResponse<Page<BloodDonateFormResponse>> getBloodDonateForms(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        if (status != null && status.trim().isEmpty()) {
+            status = null;
+        }
+        Pageable pageable = PageRequest.of(page, size);
+        return ApiResponse.<Page<BloodDonateFormResponse>>builder()
+                .code(1000)
+                .data(bloodDonateFormService.getBloodDonateForm(keyword, status, pageable))
+                .message("Get blood donate forms successfully")
                 .build();
     }
 

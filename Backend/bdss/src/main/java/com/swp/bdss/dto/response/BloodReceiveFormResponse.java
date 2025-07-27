@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -24,6 +25,6 @@ public class BloodReceiveFormResponse {
     String priority;
     LocalDate requestDate;
     String status;
-//    LocalDate requiredDate;
+    LocalDateTime requiredDate;
     List<UpdateReceivingProcessStepResponse> steps;
 }

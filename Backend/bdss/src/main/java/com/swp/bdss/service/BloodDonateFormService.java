@@ -109,22 +109,6 @@ public class BloodDonateFormService {
     }
 
 
-
-    //get all donate form of all user and form details (ADMIN)
-    public Page<BloodDonateFormResponse> getAllUserBloodDonateForm(Pageable pageable) {
-        Page<BloodDonateForm> page = bloodDonateFormRepository.findAll(pageable);
-        if (page.isEmpty()) {
-            throw new AppException(ErrorCode.NO_BLOOD_DONATE_FORM);
-        }
-        return page.map(bloodDonateForm -> {
-            BloodDonateFormResponse response = bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateForm);
-            User user = bloodDonateForm.getUser();
-            UserResponse userResponse = userMapper.toUserResponse(user);
-            response.setUserResponse(userResponse);
-            return response;
-        });
-    }
-
     //get all donate form of 1 user and form details (USER)
     public List<BloodDonateFormResponse> getUserBloodDonateForm(){
         int userId = Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -157,13 +141,6 @@ public class BloodDonateFormService {
         return response;
     }
 
-    //delete blood donate form (ADMIN, USER)
-    public void deleteBloodDonateForm(String donate_id){
-        int id = Integer.parseInt(donate_id);
-        BloodDonateForm bloodDonateForm = bloodDonateFormRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.BLOOD_DONATE_FORM_NOT_EXISTED));
-        bloodDonateFormRepository.deleteById(id);
-    }
 
     //update form status (ADMIN)
     public BloodDonateFormResponse updateBloodDonateFormStatus(int donate_id, BloodDonateFormUpdateStatusRequest request){
@@ -173,6 +150,32 @@ public class BloodDonateFormService {
         //check status
         bloodDonateForm.setStatus(request.getStatus());
         return bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateFormRepository.save(bloodDonateForm));
+    }
+
+    /// //////////////////////////////
+
+    public Page<BloodDonateFormResponse> getBloodDonateForm(String keyword, String status, Pageable pageable) {
+        Page<BloodDonateForm> page;
+
+        if(keyword != null && !keyword.trim().isEmpty()) {
+            page = bloodDonateFormRepository.searchByKeywordAndStatus(keyword, status, pageable);
+        } else if(status != null && !status.trim().isEmpty()) {
+            page = bloodDonateFormRepository.findAllByStatus(status, pageable);
+        }else {
+            page = bloodDonateFormRepository.findAll(pageable);
+        }
+
+        if (page.isEmpty()) {
+            throw new AppException(ErrorCode.NO_BLOOD_DONATE_FORM);
+        }
+
+        return page.map(bloodDonateForm -> {
+            BloodDonateFormResponse response = bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateForm);
+            User user = bloodDonateForm.getUser();
+            UserResponse userResponse = userMapper.toUserResponse(user);
+            response.setUserResponse(userResponse);
+            return response;
+        });
     }
 
     public Page<BloodDonateFormResponse> searchBloodDonateFormByKeyWord(String keyword, Pageable pageable, String status) {
@@ -196,14 +199,21 @@ public class BloodDonateFormService {
         });
     }
 
-    public Map<String, Long> countDonateRequestsByStatus() {
-        List<BloodDonateForm> forms = bloodDonateFormRepository.findAll();
-        return forms.stream()
-                .collect(Collectors.groupingBy(
-                        BloodDonateForm::getStatus,
-                        Collectors.counting()
-                ));
+    //get all donate form of all user and form details (ADMIN)
+    public Page<BloodDonateFormResponse> getAllUserBloodDonateForm(Pageable pageable) {
+        Page<BloodDonateForm> page = bloodDonateFormRepository.findAll(pageable);
+        if (page.isEmpty()) {
+            throw new AppException(ErrorCode.NO_BLOOD_DONATE_FORM);
+        }
+        return page.map(bloodDonateForm -> {
+            BloodDonateFormResponse response = bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateForm);
+            User user = bloodDonateForm.getUser();
+            UserResponse userResponse = userMapper.toUserResponse(user);
+            response.setUserResponse(userResponse);
+            return response;
+        });
     }
+
 
     public Page<BloodDonateFormResponse> getBloodDonateFormByStatus(String status, Pageable pageable){
         Page<BloodDonateForm> page = bloodDonateFormRepository.findAllByStatus(status, pageable);
@@ -217,6 +227,16 @@ public class BloodDonateFormService {
             response.setUserResponse(userResponse);
             return response;
         });
+    }
+    /// //////////////////////////////
+
+    public Map<String, Long> countDonateRequestsByStatus() {
+        List<BloodDonateForm> forms = bloodDonateFormRepository.findAll();
+        return forms.stream()
+                .collect(Collectors.groupingBy(
+                        BloodDonateForm::getStatus,
+                        Collectors.counting()
+                ));
     }
 
     public Long countBloodDonateFormByBloodType(String bloodType) {

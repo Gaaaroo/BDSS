@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -18,5 +19,5 @@ public class BloodReceiveFormCreationRequest {
     int volume;
     String hospitalAddress;
     String priority;
-//    LocalDate requiredDate;
+    LocalDateTime requiredDate;
 }
