@@ -8,5 +8,6 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface BloodUnitMapper {
     @Mapping(target = "userResponse", ignore = true)
+    @Mapping(target = "receiveUser", ignore = true)
     BloodUnitResponse toBloodUnitResponse(BloodUnit bloodUnit);
 }

@@ -44,8 +44,8 @@ public enum ErrorCode {
     BLOOD_COMPONENT_ALREADY_USED_OR_INVALID(1033, "Blood component unit already used or invalid", HttpStatus.BAD_REQUEST),
     NOTIFICATION_NOT_FOUND(1034, "Notification not exist", HttpStatus.BAD_REQUEST),
     ALREADY_REGISTERED_PENDING_RECEIVE_FORM(1035, "You have already registered a blood receive form which is still being processed", HttpStatus.BAD_REQUEST),
-    BLOOD_DONATION_IN_PROGRESS(1036, "Your previous donation form is still in progress and cannot create a new one", HttpStatus.BAD_REQUEST),
-    BLOOD_DONATION_RECOVERY_NOT_COMPLETE(1037, "You must wait at least 84 days after your last donation before donating again", HttpStatus.BAD_REQUEST),
+    BLOOD_DONATION_IN_PROGRESS(1036, "Your previous request is still in progress.", HttpStatus.BAD_REQUEST),
+    BLOOD_DONATION_RECOVERY_NOT_COMPLETE(1037, "You must wait 84 days between donations.", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;
