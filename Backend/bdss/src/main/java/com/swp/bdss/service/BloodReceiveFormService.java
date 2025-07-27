@@ -83,8 +83,6 @@ public class BloodReceiveFormService {
     }
 
 
-
-
     public BloodReceiveFormResponse createBloodReceiveForm(BloodReceiveFormCreationRequest request) {
         BloodReceiveForm bloodReceiveForm = bloodReceiveFormMapper.toBloodReceiveForm(request);
         //Lay UserID từ token
@@ -93,20 +91,13 @@ public class BloodReceiveFormService {
 
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        boolean canRegister = false;
-
-        if (user.getBloodReceiveForms().isEmpty()) {
-            canRegister = true;
-        } else {
+        // Kiểm tra điều kiện đăng ký
+        if (!user.getBloodReceiveForms().isEmpty()) {
             BloodReceiveForm lastForm = user.getBloodReceiveForms().getLast();
-
-            if (lastForm.getStatus().equalsIgnoreCase("REJECTED") || lastForm.getStatus().equalsIgnoreCase("APPROVED")) {
-                canRegister = true;
+            String status = lastForm.getStatus();
+            if (!status.equalsIgnoreCase("REJECTED") && !status.equalsIgnoreCase("APPROVED")) {
+                throw new AppException(ErrorCode.ALREADY_REGISTERED_PENDING_RECEIVE_FORM);
             }
-        }
-
-        if (!canRegister) {
-            throw new AppException(ErrorCode.NOT_ELIGIBLE_TO_REGISTER_RECEIVE);
         }
 
         //Ghi notification sau khi tạo form thành công

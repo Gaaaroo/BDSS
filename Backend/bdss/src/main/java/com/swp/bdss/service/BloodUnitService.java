@@ -7,10 +7,7 @@ import com.swp.bdss.exception.AppException;
 import com.swp.bdss.exception.ErrorCode;
 import com.swp.bdss.mapper.BloodUnitMapper;
 import com.swp.bdss.mapper.UserMapper;
-import com.swp.bdss.repository.BloodComponentUnitRepository;
-import com.swp.bdss.repository.BloodDonateFormRepository;
-import com.swp.bdss.repository.BloodReceiveFormRepository;
-import com.swp.bdss.repository.BloodUnitRepository;
+import com.swp.bdss.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 
@@ -37,6 +35,8 @@ public class BloodUnitService {
     UserMapper userMapper;
     BloodComponentUnitRepository bloodComponentUnitRepository;
     BloodReceiveFormRepository bloodReceiveFormRepository;
+    NotificationRepository notificationRepository;
+    UserRepository userRepository;
 
     public BloodUnitResponse addBloodUnit(BloodUnitRequest request) {
         BloodUnit bloodUnit = new BloodUnit();
@@ -48,6 +48,19 @@ public class BloodUnitService {
         bloodUnit.setDonatedDate(LocalDateTime.now());
         bloodUnit.setExpiryDate(LocalDateTime.now().plusDays(56));
         bloodUnit.setNote("");
+
+        var context = SecurityContextHolder.getContext();
+        int userId = Integer.parseInt(context.getAuthentication().getName());
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        Notification notification = Notification.builder()
+                .user(user)
+                .content("You have successfully donated " + request.getVolume() + " ml of blood.")
+                .createdDate(LocalDateTime.now())
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
 
         DonationProcess step4 = bloodDonateForm.getSteps().stream()
                 .filter(step -> step.getStepNumber() == 4)
@@ -175,6 +188,14 @@ public class BloodUnitService {
             BloodUnitResponse response = bloodUnitMapper.toBloodUnitResponse(bloodUnit);
             response.setUserResponse(userMapper.toUserResponse(
                     bloodUnit.getBloodDonateForm().getUser()));
+
+            if (bloodUnit.getReceiveForm() != null) {
+                response.setReceiveUser(
+                        userMapper.toUserResponse(bloodUnit.getReceiveForm().getUser())
+                );
+            } else {
+                response.setReceiveUser(null);
+            }
             return response;
         });
     }

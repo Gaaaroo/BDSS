@@ -60,31 +60,28 @@ public class BloodDonateFormService {
         }
 
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        boolean canRegister = false;
 
-        if (user.getBloodDonateForms().isEmpty()) {
-            canRegister = true;
-        } else {
+        if (!user.getBloodDonateForms().isEmpty()) {
             BloodDonateForm lastForm = user.getBloodDonateForms().getLast();
+            String status = lastForm.getStatus();
 
-            if (lastForm.getStatus().equalsIgnoreCase("REJECTED")) {
-                canRegister = true;
-            } else {
+            if (status.equalsIgnoreCase("REJECTED")) {
+                // Cho phép tạo lại form nếu bị từ chối
+            } else if (status.equalsIgnoreCase("APPROVED")) {
                 BloodUnit bloodUnit = lastForm.getBloodUnit();
                 if (bloodUnit == null || bloodUnit.getDonatedDate() == null) {
                     throw new AppException(ErrorCode.BLOOD_UNIT_NOT_EXIST);
                 }
+
                 LocalDateTime lastDonateDate = bloodUnit.getDonatedDate();
                 long daysSinceLastDonate = ChronoUnit.DAYS.between(lastDonateDate.toLocalDate(), LocalDate.now());
 
-                if (daysSinceLastDonate > 84) {
-                    canRegister = true;
+                if (daysSinceLastDonate <= 84) {
+                    throw new AppException(ErrorCode.BLOOD_DONATION_RECOVERY_NOT_COMPLETE);
                 }
+            } else {
+                throw new AppException(ErrorCode.BLOOD_DONATION_IN_PROGRESS);
             }
-        }
-
-        if (!canRegister) {
-            throw new AppException(ErrorCode.NOT_ELIGIBLE_TO_REGISTER_RECEIVE);
         }
 
         UserResponse userResponse = userMapper.toUserResponse(user);
@@ -95,7 +92,7 @@ public class BloodDonateFormService {
         BloodDonateFormResponse bloodDonateFormResponse = bloodDonateFormMapper
                 .toBloodDonateFormResponse(bloodDonateFormRepository.save(bloodDonateForm));
 
-//        //set user cho response tại vì user nằm ở user và mapstruct ko lấy trường này -> null hoặc sai
+        //set user cho response tại vì user nằm ở user và mapstruct ko lấy trường này -> null hoặc sai
          bloodDonateFormResponse.setUserResponse(userResponse);
         // Ghi notification sau khi tạo form thành công
         Notification notification = Notification.builder()

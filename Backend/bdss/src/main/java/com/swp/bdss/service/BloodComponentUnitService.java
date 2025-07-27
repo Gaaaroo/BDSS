@@ -102,6 +102,13 @@ public class BloodComponentUnitService {
             BloodComponentUnitResponse response = bloodComponentUnitMapper.toBloodComponentUnitResponse(component);
             response.setUserResponse(
                     userMapper.toUserResponse(component.getBloodUnit().getBloodDonateForm().getUser()));
+            if (component.getBloodReceiveForm() != null) {
+                response.setReceiveUser(
+                        userMapper.toUserResponse(component.getBloodReceiveForm().getUser())
+                );
+            } else {
+                response.setReceiveUser(null);
+            }
             return response;
         });
     }

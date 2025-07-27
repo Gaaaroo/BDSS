@@ -20,4 +20,5 @@ public class BloodUnitResponse implements BloodResponse {
     LocalDateTime expiryDate;
     String note;
     UserResponse userResponse;
+    UserResponse receiveUser; // nguoi duoc nhan mau
 }
