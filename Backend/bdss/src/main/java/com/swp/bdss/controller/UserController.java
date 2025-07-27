@@ -27,13 +27,6 @@ import java.util.List;
 public class UserController {
     UserService userService;
 
-    @PostMapping
-    ApiResponse<UserResponse> createUser(@RequestBody UserCreationRequest request) {
-        return ApiResponse.<UserResponse>builder()
-                .code(1000)
-                .data(userService.createUser(request))
-                .build();
-    }
 
     @GetMapping
     public ApiResponse<Page<UserResponse>> getUsers(
@@ -84,13 +77,6 @@ public class UserController {
                 .data(userService.updateUser(userId, request))
                 .build();
     }
-
-    @DeleteMapping("/{userId}")
-    String deleteUser(@PathVariable("userId") String userId){
-        userService.deleteUser(userId);
-        return "Delete successfully";
-    }
-
 
     @GetMapping("/nearby")
     public ApiResponse<List<UserResponse>> getNearbyUser(@RequestParam double lat, @RequestParam double lng,

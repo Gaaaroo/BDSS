@@ -1,6 +1,5 @@
 package com.swp.bdss.service;
 
-import com.swp.bdss.dto.request.UserCreationRequest;
 import com.swp.bdss.dto.request.UserUpdateRequest;
 import com.swp.bdss.dto.response.UserResponse;
 import com.swp.bdss.entities.Notification;
@@ -42,18 +41,6 @@ public class UserService {
         user.setStatus("ACTIVE");
         user.setActive(true);
         user.setImageLink(image_link);
-
-        User savedUser = userRepository.save(user);
-        return userMapper.toUserResponse(savedUser);
-    }
-
-    public UserResponse createUser(UserCreationRequest request) {
-        User user = userMapper.toUser(request);
-
-        user.setRole("MEMBER");
-        user.setStatus("PENDING");
-        user.setLat(null);
-        user.setLng(null);
 
         User savedUser = userRepository.save(user);
         return userMapper.toUserResponse(savedUser);
@@ -127,9 +114,6 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    public void deleteUser(String userId) {
-        userRepository.deleteById(Integer.parseInt(userId));
-    }
 
     public void banUser(int userId) {
         User user = userRepository.findById(userId)
