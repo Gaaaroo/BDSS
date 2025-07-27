@@ -11,6 +11,8 @@ export default function SeekerForm() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   // const [formErrors, setFormErrors] = useState({});
+  const [isDisabled, setIsDisabled] = useState(false);
+
   const handleCancel = () => {
     setShowModal(false);
     navigate('/');
@@ -69,6 +71,15 @@ export default function SeekerForm() {
     e.preventDefault();
     try {
       // await seekerFormSchema.validate(formData, { abortEarly: false });
+      if (isDisabled) {
+        return;
+      } else {
+        setIsDisabled(true);
+        // Re-enable after 5 seconds
+        setTimeout(() => {
+          setIsDisabled(false);
+        }, 5000);
+      }
 
       const res = await receiveForm({
         volume: formData.volume,
@@ -252,6 +263,7 @@ export default function SeekerForm() {
       </div>
       <div className="flex justify-center">
         <button
+          disabled={isDisabled}
           type="submit"
           className="px-5 py-1.5 text-xl text-white bg-red-700 font-bold border-2 border-red-700 hover:bg-red-500 hover:text-white transition"
         >

@@ -20,6 +20,8 @@ export default function DonorForm() {
   const { profile } = useApp(); //lấy profile từ context
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
+  const [isDisabled, setIsDisabled] = useState(false);
+
   const handleCancel = () => {
     setShowModal(false);
     navigate('/');
@@ -76,6 +78,16 @@ export default function DonorForm() {
   const handleDonorRegister = async (e) => {
     e.preventDefault();
     try {
+      if (isDisabled) {
+        return;
+      } else {
+        setIsDisabled(true);
+        // Re-enable after 5 seconds
+        setTimeout(() => {
+          setIsDisabled(false);
+        }, 5000);
+      }
+
       const res = await donorForm({ healthNotes: formData.disease });
       console.log('Detail donor form:', res);
       toast.success('Register successful!');
@@ -158,6 +170,7 @@ export default function DonorForm() {
       </div>
       <div className="flex justify-center">
         <button
+          disabled={isDisabled}
           type="submit"
           className="px-5 py-1.5 text-xl text-white bg-red-700 font-bold border-2 border-red-700 hover:bg-red-500 hover:text-white transition"
         >
