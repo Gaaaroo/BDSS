@@ -4,8 +4,12 @@ import BackHome from './BackHome';
 import { registerUser } from '../services/api/authService';
 import { registerSchema } from '../Validations/userValidation';
 import { toast } from 'react-toastify';
+import LoadingPage from './LoadingPage';
 export default function RegisterForm() {
   const navigate = useNavigate();
+  const [isDisabled, setIsDisabled] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -27,9 +31,19 @@ export default function RegisterForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     const { confirmPassword, ...dataToSend } = form;
 
     try {
+      if (isDisabled) {
+        return;
+      } else {
+        setIsDisabled(true);
+        // Re-enable after 5 seconds
+        setTimeout(() => {
+          setIsDisabled(false);
+        }, 5000);
+      }
       await registerSchema.validate(form, { abortEarly: false });
       setFormError({});
       await registerUser(dataToSend);
@@ -38,6 +52,7 @@ export default function RegisterForm() {
       localStorage.setItem('otpEmail', dataToSend.email);
       navigate('/verify-otp');
     } catch (error) {
+      setLoading(false);
       const errors = {};
       if (error.inner) {
         error.inner.forEach((e) => {
@@ -52,6 +67,10 @@ export default function RegisterForm() {
       }
     }
   };
+
+  if (loading) {
+    return <LoadingPage />;
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-red-100 via-white to-rose-100">
@@ -155,6 +174,7 @@ export default function RegisterForm() {
               </p>
             </div>
             <button
+              disabled={isDisabled}
               type="submit"
               className="w-full bg-gradient-to-r from-red-600 to-rose-600 text-white mt-2 py-3 rounded-lg font-semibold hover:from-red-700 hover:to-rose-700 transition shadow-lg cursor-pointer"
             >

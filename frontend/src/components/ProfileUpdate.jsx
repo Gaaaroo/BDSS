@@ -90,7 +90,7 @@ export default function ProfileUpdate({
               name="username"
               value={formData.username || ''}
               onChange={handleChange}
-              className="input"
+              className="border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-500 w-[350px]"
             />
             {formError.username && (
               <p className="text-red-500 text-sm">{formError.username}</p>
@@ -103,7 +103,7 @@ export default function ProfileUpdate({
               value={formData.password || ''}
               onChange={handleChange}
               type="password"
-              className="input"
+              className="border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-500 w-[350px]"
             />
             {formError.password && (
               <p className="text-red-500 text-sm">{formError.password}</p>
@@ -115,7 +115,7 @@ export default function ProfileUpdate({
               name="fullName"
               value={formData.fullName || ''}
               onChange={handleChange}
-              className="input"
+              className="border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-500 w-[350px]"
             />
             {formError.fullName && (
               <p className="text-red-500 text-sm">{formError.fullName}</p>
@@ -123,19 +123,33 @@ export default function ProfileUpdate({
           </div>
           <div>
             <label className="block font-medium mb-1">Gender</label>
-            <select
-              name="gender"
-              value={formData.gender || ''}
-              onChange={handleChange}
-              className="input"
-            >
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-            </select>
-            {formError.gender && (
-              <p className="text-red-500 text-sm">{formError.gender}</p>
-            )}
+            <div className="flex items-center gap-6">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="Male"
+                  checked={formData.gender === 'Male'}
+                  onChange={handleChange}
+                  className="w-4 h-4 text-purple-500 border-gray-300 focus:ring-purple-400"
+                />
+                <span className="text-gray-700">Male</span>
+              </label>
+
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="radio"
+                  name="gender"
+                  value="Female"
+                  checked={formData.gender === 'Female'}
+                  onChange={handleChange}
+                  className="w-4 h-4 text-purple-500 border-gray-300 focus:ring-purple-400"
+                />
+                <span className="text-gray-700">Female</span>
+              </label>
+            </div>
           </div>
+
           <div>
             <label className="block font-medium mb-1">Date of Birth</label>
             <input
@@ -143,7 +157,7 @@ export default function ProfileUpdate({
               type="date"
               value={formData.dob || ''}
               onChange={handleChange}
-              className="input"
+              className="border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-500 w-[350px]"
             />
             {formError.dob && (
               <p className="text-red-500 text-sm">{formError.dob}</p>
@@ -155,7 +169,7 @@ export default function ProfileUpdate({
               name="email"
               value={formData.email || ''}
               onChange={handleChange}
-              className="input"
+              className="border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-500 w-[350px]"
             />
             {formError.email && (
               <p className="text-red-500 text-sm">{formError.email}</p>
@@ -167,7 +181,7 @@ export default function ProfileUpdate({
               name="phone"
               value={formData.phone || ''}
               onChange={handleChange}
-              className="input"
+              className="border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-500 w-[350px]"
             />
             {formError.phone && (
               <p className="text-red-500 text-sm">{formError.phone}</p>
@@ -180,7 +194,7 @@ export default function ProfileUpdate({
               name="bloodType"
               value={formData.bloodType || ''}
               onChange={handleChange}
-              className="input"
+              className="border border-gray-300 px-4 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-gray-500 w-[350px]"
             >
               <option value="">Select blood type</option>
               <option value="A+">A+</option>
@@ -202,7 +216,7 @@ export default function ProfileUpdate({
               type="file"
               accept="image/*"
               onChange={(e) => handleImageUpload(e.target.files[0])}
-              className="block w-full text-sm text-gray-700"
+              className="block w-full text-sm text-gray-70 file:bg-gray-400 hover:file:bg-red-600 file:text-white file:p-1 file:cursor-pointer file:rounded-md"
             />
             {uploading && (
               <div className="text-sm text-gray-500">Loading images...</div>
