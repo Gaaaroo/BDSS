@@ -83,14 +83,31 @@ export default function SeekerForm() {
       toast.success('Register successful!');
       navigate('/');
     } catch (error) {
+      // Nếu là lỗi validation của Yup
       if (error.inner) {
         const errors = {};
         error.inner.forEach((e) => {
           errors[e.path] = e.message;
         });
         toast.error('Please fix the highlighted fields.');
-      } else {
-        toast.error('Register failed');
+        console.error('Validation errors:', errors);
+      }
+
+      // Nếu là lỗi từ API response
+      else if (error.response && error.response.data) {
+        const { code, message } = error.response.data;
+        if (message) {
+          toast.error(message);
+        } else {
+          toast.error('Register failed.');
+        }
+        console.error(`Error ${code}: ${message}`);
+      }
+
+      // Nếu là lỗi không rõ nguồn gốc
+      else {
+        toast.error('Register failed.');
+        console.error(error);
       }
     }
   };
