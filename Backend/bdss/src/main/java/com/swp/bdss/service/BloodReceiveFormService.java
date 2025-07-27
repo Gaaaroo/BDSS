@@ -122,17 +122,6 @@ public class BloodReceiveFormService {
         return bloodReceiveFormResponse;
     }
 
-    public Page<BloodReceiveFormResponse> getAllBloodReceiveForm(Pageable pageable) {
-        Page<BloodReceiveForm> page = bloodReceiveFormRepository.findAll(pageable);
-        return page.map(bloodReceiveForm -> {
-            BloodReceiveFormResponse response = bloodReceiveFormMapper.toBloodReceiveFormResponse(bloodReceiveForm);
-            User user = bloodReceiveForm.getUser();
-            UserResponse userResponse = userMapper.toUserResponse(user);
-            response.setUser(userResponse);
-            return response;
-        });
-    }
-
     public BloodReceiveFormResponse getBloodReceiveFormById(int id) {
         BloodReceiveForm bloodReceiveForm = bloodReceiveFormRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_EXISTED));
@@ -172,10 +161,6 @@ public class BloodReceiveFormService {
         return bloodReceiveFormResponse;
     }
 
-    public void deleteBloodReceiveForm(String id) {
-        bloodReceiveFormRepository.deleteById(Integer.parseInt(id));
-    }
-
     public Map<String, Long> countReceiveRequestsByStatus() {
         List<BloodReceiveForm> forms = bloodReceiveFormRepository.findAll();
         return forms.stream()
@@ -185,42 +170,37 @@ public class BloodReceiveFormService {
                 ));
     }
 
-    public Page<BloodReceiveFormResponse> getBloodReceiveFormByStatus(String status, Pageable pageable) {
-        Page<BloodReceiveForm> page = bloodReceiveFormRepository.findAllByStatus(status, pageable);
-        if (page.isEmpty()) {
-            throw new AppException(ErrorCode.NO_BLOOD_RECEIVE_FORM);
+    public Page<BloodReceiveFormResponse> getBloodReceiveForms(
+            String keyword,
+            String status,
+            String priority,
+            Pageable pageable
+    ) {
+        Page<BloodReceiveForm> page;
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            // Search by keyword, status, and priority
+            page = bloodReceiveFormRepository.searchByKeywordAndStatus(keyword, status, priority, pageable);
+            if (page.isEmpty()) {
+                throw new AppException(ErrorCode.NO_BLOOD_RECEIVE_FORM);
+            }
+        } else if (priority != null && !priority.trim().isEmpty()) {
+            // Filter by priority and optional status
+            page = bloodReceiveFormRepository.findAllByPriorityAndOptionalStatus(priority, status, pageable);
+            if (page.isEmpty()) {
+                throw new AppException(ErrorCode.NO_BLOOD_RECEIVE_FORM_WITH_PRIORITY);
+            }
+        } else if (status != null && !status.trim().isEmpty()) {
+            // Filter by status
+            page = bloodReceiveFormRepository.findAllByStatus(status, pageable);
+            if (page.isEmpty()) {
+                throw new AppException(ErrorCode.NO_BLOOD_RECEIVE_FORM);
+            }
+        } else {
+            // Get all
+            page = bloodReceiveFormRepository.findAll(pageable);
         }
-        return page.map(bloodReceiveForm -> {
-            BloodReceiveFormResponse response = bloodReceiveFormMapper.toBloodReceiveFormResponse(bloodReceiveForm);
-            User user = bloodReceiveForm.getUser();
-            UserResponse userResponse = userMapper.toUserResponse(user);
-            response.setUser(userResponse);
-            return response;
-        });
-    }
 
-    public Page<BloodReceiveFormResponse> searchBloodReceiveFormByKeyWord(String keyword, Pageable pageable, String status, String priority) {
-        Page<BloodReceiveForm> page = bloodReceiveFormRepository
-                .searchByKeywordAndStatus(keyword, status, priority, pageable);
-
-        if (page.isEmpty()) {
-            throw new AppException(ErrorCode.NO_BLOOD_RECEIVE_FORM);
-        }
-
-        return page.map(bloodReceiveForm -> {
-            BloodReceiveFormResponse response = bloodReceiveFormMapper.toBloodReceiveFormResponse(bloodReceiveForm);
-            User user = bloodReceiveForm.getUser();
-            UserResponse userResponse = userMapper.toUserResponse(user);
-            response.setUser(userResponse);
-            return response;
-        });
-    }
-
-    public Page<BloodReceiveFormResponse> getBloodReceiveFormByPriorityAndOptionalStatus(String priority, String status, Pageable pageable) {
-        Page<BloodReceiveForm> page = bloodReceiveFormRepository.findAllByPriorityAndOptionalStatus(priority, status, pageable);
-        if (page.isEmpty()) {
-            throw new AppException(ErrorCode.NO_BLOOD_RECEIVE_FORM_WITH_PRIORITY);
-        }
         return page.map(bloodReceiveForm -> {
             BloodReceiveFormResponse response = bloodReceiveFormMapper.toBloodReceiveFormResponse(bloodReceiveForm);
             User user = bloodReceiveForm.getUser();

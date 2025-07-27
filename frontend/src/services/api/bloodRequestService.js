@@ -1,58 +1,24 @@
 import axiosClient from './axiosClient';
 
-export const getAllBloodDonateRequests = async (page = 0, size = 10) => {
-  try {
-    const response = await axiosClient.get('/donate-form/all', {
-      params: {
-        page,
-        size,
-      },
-    });
-    return response;
-  } catch (error) {
-    console.error(
-      error?.response?.message || 'Error fetching all blood donate requests'
-    );
-    throw error;
-  }
-};
-
-export const getAllBloodReceiveRequests = async (page = 0, size = 10) => {
-  try {
-    const response = await axiosClient.get('/receive-form/all', {
-      params: {
-        page,
-        size,
-      },
-    });
-    return response;
-  } catch (error) {
-    console.error(
-      error?.response?.message || 'Error fetching all blood receive requests'
-    );
-    throw error;
-  }
-};
-
-//search blood donate requests
-export const searchBloodDonateRequests = async (
+export const fetchAllRequests = async (
   keyword,
+  status,
   page = 0,
-  size,
-  status
+  size = 10
 ) => {
   try {
-    const response = await axiosClient.get('/donate-form/search', {
-      params: { keyword, page, size, status },
+    const response = await axiosClient.get('/donate-form', {
+      params: { keyword, status, page, size },
     });
     return response;
   } catch (error) {
     console.error(
-      error?.response?.message || 'Error searching blood donate requests'
+      error?.response?.message || 'Error fetching blood donation requests'
     );
     throw error;
   }
 };
+
 
 //update step of donation process
 export const updateDonationProcessStep = async (stepData) => {
@@ -92,21 +58,6 @@ export const countDonateRequestByStatus = async () => {
   }
 };
 
-//get donate request by status
-export const getDonateRequestByStatus = async (status, page = 0, size) => {
-  try {
-    const response = await axiosClient.get('/donate-form/by-status', {
-      params: { status, page, size },
-    });
-    return response;
-  } catch (error) {
-    console.error(
-      error?.response?.message || 'Error fetching donate request by status'
-    );
-    throw error;
-  }
-};
-
 /////////////////////////////--RECEIVE--/////////////////////////////////////
 
 // Find suitabe blood by receiveId
@@ -132,6 +83,33 @@ export const getSuitableBloodByReceiveId = async (
   }
 };
 
+
+export const fetchAllSeekRequests = async (
+  keyword,
+  status,
+  priority,
+  page = 0,
+  size = 10
+) => {
+  try {
+    const response = await axiosClient.get('/receive-form', {
+      params: {
+        keyword,
+        status,
+        priority,
+        page,
+        size,
+      },
+    });
+    return response;
+  } catch (error) {
+    console.error(
+      error?.response?.message || 'Error fetching blood seek requests'
+    );
+    throw error;
+  }
+};
+
 // count receive request by status
 export const countReceiveRequestByStatus = async () => {
   try {
@@ -146,45 +124,7 @@ export const countReceiveRequestByStatus = async () => {
   }
 };
 
-//get donate request by status
-export const getReceiveRequestByStatus = async (
-  status,
-  page = 0,
-  size = 10
-) => {
-  try {
-    const response = await axiosClient.get('/receive-form/by-status', {
-      params: { status, page, size },
-    });
-    return response;
-  } catch (error) {
-    console.error(
-      error?.response?.message || 'Error fetching receive request by status'
-    );
-    throw error;
-  }
-};
 
-//search blood receive requests by
-export const searchBloodReceiveRequests = async (
-  keyword,
-  page = 0,
-  size = 10,
-  status,
-  priority
-) => {
-  try {
-    const response = await axiosClient.get('/receive-form/search', {
-      params: { keyword, page, size, status, priority },
-    });
-    return response;
-  } catch (error) {
-    console.error(
-      error?.response?.message || 'Error searching blood receive requests'
-    );
-    throw error;
-  }
-};
 
 //update step of receiving process
 export const updateReceivingProcessStep = async (stepData) => {
@@ -210,22 +150,3 @@ export const getReceiveRequestById = async (receiveId) => {
   return response;
 };
 
-//get receive request by priority
-export const getReceiveRequestByPriority = async (
-  priority,
-  status,
-  page = 0,
-  size = 10
-) => {
-  try {
-    const response = await axiosClient.get('/receive-form/by-priority', {
-      params: { priority, status, page, size },
-    });
-    return response;
-  } catch (error) {
-    console.error(
-      error?.response?.message || 'Error fetching receive request by priority'
-    );
-    throw error;
-  }
-};

@@ -1,9 +1,7 @@
 import React from 'react';
 import { useEffect, useState, useCallback } from 'react';
 import {
-  getAllBloodDonateRequests,
-  searchBloodDonateRequests,
-  getDonateRequestByStatus,
+  fetchAllRequests,
 } from '../services/api/bloodRequestService';
 import dayjs from 'dayjs';
 import ProfileModal from './ProfileModal';
@@ -41,24 +39,19 @@ export default function BloodRequestTable({
   const fetchRequests = useCallback(async () => {
     try {
       console.log('Search keyword:', keyword);
-      let data;
-      if (keyword.trim() === '') {
-        if (selectedStatus) {
-          data = await getDonateRequestByStatus(selectedStatus, page, size);
-        } else {
-          data = await getAllBloodDonateRequests(page, size);
-        }
-        console.log('Fetching all posts:', data);
-      } else {
-        data = await searchBloodDonateRequests(keyword.trim(), page, size, selectedStatus);
-      }
+      const data = await fetchAllRequests(
+        keyword.trim(),
+        selectedStatus,
+        page,
+        size
+      );
       // setDonateRequests(
       //   data.map((request) => ({
       //     ...request,
       //     id: request.donateId,
       //   }))
       // );
-
+      console.log({ keyword, selectedStatus, page, size });
       setDonateRequests(
         (data.content || []).map((request) => ({
           ...request,
@@ -73,11 +66,16 @@ export default function BloodRequestTable({
     }
   }, [keyword, page, size, selectedStatus]);
 
+  useEffect(() => {
+    setPage(0);
+    setInputPage(1);
+  }, [keyword, selectedStatus]);
+
   // Fetch all requests on initial load
   useEffect(() => {
     const timeout = setTimeout(() => {
       fetchRequests();
-    }, 0); // Debounce search input by 400ms
+    }, 400); // Debounce search input by 400ms
     return () => clearTimeout(timeout);
   }, [selectedStatus, keyword, triggerReloadCount, page]);
 
@@ -152,7 +150,7 @@ export default function BloodRequestTable({
                     className="even:bg-red-50 odd:bg-white"
                   >
                     <td className="py-2 text-center">
-                      {page * size + idx + 1}
+                      {idx + 1}
                     </td>
                     <td className="py-2 text-center">
                       {request.userResponse.fullName}

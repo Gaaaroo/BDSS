@@ -1,12 +1,7 @@
 import React from 'react';
 import { useState, useEffect, useCallback } from 'react';
 import dayjs from 'dayjs';
-import {
-  getAllBloodReceiveRequests,
-  searchBloodReceiveRequests,
-  getReceiveRequestByPriority,
-  getReceiveRequestByStatus,
-} from '../services/api/bloodRequestService';
+import { fetchAllSeekRequests } from '../services/api/bloodRequestService';
 import ProfileModal2 from './ProfileModal2';
 import ReceiveRequestProcessModal from './ReceiveRequestProcessModal';
 import Pagination from './Pagination';
@@ -46,19 +41,14 @@ export default function BloodReceiveRequestTable({
   const fetchRequests = useCallback(async () => {
     try {
       console.log('Search keyword:', keyword);
-      let data = await searchBloodReceiveRequests(
+      let data = await fetchAllSeekRequests(
         keyword.trim(),
+        selectedStatus,
+        showUrgent ? 'Urgent' : undefined,
         page,
-        size,
-        selectedStatus ? selectedStatus : undefined,
-        showUrgent ? 'Urgent' : undefined
+        size
       );
-      // setReceiveRequests(
-      //   data.map((request) => ({
-      //     ...request,
-      //     id: request.receiveId,
-      //   }))
-      // );
+      console.log('Fetched data:', keyword);
       setReceiveRequests(
         (data.content || []).map((request) => ({
           ...request,
@@ -74,8 +64,9 @@ export default function BloodReceiveRequestTable({
   }, [keyword, page, size, showUrgent, selectedStatus]);
 
   useEffect(() => {
-    fetchRequests();
-  }, [fetchRequests, triggerReloadCount]);
+    setPage(0);
+    setInputPage(1);
+  }, [keyword, selectedStatus, showUrgent]);
 
   const filteredRequests = receiveRequests;
 
@@ -84,7 +75,7 @@ export default function BloodReceiveRequestTable({
       fetchRequests();
     }, 400);
     return () => clearTimeout(timeout);
-  }, [selectedStatus, keyword, triggerReloadCount, page]);
+  }, [selectedStatus, keyword, triggerReloadCount, page, showUrgent]);
 
   // Modal handler for long hospital address
   const handleShowModal = (content) => {

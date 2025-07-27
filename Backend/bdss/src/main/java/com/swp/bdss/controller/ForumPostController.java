@@ -29,24 +29,6 @@ public class ForumPostController {
                 .build();
     }
 
-    @DeleteMapping("/my-posts")
-    ApiResponse<Void> deleteOwnPost(@RequestParam Long postId) {
-        forumPostService.deleteOwnPost(postId);
-        return ApiResponse.<Void>builder()
-                .code(1000)
-                .message("delete forum post successfully")
-                .build();
-    }
-
-    @DeleteMapping("/admin/{post_id}")
-    ApiResponse<Void> deletePostByAdmin(@PathVariable Long postId) {
-        forumPostService.deletePostByAdmin(postId);
-        return ApiResponse.<Void>builder()
-                .code(1000)
-                .message("delete forum post by admin successfully")
-                .build();
-    }
-
     @GetMapping
     ApiResponse<List<ForumPostResponse>> getAllForumPosts() {
         return ApiResponse.<List<ForumPostResponse>>builder()
@@ -56,14 +38,34 @@ public class ForumPostController {
                 .build();
     }
 
-    @GetMapping("/{post_id}")
-    ApiResponse<ForumPostResponse> getForumPostById(@PathVariable Long post_id) {
+    //update forum post
+    @PutMapping("/my-posts/update")
+    ApiResponse<ForumPostResponse> updateForumPost(@RequestParam Long postId, @RequestBody ForumPostCreationRequest request) {
         return ApiResponse.<ForumPostResponse>builder()
                 .code(1000)
-                .data(forumPostService.getForumPostById(post_id))
-                .message("get forum post by id successfully")
+                .data(forumPostService.updateForumPost(postId, request))
+                .message("update forum post successfully")
                 .build();
     }
+
+    @DeleteMapping("/my-posts")
+    ApiResponse<Void> deleteOwnPost(@RequestParam Long postId) {
+        forumPostService.deleteOwnPost(postId);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .message("delete forum post successfully")
+                .build();
+    }
+
+    @DeleteMapping("/admin/delete")
+    ApiResponse<Void> deletePostByAdmin(@RequestParam Long postId) {
+        forumPostService.deletePostByAdmin(postId);
+        return ApiResponse.<Void>builder()
+                .code(1000)
+                .message("delete forum post by admin successfully")
+                .build();
+    }
+
 
     //search forum posts by title or content
     // //forum/search?keyword=some_keyword
@@ -87,15 +89,6 @@ public class ForumPostController {
                 .build();
     }
 
-    //update forum post
-    @PutMapping("/my-posts/update")
-    ApiResponse<ForumPostResponse> updateForumPost(@RequestParam Long postId, @RequestBody ForumPostCreationRequest request) {
-        return ApiResponse.<ForumPostResponse>builder()
-                .code(1000)
-                .data(forumPostService.updateForumPost(postId, request))
-                .message("update forum post successfully")
-                .build();
-    }
 
     @GetMapping("/count-all")
     ApiResponse<Long> countAllForumPosts() {

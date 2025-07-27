@@ -51,8 +51,8 @@ public class BloodReceiveForm {
     @Column(name = "requestDate", nullable = false)
     LocalDateTime requestDate;
 
-//    @Column(name = "requiredDate", nullable = false)
-//    LocalDate requiredDate;
+    @Column(name = "requiredDate", nullable = true)
+    LocalDateTime requiredDate;
 
     @OneToMany(mappedBy = "bloodReceiveForm", cascade = CascadeType.ALL, orphanRemoval = true)
     List<ReceivingProcess> steps = new ArrayList<>();

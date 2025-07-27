@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import dayjs from 'dayjs';
 import { BiTrash } from 'react-icons/bi';
 import { jwtDecode } from 'jwt-decode';
+import { useApp } from '../Contexts/AppContext';
 
 export default function CommentSection({
   comments,
@@ -10,6 +11,7 @@ export default function CommentSection({
 }) {
   const [comment, setComment] = useState('');
   const [visibleCount, setVisibleCount] = useState(5);
+  const { role } = useApp();
 
   let currentUserId = null;
   const token = localStorage.getItem('authToken');
@@ -39,7 +41,8 @@ export default function CommentSection({
 
   // Hiển thị 5 comment mới nhất, nhấn "Show more" sẽ hiện thêm 5
   const totalComments = comments.length;
-  const startIdx = totalComments > visibleCount ? totalComments - visibleCount : 0;
+  const startIdx =
+    totalComments > visibleCount ? totalComments - visibleCount : 0;
   const visibleComments = comments.slice(startIdx);
 
   return (
@@ -78,9 +81,10 @@ export default function CommentSection({
             </span>
             <div className="flex items-center ml-2 shrink-0">
               <span className="text-xs text-[#C96F6F] w-[101px]">
-                {dayjs(c.created_at).format('HH:mm - DD/MM/YYYY')}
+                {dayjs(c.createdAt).format('HH:mm - DD/MM/YYYY')}
               </span>
-              {String(c.userId) === String(currentUserId) ? (
+              {String(c.userId) === String(currentUserId) ||
+              role === 'STAFF' ? (
                 <button
                   className="ml-2 text-[#F76C6C] hover:text-red-600 transition"
                   title="Delete"

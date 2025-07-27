@@ -18,7 +18,11 @@ public interface BloodReceiveFormRepository extends JpaRepository<BloodReceiveFo
     List<BloodReceiveForm> findAllByUserUserId(int userId);
 
     @Query("SELECT f FROM BloodReceiveForm f WHERE " +
-            "(:keyword IS NULL OR f.user.fullName LIKE %:keyword% OR f.user.phone LIKE %:keyword% OR f.user.bloodType LIKE %:keyword%) " +
+//            "(:keyword IS NULL OR f.user.fullName LIKE %:keyword% OR f.user.phone LIKE %:keyword% OR f.user.bloodType LIKE %:keyword%) " +
+            "(LOWER(f.user.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(f.user.phone) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(f.bloodType) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(f.componentType) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
             "AND (:status IS NULL OR f.status = :status) " +
             "AND (:priority IS NULL OR f.priority = :priority)")
     Page<BloodReceiveForm> searchByKeywordAndStatus(

@@ -67,28 +67,33 @@ public class ForumPostService {
         ForumPost forumPost = forumPostRepository.findById(post_id)
                 .orElseThrow(() -> new AppException(ErrorCode.FORUM_POST_NOT_EXISTED));
 
+        var role = forumPost.getUser().getRole();
+        if(role.equalsIgnoreCase("STAFF")){
+            throw new AppException(ErrorCode.FORUM_POST_BY_STAFF);
+        }
+
         forumPostRepository.deleteById(post_id);
         log.info("forum post deleted: {}", forumPost.getTitle());
     }
 
-    //@PreAuthorize("hasRole('USER' , 'ADMIN')")
+
     //get all forum posts
     public List<ForumPostResponse> getAllForumPosts() {
         List<ForumPostResponse> list = forumPostRepository.findAll().stream()
-                .map(forumPostMapper::toForumPostResponse)
+                .map(forumPost -> {
+                    ForumPostResponse response = forumPostMapper.toForumPostResponse(forumPost);
+                    // Sắp xếp comments mới nhất lên đầu
+                    if (response.getComments() != null) {
+                        response.getComments().sort(
+                                (a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt())
+                        );
+                    }
+                    return response;
+                })
                 .toList();
         return list;
     }
 
-    //@PreAuthorize("hasRole('USER' , 'ADMIN')")
-    //get forum post by id
-    public ForumPostResponse getForumPostById(Long post_id) {
-        ForumPost forumPost = forumPostRepository.findById(post_id)
-                .orElseThrow(() -> new AppException(ErrorCode.FORUM_POST_NOT_EXISTED));
-        return forumPostMapper.toForumPostResponse(forumPost);
-    }
-
-    //@PreAuthorize("hasRole('USER' , 'ADMIN')")
     //search forum post by title or content
     public List<ForumPostResponse> searchForumPost(String search) {
         List<ForumPostResponse> list = forumPostRepository.findByTitleContainingOrContentContaining(search, search).stream()
@@ -107,7 +112,16 @@ public class ForumPostService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         List<ForumPostResponse> list = forumPostRepository.findByUser(user).stream()
-                .map(forumPostMapper::toForumPostResponse)
+                .map(forumPost -> {
+                    ForumPostResponse response = forumPostMapper.toForumPostResponse(forumPost);
+                    // Sắp xếp comments mới nhất lên đầu
+                    if (response.getComments() != null) {
+                        response.getComments().sort(
+                                (a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt())
+                        );
+                    }
+                    return response;
+                })
                 .toList();
         return list;
     }

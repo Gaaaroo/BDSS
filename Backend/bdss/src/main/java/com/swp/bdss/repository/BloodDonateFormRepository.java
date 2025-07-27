@@ -18,7 +18,8 @@ public interface BloodDonateFormRepository extends JpaRepository<BloodDonateForm
 
     @Query("SELECT d FROM BloodDonateForm d WHERE " +
             "(LOWER(d.user.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
-            "OR LOWER(d.user.phone) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
+            "OR LOWER(d.user.phone) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "OR LOWER(d.user.bloodType) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
             "AND (:status IS NULL OR d.status = :status)")
     Page<BloodDonateForm> searchByKeywordAndStatus(@Param("keyword") String keyword, @Param("status") String status, Pageable pageable);
 

@@ -39,38 +39,45 @@ export const updatePost = async (postId, postData) => {
   return response;
 };
 
+export const deletePostByAdmin = async (postId) => {
+  try {
+    const response = await axiosClient.delete('/forum/admin/delete', {
+      params: { postId },
+      withCredentials: true,
+    });
+    return response;
+  } catch (error) {
+    console.error(error?.response?.message || 'Error deleting post by admin');
+    throw error;
+  }
+};
+
 export const countAllUsers = async () => {
-  try{
+  try {
     const response = await axiosClient.get('/users/count-all');
     return response;
-  }catch (error) {
-    console.error(
-      error?.response?.message || 'Error counting all users'
-    );
+  } catch (error) {
+    console.error(error?.response?.message || 'Error counting all users');
     throw error;
   }
-}
+};
 
 export const countAllComments = async () => {
-  try{
+  try {
     const response = await axiosClient.get('/comment/count-all');
     return response;
-  }catch(error){
-    console.error(
-      error?.response?.message || 'Error counting all comments'
-    );
+  } catch (error) {
+    console.error(error?.response?.message || 'Error counting all comments');
     throw error;
   }
-}
+};
 
 export const countAllPosts = async () => {
-  try{
+  try {
     const response = await axiosClient.get('/forum/count-all');
     return response;
-  }catch(error){
-    console.error(
-      error?.response?.message || 'Error counting all posts'
-    );
+  } catch (error) {
+    console.error(error?.response?.message || 'Error counting all posts');
     throw error;
   }
-}
+};
