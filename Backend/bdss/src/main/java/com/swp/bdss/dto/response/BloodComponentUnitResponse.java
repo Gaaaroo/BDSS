@@ -20,5 +20,6 @@ public class BloodComponentUnitResponse implements BloodResponse{
     LocalDateTime createdDate;
     LocalDateTime expiryDate;
     String note;
-    UserResponse userResponse;
+    UserResponse userResponse; // người hien mau
+    UserResponse receiveUser; // nguoi duoc nhan mau
 }
