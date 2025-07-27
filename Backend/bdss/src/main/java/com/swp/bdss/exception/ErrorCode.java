@@ -43,6 +43,9 @@ public enum ErrorCode {
     BLOOD_UNIT_ALREADY_USED_OR_INVALID(1033, "Blood unit already used or invalid", HttpStatus.BAD_REQUEST),
     BLOOD_COMPONENT_ALREADY_USED_OR_INVALID(1033, "Blood component unit already used or invalid", HttpStatus.BAD_REQUEST),
     NOTIFICATION_NOT_FOUND(1034, "Notification not exist", HttpStatus.BAD_REQUEST),
+    FORUM_POST_BY_STAFF(1035, "You cannot delete forum post that created by another staff", HttpStatus.BAD_REQUEST),
+    COMMENT_POST_BY_STAFF(1036, "You cannot delete a comment that created by another staff", HttpStatus.BAD_REQUEST),
+
     ;
 
     private final int code;

@@ -65,7 +65,7 @@ public class CommentService {
     //delete comment by id
 
     //@PreAuthorize("hasRole('USER')")
-    public void deleteOwnComment(Long comment_id) {
+    public void deleteOwnComment1(Long comment_id) {
         Comment comment = commentRepository.findById(comment_id)
                 .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
 
@@ -77,6 +77,33 @@ public class CommentService {
         }
 
         commentRepository.deleteById(comment_id);
+    }
+
+    public void deleteOwnComment(Long commentId) {
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_EXISTED));
+
+        int userId = Integer.parseInt(SecurityContextHolder.getContext().getAuthentication().getName());
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        boolean isStaff = false;
+        if(user.getRole().equalsIgnoreCase("STAFF")) {
+            isStaff = true;
+        }
+        // Only owner or admin can delete
+        if (comment.getUser().getUserId() != userId && !isStaff) {
+            throw new AppException(ErrorCode.COMMENT_CANNOT_DELETE);
+        }
+
+        // If comment is by staff, only admin can delete
+        String role = comment.getUser().getRole();
+        if ("STAFF".equalsIgnoreCase(role)) {
+            throw new AppException(ErrorCode.COMMENT_POST_BY_STAFF);
+        }
+
+        commentRepository.deleteById(commentId);
+        log.info("comment deleted: {}", comment.getContent());
     }
 
     //@PreAuthorize("hasRole('ADMIN')")

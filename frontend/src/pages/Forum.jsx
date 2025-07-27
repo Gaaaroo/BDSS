@@ -9,6 +9,7 @@ import {
   searchForumPosts,
 } from '../services/api/forumService';
 import { createComment, deleteComment } from '../services/api/commentService';
+import { deletePostByAdmin } from '../services/api/forumService';
 import { useLocation } from 'react-router-dom';
 import Footer from '../components/Footer';
 import ErrorModal from '../components/ErrorModal';
@@ -19,6 +20,8 @@ import { commentSchema, postSchema } from '../Validations/postValidation';
 import SearchForumPost from '../components/SearchForumPost';
 import { PencilSquareIcon } from '@heroicons/react/24/solid';
 import MiniForumStat from '../components/MiniForumStat';
+import { BiTrash } from 'react-icons/bi';
+import { useApp } from '../Contexts/AppContext';
 
 function Forum() {
   const [open, setOpen] = useState(false);
@@ -36,7 +39,7 @@ function Forum() {
   const [statReload, setStatReload] = useState(0);
   const [isCommenting, setIsCommenting] = useState(false);
   const location = useLocation();
-
+  const { role } = useApp();
   // Animation: track which posts are visible
   const [visiblePosts, setVisiblePosts] = useState([]);
   // Số lượng post hiển thị (infinite scroll)
@@ -44,13 +47,15 @@ function Forum() {
 
   const handleSearch = () => setKeyword(searchKey);
 
-  // Hiệu ứng slide-in cho từng post
-  // Thêm class animate-slide-in-up vào file src/index.css hoặc App.css:
-  // @keyframes slide-in-up {
-  //   from { opacity: 0; transform: translateY(40px) scale(0.98);}
-  //   to { opacity: 1; transform: translateY(0) scale(1);}
-  // }
-  // .animate-slide-in-up { animation: slide-in-up 0.7s cubic-bezier(0.4,0,0.2,1); }
+  const handleDeletePostAdmin = async (postId) => {
+    try {
+      await deletePostByAdmin(postId);
+      setPosts((prev) => prev.filter((post) => post.id !== postId));
+      toast.success('Post deleted successfully!');
+    } catch (error) {
+      toast.error(error?.response?.data?.message || 'Failed to delete post!');
+    }
+  };
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -66,6 +71,8 @@ function Forum() {
             comments: post.comments || [],
           }))
         );
+        console.log('My posts:', data);
+
         setError('');
         setVisiblePosts([]);
         setVisibleCount(2);
@@ -314,8 +321,7 @@ function Forum() {
           </div>
         </div>
       ) : (
-        <div
-          className="max-w-full">
+        <div className="max-w-full">
           {/* SỬA: chỉ render posts.slice(0, visibleCount) */}
           {posts.slice(0, visibleCount).map((post, index) => (
             <div
@@ -352,17 +358,25 @@ function Forum() {
                       {post.username}
                     </span>
                     <span className="ml-3 left text-xs text-[#C96F6F]">
-                      {post.updated_at &&
-                      post.updated_at !== post.created_at ? (
+                      {post.updatedAt && post.updatedAt !== post.createdAt ? (
                         <>
                           Updated:{' '}
-                          {dayjs(post.updated_at).format('HH:mm - DD/MM/YYYY')}
+                          {dayjs(post.updatedAt).format('HH:mm - DD/MM/YYYY')}
                         </>
                       ) : (
-                        dayjs(post.created_at).format('HH:mm - DD/MM/YYYY')
+                        dayjs(post.createdAt).format('HH:mm - DD/MM/YYYY')
                       )}
                     </span>
                   </div>
+                  {role === 'STAFF' && (
+                    <button
+                      className="ml-auto text-[#FFA1A1] hover:text-[#F76C6C] text-xl"
+                      title="Delete"
+                      onClick={() => handleDeletePostAdmin(post.id)}
+                    >
+                      <BiTrash />
+                    </button>
+                  )}
                 </div>
 
                 {/* Title */}

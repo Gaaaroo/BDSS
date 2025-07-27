@@ -253,16 +253,16 @@ function MyPosts() {
                           {post.username}
                         </span>
                         <span className="ml-3 left text-xs text-[#C96F6F]">
-                          {post.updated_at &&
-                          post.updated_at !== post.created_at ? (
+                          {post.updatedAt &&
+                          post.updatedAt !== post.createdAt ? (
                             <>
                               Updated:{' '}
-                              {dayjs(post.updated_at).format(
+                              {dayjs(post.updatedAt).format(
                                 'HH:mm - DD/MM/YYYY'
                               )}
                             </>
                           ) : (
-                            dayjs(post.created_at).format('HH:mm - DD/MM/YYYY')
+                            dayjs(post.createdAt).format('HH:mm - DD/MM/YYYY')
                           )}
                         </span>
                       </div>
@@ -293,7 +293,7 @@ function MyPosts() {
                     {/* Comment section */}
                     <div className="border-t border-[#FFA1A1] pt-4 mt-4">
                       <CommentSection
-                        comments={post.comments}
+                        comments={post.comments.reverse()}
                         handleDeleteComment={(commentId) =>
                           handleDeleteComment(post.id, commentId)
                         }
