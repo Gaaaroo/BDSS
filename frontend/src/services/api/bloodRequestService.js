@@ -130,6 +130,8 @@ export const fetchAllSeekRequests = async (
   keyword,
   status,
   priority,
+  sortField,
+  sortDir,
   page = 0,
   size = 10
 ) => {
@@ -139,6 +141,8 @@ export const fetchAllSeekRequests = async (
         keyword,
         status,
         priority,
+        sortField,
+        sortDir,
         page,
         size,
       },

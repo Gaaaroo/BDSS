@@ -160,7 +160,7 @@ public class BloodDonateFormService {
         if(keyword != null && !keyword.trim().isEmpty()) {
             page = bloodDonateFormRepository.searchByKeywordAndStatus(keyword, status, pageable);
         } else if(status != null && !status.trim().isEmpty()) {
-            page = bloodDonateFormRepository.findAllByStatus(status, pageable);
+            page = bloodDonateFormRepository.findAllByStatusOrderByDonateIdDesc(status, pageable);
         }else {
             page = bloodDonateFormRepository.findAll(pageable);
         }
