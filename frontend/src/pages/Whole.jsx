@@ -80,6 +80,10 @@ export default function Whole() {
   }, []);
 
   useEffect(() => {
+    setPage(0);
+  }, [searchTerm, statusFilter, bloodType]);
+
+  useEffect(() => {
     console.log('Calling API with:', {
       bloodType,
       statuses: statusFilter,

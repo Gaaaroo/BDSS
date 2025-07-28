@@ -54,4 +54,7 @@ public interface BloodReceiveFormRepository extends JpaRepository<BloodReceiveFo
 
     @Query("SELECT b FROM BloodReceiveForm b")
     Page<BloodReceiveForm> findAll(Pageable pageable);
+
+    List<BloodReceiveForm> findAllByRequiredDateBeforeAndStatusNotIgnoreCase(LocalDateTime currentDateTime, String status);
+
 }
