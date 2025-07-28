@@ -26,7 +26,7 @@ export default function ProfileView({ userData, onEditClick }) {
               }}
             />
             <h2 className="text-4xl font-bold text-red-700">
-              {formatField(userData?.username)}
+              {formatField(userData?.fullName)}
             </h2>
           </div>
 

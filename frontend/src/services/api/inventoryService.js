@@ -6,6 +6,7 @@ export const countBloodUnit = async (type) => {
     const res = await axiosClient.get('/bloodUnit/countBloodUnit', {
       params: { bloodType: type },
     });
+    console.log('count blood unit:', res, type);
     return res;
   } catch (error) {
     console.error(`Error fetching ${type}:`, error);
@@ -29,7 +30,7 @@ export const countRequest = async (type, componentType) => {
         componentType,
       },
     });
-    console.log('count request:', res);
+    //console.log('count request:', res);
     return res;
   } catch (error) {
     console.error('Failed to count request:', error);

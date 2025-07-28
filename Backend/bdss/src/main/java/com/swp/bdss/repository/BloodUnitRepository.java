@@ -26,6 +26,9 @@ public interface BloodUnitRepository extends JpaRepository<BloodUnit, Integer> {
 
     long countByBloodType(String bloodType);
 
+    @Query("SELECT COUNT(b) FROM BloodUnit b WHERE b.bloodType = :bloodType AND b.status = 'Stored'")
+    long countStoredByBloodType(@Param("bloodType") String bloodType);
+
     @Query("SELECT b.bloodType, COUNT(b) FROM BloodUnit b WHERE b.status = :status GROUP BY b.bloodType")
     List<Object[]> countByStatusGroupedByBloodType(@Param("status") String status);
 
