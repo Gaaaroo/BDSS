@@ -104,7 +104,7 @@ export default function MapFinder({ onClose, initialLocation }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-brightness-50">
-      <div className="bg-white rounded-lg shadow-xl w-[75vw] max-w-8xl relative">
+      <div className="bg-white rounded-lg shadow-xl w-[82vw] max-w-8xl relative">
         {/* Tìm kiếm + Bán kính + Nút Search */}
         <div className="p-4 border-b border-gray-300 flex gap-4 items-center">
           <div className="flex-1">

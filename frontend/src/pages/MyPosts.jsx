@@ -33,6 +33,8 @@ function MyPosts() {
   });
   const [deleteType, setDeleteType] = useState(''); // 'post' hoặc 'comment'
 
+  const { profile } = useApp();
+
   // Animation: track which posts are visible (giống Forum)
   const [visiblePosts, setVisiblePosts] = useState([]);
   const [visibleCount, setVisibleCount] = useState(2);
@@ -98,6 +100,10 @@ function MyPosts() {
 
   // Handle edit post
   const handleEditPost = (postId) => {
+    if (profile.status === 'BANNED') {
+      toast.error('You are banned from editing posts.');
+      return;
+    }
     const post = posts.find((p) => p.id === postId);
     setEditingPost(post);
     setEditData({ title: post.title, content: post.content });

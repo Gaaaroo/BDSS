@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +40,7 @@ public class BloodReceiveFormService {
     BloodUnitMapper bloodUnitMapper;
     BloodComponentUnitMapper bloodComponentUnitMapper;
     NotificationRepository notificationRepository;
+    EmailService emailService;
 
     private static final List<String> BLOOD_TYPES = Arrays.asList("A+", "B+", "O+", "AB+", "A-", "B-", "O-", "AB-");
     private static final List<String> COMPONENT_TYPES = Arrays.asList("Whole", "Plasma", "Platelets", "RBC", "WBC");
@@ -50,12 +52,13 @@ public class BloodReceiveFormService {
         String bloodType = bloodReceiveForm.getBloodType();
         String componentType = bloodReceiveForm.getComponentType();
         Pageable pageable = PageRequest.of(page, size);
+        int volume = bloodReceiveForm.getVolume();
 
         if (componentType.equalsIgnoreCase("Whole")) {
             Page<BloodUnit> bloodUnits = bloodUnitRepository.findAllSuitableBloodUnitByType(bloodType, pageable);
 
             List<BloodResponse> content = bloodUnits.getContent().stream()
-                    .filter(unit -> unit.getStatus().equalsIgnoreCase("Stored"))
+                    .filter(unit -> unit.getStatus().equalsIgnoreCase("Stored") && unit.getVolume() == volume)
                     .map(unit -> {
                         BloodUnitResponse response = bloodUnitMapper.toBloodUnitResponse(unit);
                         response.setUserResponse(userMapper.toUserResponse(unit.getBloodDonateForm().getUser()));
@@ -70,7 +73,8 @@ public class BloodReceiveFormService {
 
             List<BloodResponse> content = componentUnits.getContent().stream()
                     .filter(unit -> unit.getStatus().equalsIgnoreCase("Stored") &&
-                            unit.getComponentType().equalsIgnoreCase(componentType))
+                            unit.getComponentType().equalsIgnoreCase(componentType) &&
+                            unit.getVolume() == volume)
                     .map(unit -> {
                         BloodComponentUnitResponse response = bloodComponentUnitMapper.toBloodComponentUnitResponse(unit);
                         response.setUserResponse(userMapper.toUserResponse(unit.getBloodUnit().getBloodDonateForm().getUser()));
@@ -125,15 +129,70 @@ public class BloodReceiveFormService {
     public BloodReceiveFormResponse getBloodReceiveFormById(int id) {
         BloodReceiveForm bloodReceiveForm = bloodReceiveFormRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_EXISTED));
-        BloodReceiveFormResponse bloodReceiveFormResponse = bloodReceiveFormMapper
-                .toBloodReceiveFormResponse(bloodReceiveForm);
-        bloodReceiveFormResponse.setReceiveId(bloodReceiveForm.getReceiveId());
+
+        BloodReceiveFormResponse response = bloodReceiveFormMapper.toBloodReceiveFormResponse(bloodReceiveForm);
+        response.setReceiveId(bloodReceiveForm.getReceiveId());
+
         User user = bloodReceiveForm.getUser();
         UserResponse userResponse = userMapper.toUserResponse(user);
-        bloodReceiveFormResponse.setUser(userResponse);
+        response.setUser(userResponse);
 
-        return bloodReceiveFormResponse;
+        List<BloodResponse> bloodResponses = new ArrayList<>();
+
+        // Lấy danh sách BloodUnit
+        List<BloodUnit> bloodUnits = bloodUnitRepository.findByReceiveForm_ReceiveId(id);
+        if (bloodUnits != null && !bloodUnits.isEmpty()) {
+            List<BloodUnitResponse> unitResponses = bloodUnits.stream()
+                    .map(bloodUnit -> {
+                        BloodUnitResponse unitResp = bloodUnitMapper.toBloodUnitResponse(bloodUnit);
+
+                        if (bloodUnit.getBloodDonateForm() != null) {
+                            unitResp.setUserResponse(
+                                    userMapper.toUserResponse(bloodUnit.getBloodDonateForm().getUser())
+                            );
+                        }
+
+                        unitResp.setReceiveUser(null);
+                        return unitResp;
+                    })
+                    .collect(Collectors.toList());
+
+            bloodResponses.addAll(unitResponses);
+        }
+
+        // Lấy danh sách BloodComponentUnit
+        List<BloodComponentUnit> componentUnits = bloodComponentUnitRepository.findByBloodReceiveForm_ReceiveId(id);
+        if (componentUnits != null && !componentUnits.isEmpty()) {
+            List<BloodComponentUnitResponse> componentResponses = componentUnits.stream()
+                    .map(unit -> {
+                        BloodComponentUnitResponse componentResp = bloodComponentUnitMapper.toBloodComponentUnitResponse(unit);
+
+                        if (unit.getBloodUnit().getBloodDonateForm() != null) {
+                            componentResp.setUserResponse(
+                                    userMapper.toUserResponse(unit.getBloodUnit().getBloodDonateForm().getUser())
+                            );
+                        }
+
+                        componentResp.setReceiveUser(null);
+
+                        return componentResp;
+                    })
+                    .collect(Collectors.toList());
+
+            bloodResponses.addAll(componentResponses);
+        }
+
+        // Gán vào response
+        if (bloodResponses.isEmpty()) {
+            response.setBloodReceived(null);
+        } else {
+            response.setBloodReceived(bloodResponses);
+        }
+
+        return response;
     }
+
+
 
     public List<BloodReceiveFormResponse> getMyBloodReceiveForm() {
         var context = SecurityContextHolder.getContext();
@@ -299,38 +358,82 @@ public class BloodReceiveFormService {
         return bloodReceiveFormRepository.countByRequestDateBetween(start, end);
     }
 
-    public Map<String, Long> getRequestStatistics(String mode){
-        LocalDate today = LocalDate.now();
+//    public Map<String, Long> getRequestStatistics(String mode){
+//        LocalDate today = LocalDate.now();
+//
+//        List<BloodReceiveForm> requests = bloodReceiveFormRepository.findAll();
+//
+//        switch (mode.toLowerCase()){
+//            case "day":
+//                return requests.stream()
+//                        .filter(r -> r.getRequestDate().toLocalDate()
+//                                .isAfter(today.minusDays(7)))
+//                        .collect(Collectors.groupingBy(
+//                                r -> r.getRequestDate().getDayOfWeek().toString(),
+//                                Collectors.counting()
+//                        ));
+//            case "month":
+//                return requests.stream()
+//                        .filter(r -> r.getRequestDate().getMonth() == today.getMonth()
+//                                && r.getRequestDate().getYear() == today.getYear())
+//                        .collect(Collectors.groupingBy(
+//                                r -> String.valueOf(r.getRequestDate().getDayOfMonth()),
+//                                Collectors.counting()
+//                        ));
+//            case "year":
+//                return requests.stream()
+//                        .filter(r -> r.getRequestDate().getYear() == today.getYear())
+//                        .collect(Collectors.groupingBy(
+//                                r -> r.getRequestDate().getMonth().toString(),
+//                                Collectors.counting()
+//                        ));
+//            default:
+//                throw new AppException(ErrorCode.INVALID_MODE);
+//        }
+//    }
 
+    public Map<String, Long> getRequestStatistics(String mode) {
+        LocalDate today = LocalDate.now();
         List<BloodReceiveForm> requests = bloodReceiveFormRepository.findAll();
 
-        switch (mode.toLowerCase()){
+        Map<String, Long> resultMap;
+
+        switch (mode.toLowerCase()) {
             case "day":
-                return requests.stream()
-                        .filter(r -> r.getRequestDate().toLocalDate()
-                                .isAfter(today.minusDays(7)))
+                // 7 ngày gần nhất, key: yyyy-MM-dd
+                resultMap = requests.stream()
+                        .filter(r -> !r.getRequestDate().toLocalDate().isBefore(today.minusDays(6)))
                         .collect(Collectors.groupingBy(
-                                r -> r.getRequestDate().getDayOfWeek().toString(),
+                                r -> r.getRequestDate().toLocalDate().toString(),
+                                TreeMap::new,
                                 Collectors.counting()
                         ));
+                break;
             case "month":
-                return requests.stream()
+                // Trong tháng hiện tại, key: dd/MM
+                resultMap = requests.stream()
                         .filter(r -> r.getRequestDate().getMonth() == today.getMonth()
                                 && r.getRequestDate().getYear() == today.getYear())
                         .collect(Collectors.groupingBy(
-                                r -> String.valueOf(r.getRequestDate().getDayOfMonth()),
+                                r -> String.format("%02d/%02d", r.getRequestDate().getDayOfMonth(), r.getRequestDate().getMonthValue()),
+                                TreeMap::new,
                                 Collectors.counting()
                         ));
+                break;
             case "year":
-                return requests.stream()
+                // Trong năm hiện tại, key: MM/yyyy
+                resultMap = requests.stream()
                         .filter(r -> r.getRequestDate().getYear() == today.getYear())
                         .collect(Collectors.groupingBy(
-                                r -> r.getRequestDate().getMonth().toString(),
+                                r -> String.format("%02d/%d", r.getRequestDate().getMonthValue(), r.getRequestDate().getYear()),
+                                TreeMap::new,
                                 Collectors.counting()
                         ));
+                break;
             default:
                 throw new AppException(ErrorCode.INVALID_MODE);
         }
+        return resultMap;
     }
 
     public Map<String, SeekResponse> listFormWithName(){
@@ -345,6 +448,35 @@ public class BloodReceiveFormService {
                         (existing, replacement) -> existing // Giữ nguyên nếu trùng tên
                 ));
     }
+
+    //@Scheduled(cron = "*/20 * * * * *") // Mỗi 20 giây
+    @Scheduled(cron = "0 0 * * * *") // Mỗi giờ đúng (ví dụ: 00:00, 01:00, 02:00,...)
+    public void autoRejectExpiredForms() {
+        LocalDateTime now = LocalDateTime.now();
+
+        List<BloodReceiveForm> expiredForms = bloodReceiveFormRepository
+                .findAllByRequiredDateBeforeAndStatusNotIgnoreCase(now, "APPROVED");
+
+        for (BloodReceiveForm form : expiredForms) {
+            form.setStatus("REJECTED");
+
+
+            emailService.sendNotiOverRequiredDate(form.getUser().getEmail(), form.getUser().getFullName());
+
+            // Gửi thông báo cho user nếu muốn
+            Notification notification = Notification.builder()
+                    .user(form.getUser())
+                    .content("Your blood receive request has been rejected due to expiration.")
+                    .createdDate(now)
+                    .isRead(false)
+                    .build();
+
+            notificationRepository.save(notification);
+        }
+
+        bloodReceiveFormRepository.saveAll(expiredForms);
+    }
+
 
 
 }

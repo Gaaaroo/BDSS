@@ -1,14 +1,16 @@
-import React from "react";
-import DonorForm, { Title } from "../components/DonorForm";
-import Navbar from "../components/Navbar";
-import Footer from "../components/Footer";
+import React from 'react';
+import DonorForm, { Title } from '../components/DonorForm';
+import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
+import WidgetChat from '../components/WidgetChat';
+import MapPin from '../components/MapPin';
 
 export default function Donor() {
   return (
     <div>
       <Navbar mode="" />
       <Title
-        title={"Become a Donor"}
+        title={'Become a Donor'}
         decription={
           <>
             Donate blood. Save a life. Leave behind a legacy of compassion and
@@ -26,6 +28,8 @@ export default function Donor() {
       <div className="flex-1 flex flex-col justify-center">
         <DonorForm />
       </div>
+      <WidgetChat />
+      <MapPin />
       <Footer />
     </div>
   );

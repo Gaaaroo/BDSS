@@ -10,10 +10,11 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public interface BloodUnitRepository extends JpaRepository<BloodUnit, Integer> {
+    List<BloodUnit> findByReceiveForm_ReceiveId(int receiveId);
+
     Page<BloodUnit> findAllByOrderByBloodIdDesc(Pageable pageable);
 
     Page<BloodUnit> findByBloodTypeOrderByBloodIdDesc(String bloodType, Pageable pageable);

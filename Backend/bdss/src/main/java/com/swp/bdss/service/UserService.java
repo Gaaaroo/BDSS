@@ -142,6 +142,21 @@ public class UserService {
         notificationRepository.save(notification);
     }
 
+    public void activateUser(int userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        user.setStatus("ACTIVE");
+        userRepository.save(user);
+
+        Notification notification = Notification.builder()
+                .user(user)
+                .content("Your account has been activated. Please behave appropriately when using our web in the future.")
+                .createdDate(LocalDateTime.now())
+                .isRead(false)
+                .build();
+        notificationRepository.save(notification);
+    }
+
     public List<UserResponse> findUserNearby(double lat, double lng, double radiusKm) {
         var context = SecurityContextHolder.getContext();
         int userId = Integer.parseInt(context.getAuthentication().getName());

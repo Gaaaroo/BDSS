@@ -88,6 +88,10 @@ export default function Components() {
   }, []);
 
   useEffect(() => {
+    setPage(0);
+  }, [searchTerm, statusFilter, bloodType]);
+
+  useEffect(() => {
     fetchAPI();
   }, [page, searchTerm, statusFilter, bloodType]);
 

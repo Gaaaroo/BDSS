@@ -41,7 +41,8 @@ function Forum() {
   const [statReload, setStatReload] = useState(0);
   const [isCommenting, setIsCommenting] = useState(false);
   const location = useLocation();
-  const { role } = useApp();
+  const { role, profile } = useApp();
+
   // Animation: track which posts are visible
   const [visiblePosts, setVisiblePosts] = useState([]);
   // Số lượng post hiển thị (infinite scroll)
@@ -234,6 +235,7 @@ function Forum() {
     } catch (error) {
       const backendMessage = error?.response?.data?.message;
       const backendCode = error?.response?.data?.code;
+      setShowModal(false);
       setErrorModal({
         open: true,
         message: (
@@ -278,7 +280,14 @@ function Forum() {
       {/* CTA Button */}
       <div className="flex justify-center mb-8">
         <button
-          onClick={handleOpenPost}
+          onClick={() => {
+            if (profile.status === 'BANNED') {
+              toast.error('You are banned from creating posts.');
+              return;
+            } else {
+              handleOpenPost();
+            }
+          }}
           className="px-6 py-2 bg-gradient-to-br from-[#FFA1A1] to-[#F76C6C] text-white font-bold rounded-full shadow hover:scale-105 transition flex items-center gap-2"
         >
           <PencilSquareIcon className="w-6 h-6 text-white" />
@@ -290,7 +299,14 @@ function Forum() {
         {!open && (
           <div
             className="w-14 h-14 bg-[#F76C6C] rounded-full flex items-center justify-center cursor-pointer text-3xl"
-            onClick={handleOpenPost}
+            onClick={() => {
+              if (profile.status === 'ACTIVE') {
+                toast.error('You are banned from creating posts.');
+                return;
+              } else {
+                handleOpenPost();
+              }
+            }}
           >
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
               +
