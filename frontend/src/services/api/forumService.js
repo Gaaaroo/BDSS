@@ -7,19 +7,19 @@ export const createPost = async (postData) => {
 
 export const getForumPosts = async () => {
   const response = await axiosClient.get('/forum');
-  return response.reverse();
+  return response;
 };
 
 export const searchForumPosts = async (keyword) => {
   const response = await axiosClient.get('/forum/search', {
     params: { keyword },
   });
-  return response.reverse();
+  return response;
 };
 
 export const getMyPosts = async () => {
   const response = await axiosClient.get('/forum/my-posts');
-  return response.reverse();
+  return response;
 };
 
 export const deletePost = async (postId) => {

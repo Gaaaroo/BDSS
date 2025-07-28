@@ -166,6 +166,74 @@ public class EmailService {
         }
     }
 
+    public void sendRecoveryReminderEmail(String to, int reminderNumber) {
+        String subject = "";
+        String html = "";
+        switch (reminderNumber) {
+            case 1:
+                subject = "Day 21: Nutrition Reminder After Blood Donation";
+                html = """
+                    <div style='font-family: Arial,sans-serif; background: #f7fafd; padding: 24px; border-radius: 10px; border: 1px solid #b3e5fc; max-width: 480px; margin: 0 auto;'>
+                        <h2 style='color: #0288d1; text-align: center;'>21 Days After Donation</h2>
+                        <p>Dear donor,<br>It's been 21 days since your blood donation. Please continue to eat iron-rich foods and drink plenty of water to help your body recover.</p>
+                        <ul><li>Eat red meat, beans, green vegetables</li><li>Stay hydrated</li></ul>
+                        <p>Thank you for your kindness!</p>
+                        <p style='font-size:13px; color:#888; text-align:center;'>BDSS Team</p>
+                    </div>
+                """;
+                break;
+            case 2:
+                subject = "Day 42: Keep Taking Care of Your Health!";
+                html = """
+                    <div style='font-family: Arial,sans-serif; background: #f7fafd; padding: 24px; border-radius: 10px; border: 1px solid #b3e5fc; max-width: 480px; margin: 0 auto;'>
+                        <h2 style='color: #0288d1; text-align: center;'>42 Days After Donation</h2>
+                        <p>Dear donor,<br>It's been 42 days since your donation. Keep up your healthy habits and remember to rest well.</p>
+                        <ul><li>Continue eating healthy</li><li>Get enough sleep</li></ul>
+                        <p>Thank you for being a hero!</p>
+                        <p style='font-size:13px; color:#888; text-align:center;'>BDSS Team</p>
+                    </div>
+                """;
+                break;
+            case 3:
+                subject = "Day 63: You're Almost Ready to Donate Again!";
+                html = """
+                    <div style='font-family: Arial,sans-serif; background: #f7fafd; padding: 24px; border-radius: 10px; border: 1px solid #b3e5fc; max-width: 480px; margin: 0 auto;'>
+                        <h2 style='color: #0288d1; text-align: center;'>63 Days After Donation</h2>
+                        <p>Dear donor,<br>It's been 63 days since your donation. You're almost eligible to donate again. Keep taking care of yourself!</p>
+                        <ul><li>Eat well</li><li>Stay active</li></ul>
+                        <p>We appreciate your generosity!</p>
+                        <p style='font-size:13px; color:#888; text-align:center;'>BDSS Team</p>
+                    </div>
+                """;
+                break;
+            case 4:
+                subject = "Day 84: You Can Donate Blood Again!";
+                html = """
+                    <div style='font-family: Arial,sans-serif; background: #f7fafd; padding: 24px; border-radius: 10px; border: 1px solid #b3e5fc; max-width: 480px; margin: 0 auto;'>
+                        <h2 style='color: #0288d1; text-align: center;'>84 Days After Donation</h2>
+                        <p>Dear donor,<br>It's been 84 days since your last donation. You are now eligible to donate blood again if you wish. Thank you for your continued support!</p>
+                        <p>Ready to save more lives?</p>
+                        <p style='font-size:13px; color:#888; text-align:center;'>BDSS Team</p>
+                    </div>
+                """;
+                break;
+            default:
+                subject = "Blood Donation Recovery Reminder";
+                html = "<p>Thank you for your donation!</p>";
+        }
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(html, true);
+            javaMailSender.send(message);
+        } catch (Exception e) {
+            log.error("Failed to send reminder email to {}: {}", to, e.getMessage());
+        }
+    }
+
+
     public void sendOtpEmailV2(String to, String otp) {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
