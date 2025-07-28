@@ -127,4 +127,15 @@ public class UserController {
                 .message("Notification sent to userId " + userId)
                 .build();
     }
+
+    @PostMapping("/send-encouragement")
+    public ApiResponse<String> sendEncouragementEmailByBloodType(
+            @RequestParam String bloodType
+    ) {
+        userService.sendEncouragementToEligibleUsersByBloodType(bloodType);
+        return ApiResponse.<String>builder()
+                .code(1000)
+                .message("Encouragement emails sent successfully to eligible users with blood type " + bloodType)
+                .build();
+    }
 }
