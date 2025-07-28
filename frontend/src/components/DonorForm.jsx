@@ -217,7 +217,11 @@ export default function DonorForm() {
         </button>
       </div>
       {showModal && (
-        <CustomModal onCancel={handleCancel} onOk={handleConfirm}>
+        <CustomModal
+          title={'Update profile'}
+          onCancel={handleCancel}
+          onOk={handleConfirm}
+        >
           <p className="text-gray-700 mb-6">
             Please update your profile before filling out the form.
           </p>

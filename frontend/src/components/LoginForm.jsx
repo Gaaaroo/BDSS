@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import img from '../assets/images/google_logo.PNG';
 import BackHome from './BackHome';
 import { login, loginWithTokenGoogle } from '../services/api/authService';
 import { useApp } from '../Contexts/AppContext';
@@ -130,11 +131,7 @@ const LoginForm = () => {
               onClick={handleLoginWithGG}
               className="flex items-center gap-2 border border-gray-200 rounded-lg p-2 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition cursor-pointer"
             >
-              <img
-                src="https://cdn.pixabay.com/photo/2021/05/24/09/15/google-logo-6278331_960_720.png"
-                alt=""
-                className="w-4 h-4"
-              />
+              <img src={img} alt="" className="w-4 h-4" />
               Login with Google
             </button>
           </div>

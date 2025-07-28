@@ -3,16 +3,22 @@ import { useApp } from '../Contexts/AppContext';
 import { useState, useEffect } from 'react';
 import MapFinder from './MapFinder';
 import CustomModal from './CustomModal';
+import { useNavigate } from 'react-router';
 
 export default function MapPin() {
   const { profile, activeWidget, setActiveWidget } = useApp();
   const [showFinder, setShowFinder] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+  const [showModalUpdate, setShowModalUpdate] = useState(false);
+  const [showModalLogin, setShowModalLogin] = useState(false);
   const { isLogged } = useApp();
-
+  const navigate = useNavigate();
   const handleOpenMap = () => {
+    if (!isLogged) {
+      setShowModalLogin(true);
+      return;
+    }
     if (!profile?.lat || !profile?.lng) {
-      setShowModal(true);
+      setShowModalUpdate(true);
       return;
     }
     setActiveWidget('map');
@@ -23,11 +29,13 @@ export default function MapPin() {
     setShowFinder(false);
   };
 
-  const handleCancelWarning = () => {
-    setShowModal(false);
+  const handleCancelUpdate = () => {
+    navigate('/profile', {
+      state: { flag: 'update', redirectTo: '/' },
+    });
   };
-  const handleConfirmWarning = () => {
-    setShowModal(false);
+  const handleCancelLogin = () => {
+    setShowModalLogin(false);
   };
 
   useEffect(() => {
@@ -39,7 +47,7 @@ export default function MapPin() {
   return (
     <>
       <div className="fixed bottom-40 right-5 flex flex-col z-50">
-        {isLogged && !showFinder && activeWidget !== 'chat' && (
+        {!showFinder && activeWidget !== 'chat' && (
           <div
             className="w-14 h-14 bg-red-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-red-400 transition"
             onClick={handleOpenMap}
@@ -77,11 +85,26 @@ export default function MapPin() {
         />
       )}
 
-      {showModal && (
-        <CustomModal onCancel={handleCancelWarning} onOk={handleConfirmWarning}>
+      {showModalUpdate && (
+        <CustomModal
+          title={'Update location'}
+          onCancel={handleCancelUpdate}
+          onOk={() => handleCancelUpdate()}
+        >
           <p className="text-gray-700 mb-6">
-            Please update your address before opening the map to search for a
-            location.
+            Please update your address before access the map to search
+          </p>
+        </CustomModal>
+      )}
+
+      {showModalLogin && (
+        <CustomModal
+          title={'Please login'}
+          onCancel={() => handleCancelLogin(false)}
+          onOk={() => navigate('/login')}
+        >
+          <p className="text-gray-700 mb-6">
+            You must log in to access the map to search for a location.
           </p>
         </CustomModal>
       )}
