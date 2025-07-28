@@ -198,13 +198,16 @@ export default function StepProgress({
         })}
       </div>
 
-      {steps[3]?.status === 'DONE' && (
+      {((steps[3]?.status === 'DONE' && steps[4]?.status === 'PENDING') ||
+        (steps[3]?.status === 'DONE' && steps[4]?.status === 'DONE')) && (
         <>
           <button
             className="mt-4 px-3 py-2 hover:bg-text-red-600 bg-[#F76C6C] hover:scale-105 transition-transform duration-200 hover:text-white text-white rounded-[50px] font-semibold block mx-auto"
             onClick={handleShowVolumeInput}
           >
-            Add blood to inventory
+            {bloodUnit?.volume
+              ? 'View Blood Unit Volume'
+              : 'Select Blood Volume (ml)'}
           </button>
           {showVolumeInput && (
             <div className="fixed inset-0 bg-black/30 z-40">
@@ -217,7 +220,9 @@ export default function StepProgress({
                     ×
                   </button>
                   <h3 className="text-lg font-bold mb-3 text-black text-center">
-                    Select Blood Volume (ml)
+                    {bloodUnit?.volume
+                      ? 'View Blood Volume (ml)'
+                      : 'Select Blood Volume (ml)'}
                   </h3>
                   <div className="mt-8 flex gap-2 justify-center">
                     {[250, 350, 450].map((v) => (
@@ -238,14 +243,19 @@ export default function StepProgress({
                   </div>
 
                   <div className="flex gap-2 mt-8 justify-center">
-                    <button
-                      className="px-4 py-1 text-white rounded font-semibold w-20 flex items-center justify-center
+                    {bloodUnit?.volume ? (
+                      ''
+                    ) : (
+                      <button
+                        className="px-4 py-1 text-white rounded font-semibold w-20 flex items-center justify-center
                       bg-[#F76C6C] hover:scale-105 transition-transform duration-200 cursor-pointer"
-                      onClick={handleAddBloodUnit}
-                      disabled={!!bloodUnit?.volume}
-                    >
-                      Confirm
-                    </button>
+                        onClick={handleAddBloodUnit}
+                        // disabled={!!bloodUnit?.volume}
+                      >
+                        {bloodUnit?.volume ? 'Update' : 'Confirm'}
+                      </button>
+                    )}
+
                     <button
                       className="px-4 py-1 bg-gray-300 text-black rounded font-semibold w-20 flex items-center justify-center
                       hover:scale-105 transition-transform duration-200 cursor-pointer"

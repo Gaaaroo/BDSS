@@ -185,6 +185,10 @@ public class UserService {
 
     public void sendNotiToUser(int userId) {
         notificationService.createNotificationByUserId(userId, "We urgently need your help for a blood donation. If you have time, please come and donate as soon as possible. Your contribution can save lives!");
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        emailService.sendNeedBloodUrgently(user.getEmail());
     }
 
     @Async
