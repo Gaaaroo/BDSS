@@ -32,6 +32,7 @@ public interface BloodReceiveFormRepository extends JpaRepository<BloodReceiveFo
             Pageable pageable
     );
 
+//    Page<BloodReceiveForm> findAllByStatus(String status, Pageable pageable);
     Page<BloodReceiveForm> findAllByStatus(String status, Pageable pageable);
 
     @Query("SELECT b FROM BloodReceiveForm b WHERE b.priority = :priority AND (:status IS NULL OR b.status = :status)")
@@ -51,5 +52,6 @@ public interface BloodReceiveFormRepository extends JpaRepository<BloodReceiveFo
 
     Long countByBloodTypeAndRequestDateBetween(String bloodType, LocalDateTime startDate, LocalDateTime endDate);
 
+    @Query("SELECT b FROM BloodReceiveForm b")
     Page<BloodReceiveForm> findAll(Pageable pageable);
 }

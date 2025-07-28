@@ -20,6 +20,7 @@ public class BloodDonateFormResponse {
     String healthNotes;
     String status;
     LocalDateTime requestDate;
+    LocalDateTime readyDate;
     List<UpdateDonationProcessStepResponse> steps;
     BloodUnitResponse bloodUnitResponse;
 }

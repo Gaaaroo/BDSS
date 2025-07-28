@@ -96,7 +96,7 @@ public class ForumPostService {
 
     //search forum post by title or content
     public List<ForumPostResponse> searchForumPost(String search) {
-        List<ForumPostResponse> list = forumPostRepository.findByTitleContainingOrContentContaining(search, search).stream()
+        List<ForumPostResponse> list = forumPostRepository.findByTitleContainingOrContentContainingOrderByPostIdDesc(search, search).stream()
                 .map(forumPostMapper::toForumPostResponse)
                 .toList();
         if (list.isEmpty()) {

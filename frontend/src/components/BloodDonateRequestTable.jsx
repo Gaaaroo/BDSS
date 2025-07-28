@@ -1,8 +1,6 @@
 import React from 'react';
 import { useEffect, useState, useCallback } from 'react';
-import {
-  fetchAllRequests,
-} from '../services/api/bloodRequestService';
+import { fetchAllRequests } from '../services/api/bloodRequestService';
 import dayjs from 'dayjs';
 import ProfileModal from './ProfileModal';
 import DonateRequestProcessPanel from './DonateRequestProcessModal';
@@ -132,6 +130,7 @@ export default function BloodRequestTable({
                 <th className="py-2 text-center">Volume</th>
                 <th className="py-2 text-center">Phone</th>
                 <th className="py-2 text-center">Request Date</th>
+                <th className="py-2 text-center">Ready Date</th>
                 <th className="py-2 text-center">Status</th>
                 <th className="py-2 text-center">Actions</th>
               </tr>
@@ -149,9 +148,7 @@ export default function BloodRequestTable({
                     key={request.donateId || idx}
                     className="even:bg-red-50 odd:bg-white"
                   >
-                    <td className="py-2 text-center">
-                      {idx + 1}
-                    </td>
+                    <td className="py-2 text-center">{idx + 1}</td>
                     <td className="py-2 text-center">
                       {request.userResponse.fullName}
                     </td>
@@ -171,6 +168,9 @@ export default function BloodRequestTable({
                     </td>
                     <td className="py-2 text-center">
                       {dayjs(request.requestDate).format('HH:mm DD/MM/YYYY')}
+                    </td>
+                    <td className="py-2 text-center">
+                      {dayjs(request.readyDate).format('HH:mm DD/MM/YYYY')}
                     </td>
                     <td className="py-2 text-center">
                       <span

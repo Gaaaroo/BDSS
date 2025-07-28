@@ -120,7 +120,7 @@ public class EmailService {
                     + "</div>"
                     + "<p style=\"font-size: 14px; color: #888;\">If you did not request a password reset, please ignore this email.</p>"
                     + "<hr style=\"margin: 24px 0; border: none; border-top: 1px solid #eee;\">"
-                    + "<div style=\"font-size: 12px; color: #aaa; text-align: center;\">&copy; 2025 Your App Name</div>"
+                    + "<div style=\"font-size: 12px; color: #aaa; text-align: center;\">&copy; 2025 Blood Donation Support System</div>"
                     + "</div>";
 
             helper.setText(html, true); // true = isHtml
@@ -131,6 +131,108 @@ public class EmailService {
             throw new AppException(ErrorCode.USER_NOT_EXISTED);
         }
     }
+
+    //mail gửi khuyến khích hiến máu
+    public void sendEncourageBloodDonationEmail(String to){
+        try{
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(to);
+            helper.setSubject("Password Reset Request");
+
+            String html =
+                    "<div style=\"font-family: Arial, sans-serif; background: #fff7f7; padding: 32px; border-radius: 12px; border: 1px solid #f9b3b3; max-width: 500px; margin: 0 auto;\">" +
+                            "<h2 style=\"color: #e53935; text-align: center;\">❤️ We Need Your Kindness ❤️</h2>" +
+                            "<p style=\"font-size: 16px; color: #333;\">Dear friend,</p>" +
+                            "<p style=\"font-size: 16px; color: #333;\">Our blood bank is currently running low, and many patients are waiting for a chance at life. Your blood donation can make a real difference and bring hope to those in urgent need.</p>" +
+                            "<div style=\"background: #ffeaea; padding: 16px; border-radius: 8px; margin: 16px 0;\">" +
+                            "<strong style=\"color: #d32f2f;\">If you are able, please consider donating blood today. Every drop counts!</strong>" +
+                            "</div>" +
+                            "<ul style=\"font-size: 15px; color: #444;\">" +
+                            "<li><b>Where:</b> Your nearest blood donation center</li>" +
+                            "<li><b>When:</b> 8:00 AM – 5:00 PM, every day</li>" +
+                            "<li><b>Contact:</b> 0123 456 789</li>" +
+                            "</ul>" +
+                            "<p style=\"font-size: 15px; color: #333;\">Thank you for your compassion and support. Together, we can save lives.</p>" +
+                            "<p style=\"font-size: 15px; color: #e53935; font-weight: bold; text-align: center;\">Donate blood, share life!</p>" +
+                            "<hr style=\"margin: 24px 0; border: none; border-top: 1px solid #f9b3b3;\">" +
+                            "<p style=\"font-size: 13px; color: #888; text-align: center;\">With gratitude,<br>The BDSS Team</p>" +
+                            "</div>";
+            helper.setText(html, true); // true = isHtml
+            javaMailSender.send(message);
+        }catch(Exception e){
+            log.error("Failed to send encourage blood donation email to {}: {}", to, e.getMessage());
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
+    }
+
+    public void sendRecoveryReminderEmail(String to, int reminderNumber) {
+        String subject = "";
+        String html = "";
+        switch (reminderNumber) {
+            case 1:
+                subject = "Day 21: Nutrition Reminder After Blood Donation";
+                html = """
+                    <div style='font-family: Arial,sans-serif; background: #f7fafd; padding: 24px; border-radius: 10px; border: 1px solid #b3e5fc; max-width: 480px; margin: 0 auto;'>
+                        <h2 style='color: #0288d1; text-align: center;'>21 Days After Donation</h2>
+                        <p>Dear donor,<br>It's been 21 days since your blood donation. Please continue to eat iron-rich foods and drink plenty of water to help your body recover.</p>
+                        <ul><li>Eat red meat, beans, green vegetables</li><li>Stay hydrated</li></ul>
+                        <p>Thank you for your kindness!</p>
+                        <p style='font-size:13px; color:#888; text-align:center;'>BDSS Team</p>
+                    </div>
+                """;
+                break;
+            case 2:
+                subject = "Day 42: Keep Taking Care of Your Health!";
+                html = """
+                    <div style='font-family: Arial,sans-serif; background: #f7fafd; padding: 24px; border-radius: 10px; border: 1px solid #b3e5fc; max-width: 480px; margin: 0 auto;'>
+                        <h2 style='color: #0288d1; text-align: center;'>42 Days After Donation</h2>
+                        <p>Dear donor,<br>It's been 42 days since your donation. Keep up your healthy habits and remember to rest well.</p>
+                        <ul><li>Continue eating healthy</li><li>Get enough sleep</li></ul>
+                        <p>Thank you for being a hero!</p>
+                        <p style='font-size:13px; color:#888; text-align:center;'>BDSS Team</p>
+                    </div>
+                """;
+                break;
+            case 3:
+                subject = "Day 63: You're Almost Ready to Donate Again!";
+                html = """
+                    <div style='font-family: Arial,sans-serif; background: #f7fafd; padding: 24px; border-radius: 10px; border: 1px solid #b3e5fc; max-width: 480px; margin: 0 auto;'>
+                        <h2 style='color: #0288d1; text-align: center;'>63 Days After Donation</h2>
+                        <p>Dear donor,<br>It's been 63 days since your donation. You're almost eligible to donate again. Keep taking care of yourself!</p>
+                        <ul><li>Eat well</li><li>Stay active</li></ul>
+                        <p>We appreciate your generosity!</p>
+                        <p style='font-size:13px; color:#888; text-align:center;'>BDSS Team</p>
+                    </div>
+                """;
+                break;
+            case 4:
+                subject = "Day 84: You Can Donate Blood Again!";
+                html = """
+                    <div style='font-family: Arial,sans-serif; background: #f7fafd; padding: 24px; border-radius: 10px; border: 1px solid #b3e5fc; max-width: 480px; margin: 0 auto;'>
+                        <h2 style='color: #0288d1; text-align: center;'>84 Days After Donation</h2>
+                        <p>Dear donor,<br>It's been 84 days since your last donation. You are now eligible to donate blood again if you wish. Thank you for your continued support!</p>
+                        <p>Ready to save more lives?</p>
+                        <p style='font-size:13px; color:#888; text-align:center;'>BDSS Team</p>
+                    </div>
+                """;
+                break;
+            default:
+                subject = "Blood Donation Recovery Reminder";
+                html = "<p>Thank you for your donation!</p>";
+        }
+        try {
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(to);
+            helper.setSubject(subject);
+            helper.setText(html, true);
+            javaMailSender.send(message);
+        } catch (Exception e) {
+            log.error("Failed to send reminder email to {}: {}", to, e.getMessage());
+        }
+    }
+
 
     public void sendOtpEmailV2(String to, String otp) {
         try {

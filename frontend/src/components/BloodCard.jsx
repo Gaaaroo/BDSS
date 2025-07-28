@@ -13,7 +13,7 @@ export default function BloodCard({ bloodType, units, onClick, request }) {
             {request}
             {request > 1 ? ' Requests' : ' Request'}
           </div>
-          <div className="text-md text-red-800 font-medium mt-1">
+          <div className="text-md text-red-800 font-medium mt-1 whitespace-nowrap">
             {units}
             {units > 1 ? ' Units available' : ' Unit available'}
           </div>

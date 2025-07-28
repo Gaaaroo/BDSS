@@ -88,6 +88,11 @@ public class DonationProcessService {
         stepToUpdate.setUpdatedAt(LocalDateTime.now());
         stepToUpdate.setNote(request.getNote());
 
+        if (request.getStepNumber() == 5 && "DONE".equalsIgnoreCase(request.getStatus())) {
+            bloodDonateForm.setReadyDate(LocalDateTime.now()); // hoặc donatedAt nếu bạn dùng tên khác
+            bloodDonateFormRepository.save(bloodDonateForm);
+        }
+
         User staff = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         stepToUpdate.setUpdatedBy(staff);

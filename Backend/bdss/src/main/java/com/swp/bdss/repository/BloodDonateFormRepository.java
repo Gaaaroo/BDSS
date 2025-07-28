@@ -20,11 +20,12 @@ public interface BloodDonateFormRepository extends JpaRepository<BloodDonateForm
             "(LOWER(d.user.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(d.user.phone) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
             "OR LOWER(d.user.bloodType) LIKE LOWER(CONCAT('%', :keyword, '%'))) " +
-            "AND (:status IS NULL OR d.status = :status)")
+            "AND (:status IS NULL OR d.status = :status) ORDER BY d.donateId DESC")
     Page<BloodDonateForm> searchByKeywordAndStatus(@Param("keyword") String keyword, @Param("status") String status, Pageable pageable);
 
-    Page<BloodDonateForm> findAllByStatus(String status, Pageable pageable);
+    Page<BloodDonateForm> findAllByStatusOrderByDonateIdDesc(String status, Pageable pageable);
 
+    @Query("SELECT d FROM BloodDonateForm d ORDER BY d.donateId DESC")
     Page<BloodDonateForm> findAll(Pageable pageable);
 
     Long countByUserBloodTypeAndStatus(String bloodType, String status);
@@ -36,4 +37,7 @@ public interface BloodDonateFormRepository extends JpaRepository<BloodDonateForm
     Long countByUserBloodType(String bloodType);
 
     Long countByUserBloodTypeAndRequestDateBetween(String bloodType, LocalDateTime startDate, LocalDateTime endDate);
+
+    @Query("SELECT f FROM BloodDonateForm f JOIN FETCH f.user")
+    List<BloodDonateForm> findAllWithUser();
 }
