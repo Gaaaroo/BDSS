@@ -118,3 +118,14 @@ export const filterBloodComponentUnits = async ({
     throw error;
   }
 };
+////////////////////////
+
+export const countStoredBloodUnit = () => {
+  try {
+    const response = axiosClient.get('bloodUnit/count/by-blood-types');
+    return response;
+  } catch (error) {
+    console.error('Error fetching stored blood unit count:', error);
+    throw error;
+  }
+};

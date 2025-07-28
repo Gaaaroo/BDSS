@@ -166,6 +166,80 @@ public class EmailService {
         }
     }
 
+    public void sendNeedBloodUrgently(String to){
+        try{
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(to);
+            helper.setSubject("We Urgently Need Your Help!");
+
+            String html = """
+<div style="font-family: Arial, sans-serif; background: #fff7f7; padding: 32px; border-radius: 12px; border: 1px solid #f9b3b3; max-width: 500px; margin: 0 auto;">
+    <h2 style="color: #e53935; text-align: center;">🩸 Urgent Blood Donation Needed 🩸</h2>
+    <p style="font-size: 16px; color: #333;">Dear friend,</p>
+    <p style="font-size: 16px; color: #333;">
+        Our blood bank is currently <b>out of stock</b> and patients are in urgent need of blood. 
+        Your donation can save lives and bring hope to those in critical condition.
+    </p>
+    <div style="background: #ffeaea; padding: 16px; border-radius: 8px; margin: 16px 0;">
+        <strong style="color: #d32f2f;">If you are able, please consider donating blood as soon as possible. Every drop counts!</strong>
+    </div>
+    <ul style="font-size: 15px; color: #444;">
+        <li><b>Where:</b> Your nearest blood donation center</li>
+        <li><b>When:</b> 8:00 AM – 5:00 PM, every day</li>
+        <li><b>Contact:</b> 0123 456 789</li>
+    </ul>
+    <p style="font-size: 15px; color: #333;">Thank you for your kindness and support. Together, we can save lives.</p>
+    <p style="font-size: 15px; color: #e53935; font-weight: bold; text-align: center;">Donate blood, share life!</p>
+    <hr style="margin: 24px 0; border: none; border-top: 1px solid #f9b3b3;">
+    <p style="font-size: 13px; color: #888; text-align: center;">With gratitude,<br>The BDSS Team</p>
+</div>
+""";
+
+            helper.setText(html, true); // true = isHtml
+            javaMailSender.send(message);
+        }catch(Exception e){
+            log.error("Failed to send encourage blood donation email to {}: {}", to, e.getMessage());
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
+    }
+
+    public void sendNotiOverRequiredDate(String to, String name){
+        try{
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(to);
+            helper.setSubject("Blood Request Expired Notification!");
+
+            String html = """
+<div style="font-family: Arial, sans-serif; background: #fff7f7; padding: 32px; border-radius: 12px; border: 1px solid #f9b3b3; max-width: 500px; margin: 0 auto;">
+    <h2 style="color: #e53935; text-align: center;">Notification: Blood Request Expired</h2>
+    <p style="font-size: 16px; color: #333;">
+        Dear %s,<br><br>
+        We sincerely apologize that your blood request has passed the required date, and we have not yet found a suitable blood donor for your needs.
+    </p>
+    <p style="font-size: 15px; color: #333;">
+        Our team is still actively searching and will notify you via messages on our website as soon as we find a matching donor.
+    </p>
+    <p style="font-size: 15px; color: #333;">
+        If you still need support or have urgent needs, please contact us directly via the website messaging system.
+    </p>
+    <div style="background: #ffeaea; padding: 14px; border-radius: 8px; margin: 18px 0; text-align: center;">
+        <strong style="color: #d32f2f;">Thank you for your patience and understanding!</strong>
+    </div>
+    <hr style="margin: 24px 0; border: none; border-top: 1px solid #f9b3b3;">
+    <p style="font-size: 13px; color: #888; text-align: center;">Best regards,<br>The BDSS Team</p>
+</div>
+""".formatted(name);
+
+            helper.setText(html, true); // true = isHtml
+            javaMailSender.send(message);
+        }catch(Exception e){
+            log.error("Failed to send encourage blood donation email to {}: {}", to, e.getMessage());
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
+    }
+
     public void sendRecoveryReminderEmail(String to, int reminderNumber) {
         String subject = "";
         String html = "";

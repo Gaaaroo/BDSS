@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import BloodDocs from './BloodDocs';
 import { toast } from 'react-toastify';
+import MiniBloodUnitForumStat from './MiniBloodUnitForumStat';
 
 export default function BloodCompatibilityChecker() {
   const [recipientBloodType, setRecipientBloodType] = useState('');
@@ -150,18 +151,23 @@ export default function BloodCompatibilityChecker() {
           </button>
         </form>
       </div>
-      <div className="w-full flex justify-center mt-8 mb-4">
+      <div className="mt-8 mb-2">
+        <MiniBloodUnitForumStat />
+      </div>
+      <div className="w-full flex justify-center mt-4 mb-4">
         <h2 className="text-2xl font-bold text-black bg-[#FFA1A1] bg-opacity-80 px-6 py-2 rounded-full shadow mt-5">
           Blood Compatibility Checker
         </h2>
       </div>
       {compatibleDonors.length === 0 ? (
-        <div className="absolute top-[267px] transform items-center flex flex-row ">
-          <BloodDocs />
-        </div>
+        <>
+          <div className="absolute top-[370px] transform items-center flex flex-row ">
+            <BloodDocs />
+          </div>
+        </>
       ) : (
         <div>
-          <div className="absolute left-1/2 top-[250px] transform -translate-x-1/2 w-[600px] bg-white bg-opacity-90 rounded-xl shadow-lg border-2 border-[#FFA1A1] p-6 mt-8 flex flex-col items-center">
+          <div className="absolute left-1/2 top-[355px] transform -translate-x-1/2 w-[600px] bg-white bg-opacity-90 rounded-xl shadow-lg border-2 border-[#FFA1A1] p-6 mt-8 flex flex-col items-center">
             <ul className="flex flex-wrap gap-3 justify-center">
               {compatibleDonors.length === 0 ? (
                 <li className="text-gray-400 italic">No result</li>
@@ -177,7 +183,8 @@ export default function BloodCompatibilityChecker() {
               )}
             </ul>
           </div>
-          <div className="absolute top-[380px] transform items-center flex flex-row ">
+
+          <div className="absolute top-[495px] transform items-center flex flex-row ">
             {compatibleDonors.map((blood) => (
               <BloodDocs key={blood} bloodT={blood} />
             ))}
