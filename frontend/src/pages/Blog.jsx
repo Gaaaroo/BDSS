@@ -4,6 +4,8 @@ import BlogDetail from '../components/BlogDetail';
 import BlogList from '../components/BlogList';
 import BlogForm from '../components/BlogForm';
 import Navbar from '../components/Navbar';
+import WidgetChat from '../components/WidgetChat';
+import MapPin from '../components/MapPin';
 
 export default function Blog() {
   const [blogs, setBlogs] = useState([]);
@@ -35,18 +37,26 @@ export default function Blog() {
       <div className="p-6">
         {/* Hiển thị danh sách blog hoặc chi tiết */}
         {!selectedBlog ? (
-          <BlogList
-            blogs={blogs}
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={(newPage) => setPage(newPage)}
-            onSelectBlog={(blog) => setSelectedBlog(blog)}
-          />
+          <>
+            <BlogList
+              blogs={blogs}
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={(newPage) => setPage(newPage)}
+              onSelectBlog={(blog) => setSelectedBlog(blog)}
+            />
+            <WidgetChat />
+            <MapPin />
+          </>
         ) : (
-          <BlogDetail
-            blog={selectedBlog}
-            onBack={() => setSelectedBlog(null)}
-          />
+          <>
+            <BlogDetail
+              blog={selectedBlog}
+              onBack={() => setSelectedBlog(null)}
+            />
+            <WidgetChat />
+            <MapPin />
+          </>
         )}
       </div>
     </>
