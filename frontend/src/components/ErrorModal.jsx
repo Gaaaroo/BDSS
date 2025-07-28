@@ -1,9 +1,9 @@
-import React from "react";
+import React from 'react';
 
 export default function ErrorModal({ open, message, onClose }) {
   if (!open) return null;
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-opacity-40 bg-black/10 backdrop-blur-xs z-40">
+    <div className="text-base fixed inset-0 bg-opacity-50 flex items-center justify-center z-50 backdrop-brightness-50">
       <div className="bg-white rounded-lg shadow-lg p-8 max-w-sm w-full text-center">
         <h2 className="text-xl font-bold text-red-600 mb-4">Error</h2>
         <div className="mb-6 text-gray-700">{message}</div>

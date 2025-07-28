@@ -232,6 +232,7 @@ function Forum() {
     } catch (error) {
       const backendMessage = error?.response?.data?.message;
       const backendCode = error?.response?.data?.code;
+      setShowModal(false);
       setErrorModal({
         open: true,
         message: (

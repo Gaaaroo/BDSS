@@ -112,3 +112,15 @@ export const banUser = async (userId) => {
     throw err;
   }
 };
+
+export const activateUser = async (userId) => {
+  try {
+    const res = await axiosClient.put('/users/activate-user', null, {
+      params: { userId },
+    });
+    return res;
+  } catch (err) {
+    console.error('Error activating user:', err);
+    throw err;
+  }
+};
