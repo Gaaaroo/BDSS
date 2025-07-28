@@ -104,7 +104,7 @@ export default function ProfileView({ userData, onEditClick }) {
           <div className="mt-6 text-right">
             <button
               onClick={onEditClick}
-              className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700"
+              className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 cursor-pointer"
             >
               Update
             </button>

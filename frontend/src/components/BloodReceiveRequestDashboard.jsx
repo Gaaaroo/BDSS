@@ -2,7 +2,7 @@ import BloodReceiveRequestTable from './BloodReceiveRequestTable';
 import StatusCard from './StatusCard';
 import {
   countReceiveRequestByStatus,
-  getAllBloodReceiveRequests,
+  // getAllBloodReceiveRequests,
 } from '../services/api/bloodRequestService';
 import { useState, useEffect } from 'react';
 

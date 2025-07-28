@@ -95,7 +95,11 @@ function MapSelector({ onLocationSelect, initialLocation }) {
     }
   };
 
-  const handleClose = () => {
+  const handleCancel = () => {
+    setShowModal(false);
+  };
+
+  const handleConfirm = () => {
     if (selectedLocation) {
       setAddressText(selectedLocation.address); // Đảm bảo input luôn đúng
       onLocationSelect(selectedLocation); // Gửi dữ liệu về cha
@@ -110,13 +114,13 @@ function MapSelector({ onLocationSelect, initialLocation }) {
         value={addressText}
         onClick={() => setShowModal(true)}
         readOnly
-        placeholder="Nhấp để chọn địa chỉ..."
+        placeholder="Click to select address..."
         className="w-full h-10 px-4 text-black placeholder-gray-500 bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
       />
 
       {/* Modal chứa bản đồ và tìm kiếm địa chỉ */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-brightness-50">
           <div className="bg-white rounded-lg shadow-xl w-[90vw] max-w-4xl relative">
             {/* Ô tìm kiếm địa chỉ (autocomplete) */}
             <div className="p-4 border-b border-gray-300">
@@ -171,11 +175,16 @@ function MapSelector({ onLocationSelect, initialLocation }) {
               </GoogleMap>
             </div>
 
-            {/* Nút đóng modal */}
-            <div className="flex justify-end p-4 border-t border-gray-300">
+            <div className="flex justify-end gap-4 p-4 ">
               <button
-                onClick={handleClose}
-                className="px-4 py-2 text-sm text-white bg-red-500 rounded hover:bg-red-600"
+                onClick={handleCancel}
+                className="px-6 py-2 bg-red-300 rounded-xl hover:bg-red-400 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirm}
+                className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 cursor-pointer"
               >
                 Confirm
               </button>
