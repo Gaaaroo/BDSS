@@ -2,10 +2,13 @@ import React, { useRef, useState } from 'react';
 import { resendOTP, verifyOTP } from '../services/api/authService';
 import { useNavigate } from 'react-router';
 import { toast } from 'react-toastify';
+import LoadingPage from './LoadingPage';
 
 export default function OTPForm({ onSubmit }) {
   const [otp, setOtp] = useState(['', '', '', '', '', '']);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
   const inputsRef = Array.from({ length: 6 }, () => useRef());
   const handleChange = (idx, e) => {
@@ -70,6 +73,7 @@ export default function OTPForm({ onSubmit }) {
       setError('Email does not exist.');
       return;
     }
+    setLoading(true);
     try {
       await verifyOTP({ email, otp: otpString });
       toast.success('Account created successfully');
@@ -77,6 +81,8 @@ export default function OTPForm({ onSubmit }) {
       navigate('/login');
     } catch (err) {
       setError('Invalid OTP');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -96,7 +102,7 @@ export default function OTPForm({ onSubmit }) {
       setError('Failed to resend OTP');
     }
   };
-
+  if (loading) return <LoadingPage />;
   return (
     <div className="flex items-center justify-center min-h-screen">
       <form

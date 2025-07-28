@@ -238,7 +238,7 @@ export default function Navbar({ mode }) {
   // const handleMyPostsClick = () => navigate('/forum/my-posts');
   const handleMyPostsClick = () => {
     if (isLogged) {
-      navigate('/my-posts');
+      navigate('/forum/my-posts');
     } else {
       setShowModal(true);
     }
@@ -297,6 +297,7 @@ export default function Navbar({ mode }) {
             </button>
             {showModal && (
               <CustomModal
+                title={'Please login'}
                 onCancel={() => setShowModal(false)}
                 onOk={() => navigate('/login')}
               >

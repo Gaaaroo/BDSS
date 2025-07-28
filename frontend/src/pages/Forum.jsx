@@ -316,6 +316,7 @@ function Forum() {
             />
           ) : (
             <CustomModal
+              title={'Please login'}
               onCancel={handleClosePost}
               onOk={() => navigate('/login')}
             >

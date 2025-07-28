@@ -27,7 +27,6 @@ export const AppProvider = ({ children }) => {
         fetchUserRole();
       }
     } else {
-      console.log('hihi');
       setIsLogged(false);
       setProfile(null);
     }
