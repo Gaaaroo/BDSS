@@ -22,6 +22,7 @@ public interface BloodReceiveFormMapper {
     @Mapping(source = "receiveId", target = "receiveId")
     @Mapping(source = "user", target = "user")
     @Mapping(source = "steps", target = "steps")
+    @Mapping(target = "bloodReceived", ignore = true)
     BloodReceiveFormResponse toBloodReceiveFormResponse(BloodReceiveForm bloodReceiveForm);
 
     List<UpdateReceivingProcessStepResponse> toReceivingProcessResponseList(List<ReceivingProcess> steps);

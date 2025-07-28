@@ -187,12 +187,29 @@ export default function SeekerForm() {
               required
               className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
             >
-              <option value="">Select volume (ml)</option>
-              <option value="350">350</option>
-              <option value="400">400</option>
-              <option value="450">450</option>
+              <option value="">
+                {formData.type && formData.type !== 'Whole'
+                  ? 'Select component volume'
+                  : 'Select volume (ml)'}
+              </option>
+              <option value="250">
+                {formData.type && formData.type !== 'Whole'
+                  ? 'Component derived from 250ml'
+                  : '250'}
+              </option>
+              <option value="350">
+                {formData.type && formData.type !== 'Whole'
+                  ? 'Component derived from 350ml'
+                  : '350'}
+              </option>
+              <option value="450">
+                {formData.type && formData.type !== 'Whole'
+                  ? 'Component derived from 450ml'
+                  : '450'}
+              </option>
             </select>
           </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Priority

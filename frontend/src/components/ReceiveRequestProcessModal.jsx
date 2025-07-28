@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BiNote } from 'react-icons/bi';
 import { getReceiveRequestById } from '../services/api/bloodRequestService';
 import ReceiveStepProgress from './ReceiveStepProgress';
@@ -20,6 +20,7 @@ export default function ReceiveRequestProcessModal({ request, onReloadTable }) {
       setCurrentRequest(res);
       setOpenProcessModal(true);
     } catch (error) {
+      console.error('Error fetching request:', error);
       setCurrentRequest(request); // fallback nếu lỗi
       setOpenProcessModal(true);
     }
@@ -78,12 +79,48 @@ export default function ReceiveRequestProcessModal({ request, onReloadTable }) {
                     </div>
                   </div>
 
+                  {/* Quantity + Assigned Blood Info */}
+                  <div className="bg-[#FFF3F3] rounded-md p-3 mx-3 mb-4 border border-red-300">
+                    <div className="text-md text-gray-800 font-medium mb-1">
+                      Required Units:{' '}
+                      <span className="font-bold text-red-700">
+                        {currentRequest.quantity}
+                      </span>
+                    </div>
+
+                    {currentRequest.bloodReceived?.length > 0 ? (
+                      <>
+                        <div className="text-md text-gray-800 font-medium">
+                          Assigned Units:{' '}
+                          <span className="font-bold text-green-700">
+                            {currentRequest.bloodReceived.length}
+                          </span>
+                        </div>
+                        {currentRequest.bloodReceived.length <
+                          currentRequest.quantity && (
+                          <div className="text-yellow-600 font-medium mt-1">
+                            ⚠ Still missing{' '}
+                            {currentRequest.quantity -
+                              currentRequest.bloodReceived.length}{' '}
+                            unit(s)
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <div className="text-red-600 font-medium">
+                        ⚠ No blood unit has been assigned yet.
+                      </div>
+                    )}
+                  </div>
+
                   {/* Các bước quá trình */}
                   <ReceiveStepProgress
                     steps={currentRequest.steps}
                     onReload={reloadRequest}
                     receiveId={currentRequest.receiveId}
                     onReloadTable={onReloadTable}
+                    quantity={currentRequest.quantity}
+                    bloodReceived={currentRequest.bloodReceived}
                   />
                 </div>
               </div>

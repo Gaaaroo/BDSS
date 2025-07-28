@@ -1,5 +1,6 @@
 package com.swp.bdss.dto.response;
 
+import com.swp.bdss.entities.BloodUnit;
 import com.swp.bdss.entities.User;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -27,4 +28,5 @@ public class BloodReceiveFormResponse {
     String status;
     LocalDateTime requiredDate;
     List<UpdateReceivingProcessStepResponse> steps;
+    List<BloodResponse> bloodReceived;
 }

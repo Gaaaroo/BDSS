@@ -19,6 +19,8 @@ export default function StepProgress({
   onReload,
   receiveId,
   onReloadTable,
+  quantity,
+  bloodReceived = [],
 }) {
   const [openStepIdx, setOpenStepIdx] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(
@@ -170,7 +172,12 @@ export default function StepProgress({
       </div>
 
       {steps[0]?.status == 'DONE' && (
-        <FindSuitableBlood receiveId={receiveId} />
+        <FindSuitableBlood
+          receiveId={receiveId}
+          quantity={quantity}
+          bloodReceived={bloodReceived}
+          onReload={onReload}
+        />
       )}
 
       {/* Modal chi tiết step */}
