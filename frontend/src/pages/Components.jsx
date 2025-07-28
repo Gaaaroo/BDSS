@@ -148,7 +148,19 @@ export default function Components() {
                 <td className="py-2 text-center">{item.bloodType}</td>
                 <td className="py-2 text-center">{item.componentType}</td>
                 <td className="py-2 text-center">{item.volume}</td>
-                <td className="py-2 text-center">{item.status}</td>
+                <td className="py-2 text-center">
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-semibold 
+      ${
+        item.status === 'Stored'
+          ? 'text-green-700 bg-green-100'
+          : 'text-blue-700 bg-blue-300'
+      }
+    `}
+                  >
+                    {item.status}
+                  </span>
+                </td>
                 <td className="py-2 text-center">
                   {item.createdDate?.slice(0, 10)}
                 </td>

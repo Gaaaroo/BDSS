@@ -2,20 +2,32 @@ import React from 'react';
 import { useApp } from '../Contexts/AppContext';
 import { useState, useEffect } from 'react';
 import MapFinder from './MapFinder';
+import CustomModal from './CustomModal';
 
 export default function MapPin() {
   const { profile, activeWidget, setActiveWidget } = useApp();
   const [showFinder, setShowFinder] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const { isLogged } = useApp();
 
   const handleOpenMap = () => {
-    if (activeWidget !== 'map') {
-      setActiveWidget('map');
-      setShowFinder(true);
-    } else {
-      setActiveWidget(null);
-      setShowFinder(false);
+    if (!profile?.lat || !profile?.lng) {
+      setShowModal(true);
+      return;
     }
+    setActiveWidget('map');
+    setShowFinder(true);
+  };
+  const handleCloseMap = () => {
+    setActiveWidget(null);
+    setShowFinder(false);
+  };
+
+  const handleCancelWarning = () => {
+    setShowModal(false);
+  };
+  const handleConfirmWarning = () => {
+    setShowModal(false);
   };
 
   useEffect(() => {
@@ -61,8 +73,17 @@ export default function MapPin() {
             lat: profile?.lat,
             lng: profile?.lng,
           }}
-          onClose={() => setShowFinder(false)}
+          onClose={handleCloseMap}
         />
+      )}
+
+      {showModal && (
+        <CustomModal onCancel={handleCancelWarning} onOk={handleConfirmWarning}>
+          <p className="text-gray-700 mb-6">
+            Please update your address before opening the map to search for a
+            location.
+          </p>
+        </CustomModal>
       )}
     </>
   );
