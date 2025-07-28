@@ -103,7 +103,7 @@ export default function MapFinder({ onClose, initialLocation }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-blur-xs">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 backdrop-brightness-50">
       <div className="bg-white rounded-lg shadow-xl w-[75vw] max-w-8xl relative">
         {/* Tìm kiếm + Bán kính + Nút Search */}
         <div className="p-4 border-b border-gray-300 flex gap-4 items-center">
@@ -118,7 +118,7 @@ export default function MapFinder({ onClose, initialLocation }) {
                 id="search-input"
                 ref={inputRef}
                 type="text"
-                placeholder="Tìm kiếm địa chỉ..."
+                placeholder="Search address..."
                 defaultValue={addressText}
                 className="w-full h-10 px-4 bg-white text-black border border-black rounded focus:outline-none focus:ring-2 focus:ring-black"
               />
@@ -130,16 +130,16 @@ export default function MapFinder({ onClose, initialLocation }) {
             max={50}
             value={searchRadius}
             onChange={(e) => setSearchRadius(Number(e.target.value))}
-            className="w-28 h-10 px-2 text-black border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-28 h-10 px-2 text-black border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-red-200"
             placeholder="Bán kính (km)"
           />
           {/* Blood Type select */}
           <select
             value={bloodType}
             onChange={(e) => setBloodType(e.target.value)}
-            className="w-32 h-10 px-2 text-black border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-32 h-10 px-2 text-black border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-red-200 cursor-pointer"
           >
-            <option value="">Tất cả nhóm máu</option>
+            <option value="">Blood Type</option>
             <option value="A+">A+</option>
             <option value="A-">A-</option>
             <option value="B+">B+</option>
@@ -159,7 +159,7 @@ export default function MapFinder({ onClose, initialLocation }) {
                 setSelectedUser(null); // đóng InfoWindow nếu đang mở
               }
             }}
-            className="h-10 px-4 text-white bg-red-500 rounded hover:bg-red-700"
+            className="h-10 px-4 text-white bg-red-500 rounded hover:bg-red-700 cursor-pointer"
           >
             Search
           </button>
@@ -296,7 +296,7 @@ export default function MapFinder({ onClose, initialLocation }) {
         <div className="flex justify-end p-4 border-t border-gray-300">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-white bg-red-500 rounded hover:bg-red-600"
+            className="px-4 py-2 text-sm text-white bg-red-500 rounded hover:bg-red-600 cursor-pointer"
           >
             Close
           </button>

@@ -23,7 +23,7 @@ export default function SeekerForm() {
     });
   };
   const [formData, setFormData] = useState({
-    fullName: 'abc',
+    fullName: '',
     dob: '',
     phone: '',
     gender: '',
