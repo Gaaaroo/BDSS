@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +40,7 @@ public class BloodReceiveFormService {
     BloodUnitMapper bloodUnitMapper;
     BloodComponentUnitMapper bloodComponentUnitMapper;
     NotificationRepository notificationRepository;
+    EmailService emailService;
 
     private static final List<String> BLOOD_TYPES = Arrays.asList("A+", "B+", "O+", "AB+", "A-", "B-", "O-", "AB-");
     private static final List<String> COMPONENT_TYPES = Arrays.asList("Whole", "Plasma", "Platelets", "RBC", "WBC");
@@ -402,6 +404,35 @@ public class BloodReceiveFormService {
                         (existing, replacement) -> existing // Giữ nguyên nếu trùng tên
                 ));
     }
+
+    //@Scheduled(cron = "*/20 * * * * *") // Mỗi 20 giây
+    @Scheduled(cron = "0 0 * * * *") // Mỗi giờ đúng (ví dụ: 00:00, 01:00, 02:00,...)
+    public void autoRejectExpiredForms() {
+        LocalDateTime now = LocalDateTime.now();
+
+        List<BloodReceiveForm> expiredForms = bloodReceiveFormRepository
+                .findAllByRequiredDateBeforeAndStatusNotIgnoreCase(now, "APPROVED");
+
+        for (BloodReceiveForm form : expiredForms) {
+            form.setStatus("REJECTED");
+
+
+            emailService.sendNotiOverRequiredDate(form.getUser().getEmail(), form.getUser().getFullName());
+
+            // Gửi thông báo cho user nếu muốn
+            Notification notification = Notification.builder()
+                    .user(form.getUser())
+                    .content("Your blood receive request has been rejected due to expiration.")
+                    .createdDate(now)
+                    .isRead(false)
+                    .build();
+
+            notificationRepository.save(notification);
+        }
+
+        bloodReceiveFormRepository.saveAll(expiredForms);
+    }
+
 
 
 }
