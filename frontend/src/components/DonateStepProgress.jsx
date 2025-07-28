@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { updateDonationProcessStep } from '../services/api/bloodRequestService';
 import { addBloodUnit } from '../services/api/bloodUnitService';
+import { toast } from 'react-toastify';
 
 const stepNames = [
   'Register for blood donation',
@@ -36,7 +37,7 @@ export default function StepProgress({
 
   const handleAddBloodUnit = async () => {
     if (!volume || isNaN(volume) || Number(volume) <= 0) {
-      alert('Please enter a valid volume!');
+      toast.error('Please enter a valid volume!');
       return;
     }
 
@@ -46,10 +47,10 @@ export default function StepProgress({
         volume: Number(volume),
       });
       console.log();
-      alert('Blood unit added successfully!');
+      toast.success('Blood unit added successfully!');
       setShowVolumeInput(false);
     } catch (error) {
-      alert(error?.response?.data?.message || 'Error adding blood unit');
+      toast.error(error?.response?.data?.message || 'Error adding blood unit');
     }
   };
 
@@ -83,7 +84,7 @@ export default function StepProgress({
     // If it's the first step
     if (openStepIdx === 0) {
       if (!allNextPending) {
-        alert('All following steps must be PENDING!');
+        toast.warning('All following steps must be PENDING!');
         setLoading(false);
         return;
       }
@@ -91,7 +92,7 @@ export default function StepProgress({
     // If it's the last step
     else if (openStepIdx === steps.length - 1) {
       if (!allPrevDone) {
-        alert('All previous steps must be DONE!');
+        toast.warning('All previous steps must be DONE!');
         setLoading(false);
         return;
       }
@@ -99,7 +100,7 @@ export default function StepProgress({
     // Any step in the middle
     else {
       if (!allPrevDone || !allNextPending) {
-        alert(
+        toast.warning(
           'All previous steps must be DONE and all following steps must be PENDING!'
         );
         setLoading(false);
@@ -119,9 +120,10 @@ export default function StepProgress({
       if (onReloadTable) {
         await onReloadTable();
       }
+      toast.success('Update Donation Process successfully');
       setOpenStepIdx(null);
     } catch (error) {
-      alert(error?.response?.data?.message);
+      toast.error(error?.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -198,13 +200,16 @@ export default function StepProgress({
         })}
       </div>
 
-      {steps[3]?.status === 'DONE' && (
+      {((steps[3]?.status === 'DONE' && steps[4]?.status === 'PENDING') ||
+        (steps[3]?.status === 'DONE' && steps[4]?.status === 'DONE')) && (
         <>
           <button
             className="mt-4 px-3 py-2 hover:bg-text-red-600 bg-[#F76C6C] hover:scale-105 transition-transform duration-200 hover:text-white text-white rounded-[50px] font-semibold block mx-auto"
             onClick={handleShowVolumeInput}
           >
-            Add blood to inventory
+            {bloodUnit?.volume
+              ? 'View Blood Unit Volume'
+              : 'Select Blood Volume (ml)'}
           </button>
           {showVolumeInput && (
             <div className="fixed inset-0 bg-black/30 z-40">
@@ -217,7 +222,9 @@ export default function StepProgress({
                     ×
                   </button>
                   <h3 className="text-lg font-bold mb-3 text-black text-center">
-                    Select Blood Volume (ml)
+                    {bloodUnit?.volume
+                      ? 'View Blood Volume (ml)'
+                      : 'Select Blood Volume (ml)'}
                   </h3>
                   <div className="mt-8 flex gap-2 justify-center">
                     {[250, 350, 450].map((v) => (
@@ -238,14 +245,19 @@ export default function StepProgress({
                   </div>
 
                   <div className="flex gap-2 mt-8 justify-center">
-                    <button
-                      className="px-4 py-1 text-white rounded font-semibold w-20 flex items-center justify-center
+                    {bloodUnit?.volume ? (
+                      ''
+                    ) : (
+                      <button
+                        className="px-4 py-1 text-white rounded font-semibold w-20 flex items-center justify-center
                       bg-[#F76C6C] hover:scale-105 transition-transform duration-200 cursor-pointer"
-                      onClick={handleAddBloodUnit}
-                      disabled={!!bloodUnit?.volume}
-                    >
-                      Confirm
-                    </button>
+                        onClick={handleAddBloodUnit}
+                        // disabled={!!bloodUnit?.volume}
+                      >
+                        {bloodUnit?.volume ? 'Update' : 'Confirm'}
+                      </button>
+                    )}
+
                     <button
                       className="px-4 py-1 bg-gray-300 text-black rounded font-semibold w-20 flex items-center justify-center
                       hover:scale-105 transition-transform duration-200 cursor-pointer"

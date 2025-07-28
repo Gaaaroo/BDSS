@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router';
 import { donorForm } from '../services/api/bloodFormService';
 import CustomModal from './CustomModal';
 import { toast } from 'react-toastify';
+import { donorFormSchema } from '../Validations/formValidate';
 
 export function Title({ title, decription }) {
   return (
@@ -21,6 +22,7 @@ export default function DonorForm() {
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [isDisabled, setIsDisabled] = useState(false);
+  const [formError, setFormError] = useState({});
 
   const handleCancel = () => {
     setShowModal(false);
@@ -40,6 +42,7 @@ export default function DonorForm() {
     email: '',
     address: '',
     disease: '',
+    readyDate: '',
   });
   function isProfileIncomplete(profile) {
     return (
@@ -77,6 +80,7 @@ export default function DonorForm() {
 
   const handleDonorRegister = async (e) => {
     e.preventDefault();
+    setFormError({});
     try {
       if (isDisabled) {
         return;
@@ -87,25 +91,34 @@ export default function DonorForm() {
           setIsDisabled(false);
         }, 5000);
       }
-
-      const res = await donorForm({ healthNotes: formData.disease });
-      console.log('Detail donor form:', res);
+      await donorFormSchema.validate(formData, { abortEarly: false });
+      await donorForm({
+        healthNotes: formData.disease,
+        readyDate: formData.readyDate,
+      });
       toast.success('Register successful!');
       navigate('/');
     } catch (error) {
-      if (error.response && error.response.data) {
+      // Nếu là lỗi validation của Yup
+      if (error.inner) {
+        const errors = {};
+        error.inner.forEach((e) => {
+          errors[e.path] = e.message;
+        });
+        setFormError(errors);
+        toast.error('Please fix the highlighted fields.');
+        console.error('Validation errors:', errors);
+        // Nếu là lỗi từ API response
+      } else if (error.response && error.response.data) {
         const { code, message } = error.response.data;
-
-        // Hiển thị message cụ thể từ server nếu có
         if (message) {
           toast.error(message);
         } else {
           toast.error('Register failed.');
         }
-
         console.error(`Error ${code}: ${message}`);
+        // Nếu là lỗi không rõ nguồn gốc
       } else {
-        // Fallback nếu không có thông tin từ server
         toast.error('Register failed.');
         console.error(error);
       }
@@ -127,27 +140,37 @@ export default function DonorForm() {
             label="Full Name"
             name="fullName"
             value={formData.fullName}
-            onChange={() => {}}
+            readOnly
           />
           <TextInput
             label="Date of Birth"
             name="dob"
             value={formData.dob}
-            onChange={() => {}}
+            readOnly
           />
           <TextInput
             label="Phone"
             name="phone"
             placeholder="Enter your phone number"
             value={formData.phone}
-            onChange={() => {}}
+            readOnly
           />
           <TextInput
             label="Blood Type"
             name="bloodType"
             value={formData.bloodType}
-            onChange={() => {}}
+            readOnly
           />
+          <TextInput
+            label="Ready Date"
+            name="readyDate"
+            type="datetime-local"
+            value={formData.readyDate}
+            onChange={handleChange}
+          />
+          {formError.readyDate && (
+            <p className="text-sm text-red-600 mt-1">{formError.readyDate}</p>
+          )}
         </div>
         {/* Right Column */}
         <div className="space-y-4">
@@ -155,7 +178,7 @@ export default function DonorForm() {
             label="Gender"
             name="gender"
             value={formData.gender}
-            onChange={() => {}}
+            readOnly
           />
           <TextInput
             label="Email"
@@ -163,14 +186,14 @@ export default function DonorForm() {
             type="email"
             placeholder="Enter your email"
             value={formData.email}
-            onChange={() => {}}
+            readOnly
           />
           <TextInput
             label="Address"
             name="address"
             placeholder="Enter your address"
             value={formData.address}
-            onChange={() => {}}
+            readOnly
           />
           <TextInput
             label="Any blood related disease"
@@ -178,8 +201,10 @@ export default function DonorForm() {
             placeholder="Specify if any"
             value={formData.disease}
             onChange={handleChange}
-            required
           />
+          {formError.disease && (
+            <p className="text-sm text-red-600 mt-1">{formError.disease}</p>
+          )}
         </div>
       </div>
       <div className="flex justify-center">

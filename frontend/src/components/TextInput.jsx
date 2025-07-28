@@ -7,6 +7,7 @@ export default function TextInput({
   value,
   onChange,
   placeholder,
+  readOnly,
   required = false,
 }) {
   return (
@@ -27,6 +28,7 @@ export default function TextInput({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
+        readOnly={readOnly}
         className="w-full px-3 text-lg py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
       />
     </div>

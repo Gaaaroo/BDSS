@@ -71,6 +71,35 @@ export default function InventoryDetail({
             ))}
           </tbody>
         </table>
+        {data.receiveUser && (
+          <>
+            <h2 className="text-xl font-bold text-blue-600 mt-5">
+              Receiver Information
+            </h2>
+            <table className="table-auto w-full text-sm text-gray-800 border border-gray-200 rounded-md overflow-hidden">
+              <tbody>
+                {[
+                  ['Full Name', data.receiveUser?.fullName],
+                  ['Email', data.receiveUser?.email],
+                  ['Date of Birth', data.receiveUser?.dob?.slice(0, 10)],
+                  ['Gender', data.receiveUser?.gender],
+                  ['Blood Type', data.receiveUser?.bloodType],
+                  ['Address', data.receiveUser?.address],
+                ].map(([label, value], idx) => (
+                  <tr
+                    key={label}
+                    className={idx % 2 === 0 ? 'bg-white' : 'bg-blue-50'}
+                  >
+                    <th className="text-left w-48 px-4 py-2 font-semibold text-gray-700 border-b">
+                      {label}
+                    </th>
+                    <td className="px-4 py-2 border-b">{value || '-'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </>
+        )}
         <div className="mt-4 text-right">
           <button
             onClick={onClose}

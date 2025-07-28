@@ -37,6 +37,19 @@ export default function ReceiveDetail() {
     }
   };
 
+  function formatDateTime(dateTimeStr) {
+    if (!dateTimeStr) return '';
+    const d = new Date(dateTimeStr);
+
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+
+    return `${yyyy}/${mm}/${dd} ${hh}:${min}`;
+  }
+
   useEffect(() => {
     fetchDetail();
   }, [id]);
@@ -84,61 +97,38 @@ export default function ReceiveDetail() {
           <div className="space-y-4">
             <TextInput
               label="Full Name"
-              onChange={() => {}}
+              readOnly
               value={detail.user.fullName}
             />
-            <TextInput
-              label="Date of Birth"
-              onChange={() => {}}
-              value={detail.user.dob}
-            />
-            <TextInput
-              label="Phone"
-              onChange={() => {}}
-              value={detail.user.phone}
-            />
+            <TextInput label="Date of Birth" readOnly value={detail.user.dob} />
+            <TextInput label="Phone" readOnly value={detail.user.phone} />
             <TextInput
               label="Blood Type request"
-              onChange={() => {}}
+              readOnly
               value={detail.bloodType}
             />
-            <TextInput
-              label="Volume (ml)"
-              onChange={() => {}}
-              value={detail.volume}
-            />
-            <TextInput
-              label="Priority"
-              onChange={() => {}}
-              value={detail.priority}
-            />
+            <TextInput label="Volume (ml)" readOnly value={detail.volume} />
+            <TextInput label="Priority" readOnly value={detail.priority} />
           </div>
           {/* Right Column */}
           <div className="space-y-4">
-            <TextInput
-              label="Gender"
-              onChange={() => {}}
-              value={detail.user.gender}
-            />
-            <TextInput
-              label="Email"
-              onChange={() => {}}
-              value={detail.user.email}
-            />
+            <TextInput label="Gender" readOnly value={detail.user.gender} />
+            <TextInput label="Email" readOnly value={detail.user.email} />
             <TextInput
               label="Hospital Address"
-              onChange={() => {}}
+              readOnly
               value={detail.hospitalAddress}
             />
             <TextInput
               label="Component Type request"
               value={detail.componentType}
-              onChange={() => {}}
+              readOnly
             />
+            <TextInput label="Quantity" value={detail.quantity} readOnly />
             <TextInput
-              label="Quantity"
-              value={detail.quantity}
-              onChange={() => {}}
+              label="Required date"
+              value={formatDateTime(detail.requiredDate)}
+              readOnly
             />
           </div>
         </div>
