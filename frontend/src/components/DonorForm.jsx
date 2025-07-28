@@ -40,6 +40,7 @@ export default function DonorForm() {
     email: '',
     address: '',
     disease: '',
+    readyDate: '',
   });
   function isProfileIncomplete(profile) {
     return (
@@ -88,7 +89,10 @@ export default function DonorForm() {
         }, 5000);
       }
 
-      const res = await donorForm({ healthNotes: formData.disease });
+      const res = await donorForm({
+        healthNotes: formData.disease,
+        readyDate: formData.readyDate,
+      });
       console.log('Detail donor form:', res);
       toast.success('Register successful!');
       navigate('/');
@@ -147,6 +151,14 @@ export default function DonorForm() {
             name="bloodType"
             value={formData.bloodType}
             onChange={() => {}}
+          />
+          <TextInput
+            label="Ready Date"
+            name="readyDate"
+            type="date"
+            value={formData.readyDate}
+            onChange={handleChange}
+            required
           />
         </div>
         {/* Right Column */}

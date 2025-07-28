@@ -125,7 +125,6 @@ export default function Components() {
             <th className="py-2 text-center">Created Date</th>
             <th className="py-2 text-center">Expiry Date</th>
             <th className="py-2 text-center">Note</th>
-            <th className="py-2 text-center">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -139,7 +138,8 @@ export default function Components() {
             list.map((item, index) => (
               <tr
                 key={item.id || index}
-                className="even:bg-red-50 odd:bg-white"
+                className="even:bg-red-50 odd:bg-white cursor-pointer"
+                onClick={() => setSelectedItem(item)}
               >
                 <td className="py-2 text-center">{page * 10 + index + 1}</td>
                 <td className="py-2 text-center">
@@ -150,13 +150,19 @@ export default function Components() {
                 <td className="py-2 text-center">{item.volume}</td>
                 <td className="py-2 text-center">
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-semibold 
-      ${
-        item.status === 'Stored'
-          ? 'text-green-700 bg-green-100'
-          : 'text-blue-700 bg-blue-300'
-      }
-    `}
+                    className={`px-2 py-1 rounded-full text-xs font-semibold
+    ${
+      item.status === 'Stored'
+        ? 'text-green-700 bg-green-100'
+        : item.status === 'Separated'
+        ? 'text-blue-700 bg-blue-100'
+        : item.status === 'Used'
+        ? 'text-gray-700 bg-gray-200'
+        : item.status === 'Expired'
+        ? 'text-red-700 bg-red-100'
+        : 'text-yellow-700 bg-yellow-100' // default
+    }
+  `}
                   >
                     {item.status}
                   </span>
@@ -168,21 +174,6 @@ export default function Components() {
                   {item.expiryDate?.slice(0, 10)}
                 </td>
                 <td className="py-2 text-center">{item.note}</td>
-
-                <td className="py-2 text-center space-x-1">
-                  <button
-                    className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-500 text-xs"
-                    onClick={() => setSelectedItem(item)}
-                  >
-                    View
-                  </button>
-                  <button
-                    className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-500 text-xs"
-                    onClick={() => alert(`Delete ${item.bloodId}`)}
-                  >
-                    None
-                  </button>
-                </td>
               </tr>
             ))
           )}

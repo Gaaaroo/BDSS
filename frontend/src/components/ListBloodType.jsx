@@ -60,7 +60,12 @@ export default function ListBloodType({ list, fetchList }) {
             list?.map((item, index) => (
               <tr
                 key={item.bloodId}
-                className={index % 2 === 0 ? 'bg-white' : 'bg-red-50'}
+                className={
+                  index % 2 === 0
+                    ? 'bg-white cursor-pointer'
+                    : 'bg-red-50 cursor-pointer'
+                }
+                onClick={() => setSelectedItem(item)}
               >
                 <td className="py-2 text-center">{index + 1}</td>
                 <td className="py-2 text-center">
@@ -76,32 +81,32 @@ export default function ListBloodType({ list, fetchList }) {
                 </td>
                 <td className="py-2 text-center">
                   <span
-                    className={`px-2 py-1 rounded-full text-xs font-semibold 
-      ${
-        item.status === 'Stored'
-          ? 'text-green-700 bg-green-100'
-          : 'text-yellow-700 bg-orange-200'
-      }
-    `}
+                    className={`px-2 py-1 rounded-full text-xs font-semibold
+    ${
+      item.status === 'Stored'
+        ? 'text-green-700 bg-green-100'
+        : item.status === 'Separated'
+        ? 'text-blue-700 bg-blue-100'
+        : item.status === 'Used'
+        ? 'text-gray-700 bg-gray-200'
+        : item.status === 'Expired'
+        ? 'text-red-700 bg-red-100'
+        : 'text-yellow-700 bg-yellow-100' // default
+    }
+  `}
                   >
                     {item.status}
                   </span>
                 </td>
                 <td className="py-2 text-center">{item.volume}</td>
                 <td className="py-2 text-center">{item.note}</td>
-                <td className="py-2 space-x-2 text-justify w-30">
-                  <button
-                    className="px-2 py-1 bg-blue-600 text-white rounded hover:bg-blue-500 text-xs"
-                    onClick={() => setSelectedItem(item)}
-                  >
-                    View
-                  </button>
-
+                <td className="py-2 space-x-2 text-center w-30">
                   {/*Button Separate */}
                   {item.status === 'Stored' && (
                     <button
                       className="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-400 text-xs"
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         setSelectedBloodId(item.bloodId);
                         setShowSeparateModal(true);
                       }}
