@@ -50,12 +50,13 @@ public class BloodReceiveFormService {
         String bloodType = bloodReceiveForm.getBloodType();
         String componentType = bloodReceiveForm.getComponentType();
         Pageable pageable = PageRequest.of(page, size);
+        int volume = bloodReceiveForm.getVolume();
 
         if (componentType.equalsIgnoreCase("Whole")) {
             Page<BloodUnit> bloodUnits = bloodUnitRepository.findAllSuitableBloodUnitByType(bloodType, pageable);
 
             List<BloodResponse> content = bloodUnits.getContent().stream()
-                    .filter(unit -> unit.getStatus().equalsIgnoreCase("Stored"))
+                    .filter(unit -> unit.getStatus().equalsIgnoreCase("Stored") && unit.getVolume() == volume)
                     .map(unit -> {
                         BloodUnitResponse response = bloodUnitMapper.toBloodUnitResponse(unit);
                         response.setUserResponse(userMapper.toUserResponse(unit.getBloodDonateForm().getUser()));
@@ -70,7 +71,8 @@ public class BloodReceiveFormService {
 
             List<BloodResponse> content = componentUnits.getContent().stream()
                     .filter(unit -> unit.getStatus().equalsIgnoreCase("Stored") &&
-                            unit.getComponentType().equalsIgnoreCase(componentType))
+                            unit.getComponentType().equalsIgnoreCase(componentType) &&
+                            unit.getVolume() == volume)
                     .map(unit -> {
                         BloodComponentUnitResponse response = bloodComponentUnitMapper.toBloodComponentUnitResponse(unit);
                         response.setUserResponse(userMapper.toUserResponse(unit.getBloodUnit().getBloodDonateForm().getUser()));
@@ -125,15 +127,70 @@ public class BloodReceiveFormService {
     public BloodReceiveFormResponse getBloodReceiveFormById(int id) {
         BloodReceiveForm bloodReceiveForm = bloodReceiveFormRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_EXISTED));
-        BloodReceiveFormResponse bloodReceiveFormResponse = bloodReceiveFormMapper
-                .toBloodReceiveFormResponse(bloodReceiveForm);
-        bloodReceiveFormResponse.setReceiveId(bloodReceiveForm.getReceiveId());
+
+        BloodReceiveFormResponse response = bloodReceiveFormMapper.toBloodReceiveFormResponse(bloodReceiveForm);
+        response.setReceiveId(bloodReceiveForm.getReceiveId());
+
         User user = bloodReceiveForm.getUser();
         UserResponse userResponse = userMapper.toUserResponse(user);
-        bloodReceiveFormResponse.setUser(userResponse);
+        response.setUser(userResponse);
 
-        return bloodReceiveFormResponse;
+        List<BloodResponse> bloodResponses = new ArrayList<>();
+
+        // Lấy danh sách BloodUnit
+        List<BloodUnit> bloodUnits = bloodUnitRepository.findByReceiveForm_ReceiveId(id);
+        if (bloodUnits != null && !bloodUnits.isEmpty()) {
+            List<BloodUnitResponse> unitResponses = bloodUnits.stream()
+                    .map(bloodUnit -> {
+                        BloodUnitResponse unitResp = bloodUnitMapper.toBloodUnitResponse(bloodUnit);
+
+                        if (bloodUnit.getBloodDonateForm() != null) {
+                            unitResp.setUserResponse(
+                                    userMapper.toUserResponse(bloodUnit.getBloodDonateForm().getUser())
+                            );
+                        }
+
+                        unitResp.setReceiveUser(null);
+                        return unitResp;
+                    })
+                    .collect(Collectors.toList());
+
+            bloodResponses.addAll(unitResponses);
+        }
+
+        // Lấy danh sách BloodComponentUnit
+        List<BloodComponentUnit> componentUnits = bloodComponentUnitRepository.findByBloodReceiveForm_ReceiveId(id);
+        if (componentUnits != null && !componentUnits.isEmpty()) {
+            List<BloodComponentUnitResponse> componentResponses = componentUnits.stream()
+                    .map(unit -> {
+                        BloodComponentUnitResponse componentResp = bloodComponentUnitMapper.toBloodComponentUnitResponse(unit);
+
+                        if (unit.getBloodUnit().getBloodDonateForm() != null) {
+                            componentResp.setUserResponse(
+                                    userMapper.toUserResponse(unit.getBloodUnit().getBloodDonateForm().getUser())
+                            );
+                        }
+
+                        componentResp.setReceiveUser(null);
+
+                        return componentResp;
+                    })
+                    .collect(Collectors.toList());
+
+            bloodResponses.addAll(componentResponses);
+        }
+
+        // Gán vào response
+        if (bloodResponses.isEmpty()) {
+            response.setBloodReceived(null);
+        } else {
+            response.setBloodReceived(bloodResponses);
+        }
+
+        return response;
     }
+
+
 
     public List<BloodReceiveFormResponse> getMyBloodReceiveForm() {
         var context = SecurityContextHolder.getContext();

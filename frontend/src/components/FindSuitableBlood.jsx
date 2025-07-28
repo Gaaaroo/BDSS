@@ -5,7 +5,12 @@ import { useApp } from '../Contexts/AppContext';
 import MapFinder from './MapFinder';
 import { toast } from 'react-toastify';
 
-export default function FindSuitableBlood({ receiveId }) {
+export default function FindSuitableBlood({
+  receiveId,
+  quantity,
+  bloodReceived = [],
+  onReload,
+}) {
   const { profile } = useApp();
   const [openPopup, setOpenPopup] = useState(false);
   const [suitableBloodList, setSuitableBloodList] = useState([]);
@@ -14,6 +19,7 @@ export default function FindSuitableBlood({ receiveId }) {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [showFinder, setShowFinder] = useState(false);
+  const [showAssignedBlood, setShowAssignedBlood] = useState(false);
 
   const fetchData = async (pageNumber = 0) => {
     setLoading(true);
@@ -39,6 +45,7 @@ export default function FindSuitableBlood({ receiveId }) {
     setOpenPopup(false);
     setPage(0);
     setSuitableBloodList([]);
+    if (onReload) onReload();
   };
 
   const handlePageChange = (newPage) => {
@@ -48,7 +55,16 @@ export default function FindSuitableBlood({ receiveId }) {
     }
   };
 
+  const assignedCount = suitableBloodList.filter(
+    (blood) => blood.status === 'Used'
+  ).length;
+
   const handleAssign = async (blood, index) => {
+    if (assignedCount >= quantity) {
+      toast.warning(`You must assign exactly ${quantity} blood unit(s).`);
+      return;
+    }
+
     const componentType = blood.componentType || 'whole';
     const bloodId =
       componentType === 'whole' ? blood.bloodId : blood.componentId;
@@ -65,12 +81,12 @@ export default function FindSuitableBlood({ receiveId }) {
         componentType,
       });
 
-      // Không fetch lại, chỉ cập nhật local state
       const updatedList = [...suitableBloodList];
       updatedList[index] = { ...blood, status: 'Used' };
       setSuitableBloodList(updatedList);
 
       toast.success('Assigned successfully!');
+      if (onReload) onReload();
     } catch (error) {
       toast.error('Failed to assign blood unit.');
       console.error(error);
@@ -79,12 +95,21 @@ export default function FindSuitableBlood({ receiveId }) {
 
   return (
     <>
-      <button
-        className="mt-4 px-3 py-2 hover:bg-text-red-600 bg-[#F76C6C] hover:scale-105 transition-transform duration-200 hover:text-white text-white rounded-[50px] font-semibold block mx-auto"
-        onClick={handleOpenPopup}
-      >
-        Find Blood From Inventory
-      </button>
+      {(bloodReceived?.length ?? 0) < quantity ? (
+        <button
+          className="mt-4 px-3 py-2 hover:bg-text-red-600 bg-[#F76C6C] hover:scale-105 transition-transform duration-200 hover:text-white text-white rounded-[50px] font-semibold block mx-auto"
+          onClick={handleOpenPopup}
+        >
+          Find Blood From Inventory
+        </button>
+      ) : (
+        <button
+          className="mt-4 px-3 py-2 hover:bg-red-500 bg-red-400 hover:scale-105 transition-transform duration-200 hover:text-white text-white rounded-[50px] font-semibold block mx-auto"
+          onClick={() => setShowAssignedBlood(true)}
+        >
+          View Assigned Blood
+        </button>
+      )}
 
       {openPopup && (
         <div className="fixed inset-0 bg-black/30 z-40 flex items-center justify-center">
@@ -96,15 +121,21 @@ export default function FindSuitableBlood({ receiveId }) {
               ×
             </button>
 
-            <h2 className="text-4xl font-bold mt-8 mb-6 text-center text-red-600">
+            <h2 className="text-4xl font-bold mt-8 mb-2 text-center text-red-600">
               Suitable Blood Units
             </h2>
+            <p className="text-center text-gray-700 text-lg mb-6">
+              Need to assign: <span className="font-bold">{quantity}</span>{' '}
+              unit(s). Already assigned:{' '}
+              <span className="font-bold">{assignedCount}</span>
+            </p>
 
             {loading ? (
               <p className="text-center text-gray-500">Loading...</p>
             ) : error ? (
               <p className="text-center text-red-500">{error}</p>
-            ) : suitableBloodList.length === 0 ? (
+            ) : suitableBloodList.length === 0 ||
+              suitableBloodList.length < quantity ? (
               <div className="text-center mt-6">
                 <p className="text-gray-500 text-lg mb-4">
                   No suitable blood found.
@@ -113,6 +144,7 @@ export default function FindSuitableBlood({ receiveId }) {
                   onClick={() => setShowFinder(true)}
                   className="mx-auto flex items-center justify-center bg-red-500 hover:bg-red-400 text-white font-semibold px-4 py-2 rounded-full transition"
                 >
+                  {/* icon */}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="w-5 h-5 mr-2"
@@ -235,6 +267,96 @@ export default function FindSuitableBlood({ receiveId }) {
           </div>
         </div>
       )}
+
+      {showAssignedBlood && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Overlay mờ */}
+          <div
+            className="absolute inset-0 bg-black/30"
+            onClick={() => setShowAssignedBlood(false)}
+          ></div>
+
+          {/* Nội dung chính */}
+          <div className="bg-white rounded-xl shadow-2xl p-6 w-[1000px] z-10 overflow-auto h-[70vh] ml-64">
+            <h3 className="text-3xl font-bold text-red-600 mb-6 text-center mt-15">
+              Assigned Blood Units
+            </h3>
+
+            <div className="overflow-x-auto">
+              <table className="min-w-full table-auto border border-gray-300 rounded-lg shadow-md">
+                <thead className="bg-white text-sm font-bold border-b border-gray-300">
+                  <tr>
+                    <th className="py-6 px-4 border border-gray-300 text-red-600">
+                      #
+                    </th>
+                    <th className="py-6 px-4 border border-gray-300 text-red-600 text-left">
+                      Donor Name
+                    </th>
+                    <th className="py-6 px-4 border border-gray-300 text-red-600 text-left">
+                      Phone
+                    </th>
+                    <th className="py-6 px-4 border border-gray-300 text-red-600 text-left">
+                      Email
+                    </th>
+                    <th className="py-6 px-4 border border-gray-300 text-red-600 text-left">
+                      Blood Type
+                    </th>
+                    <th className="py-6 px-4 border border-gray-300 text-red-600 text-left">
+                      Volume
+                    </th>
+                    <th className="py-6 px-4 border border-gray-300 text-red-600 text-left">
+                      Status
+                    </th>
+                    <th className="py-6 px-4 border border-gray-300 text-red-600 text-left">
+                      Note
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="text-sm text-gray-700">
+                  {bloodReceived.map((blood, index) => (
+                    <tr key={index} className="hover:bg-red-50 transition">
+                      <td className="py-6 px-4 border border-gray-300 text-center">
+                        {index + 1}
+                      </td>
+                      <td className="py-6 px-4 border border-gray-300">
+                        {blood.userResponse?.fullName}
+                      </td>
+                      <td className="py-6 px-4 border border-gray-300">
+                        {blood.userResponse?.phone}
+                      </td>
+                      <td className="py-6 px-4 border border-gray-300">
+                        {blood.userResponse?.email}
+                      </td>
+                      <td className="py-6 px-4 border border-gray-300">
+                        {blood.bloodType}
+                      </td>
+                      <td className="py-6 px-4 border border-gray-300">
+                        {blood.volume} ml
+                      </td>
+                      <td className="py-6 px-4 border border-gray-300">
+                        {blood.status}
+                      </td>
+                      <td className="py-6 px-4 border border-gray-300">
+                        {blood.note}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="text-center mt-6">
+              <button
+                className="px-5 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full font-semibold"
+                onClick={() => setShowAssignedBlood(false)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showFinder && (
         <MapFinder
           initialLocation={{

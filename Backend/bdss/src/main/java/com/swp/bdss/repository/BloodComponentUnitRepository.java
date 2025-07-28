@@ -17,6 +17,9 @@ public interface BloodComponentUnitRepository extends JpaRepository<BloodCompone
 
     List<BloodComponentUnit> findByStatusNotAndExpiryDateBefore(String status, LocalDateTime expiryDate);
 
+    List<BloodComponentUnit> findByBloodReceiveForm_ReceiveId(Integer receiveId);
+
+
     Page<BloodComponentUnit> findByStatusOrderByComponentIdDesc(String status, Pageable pageable);
 
     Page<BloodComponentUnit> findByBloodTypeAndStatusOrderByComponentIdDesc(String bloodType, String status, Pageable pageable);
