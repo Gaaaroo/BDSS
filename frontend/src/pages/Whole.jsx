@@ -5,6 +5,7 @@ import {
   countBloodUnit,
   countRequest,
 } from '../services/api/inventoryService';
+import { sendEncouragementEmailByBloodType } from '../services/api/userService';
 import ListBloodType from '../components/ListBloodType';
 import BloodCardGrid from '../components/BloodCardGrid';
 import FilterHeader from '../components/FilterHeader';
@@ -15,6 +16,7 @@ export default function Whole() {
   const statusOptions = ['Stored', 'Separated', 'Used', 'Expired'];
   const [bloodData, setBloodData] = useState({});
   const [list, setList] = useState([]);
+  const [selectedType, setSelectedType] = useState('');
   //Page
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
@@ -94,23 +96,50 @@ export default function Whole() {
     }
   };
 
+  const handleSendEmail = async (bloodType) => {
+    try {
+      await sendEncouragementEmailByBloodType(bloodType);
+      alert(`Đã gửi email khuyến khích cho nhóm máu ${bloodType}`);
+    } catch (error) {
+      alert('Gửi email thất bại');
+      console.error(error);
+    }
+  };
+
+  const shouldShowEncouragementButton = () => {
+    if (!selectedType) return false;
+    const { units = 0, requests = 0 } = bloodData[selectedType] || {};
+    return units === 0 || requests > units;
+  };
+
   return (
     <div className="p-5">
       <BloodCardGrid
         bloodGroups={bloodGroups}
         bloodData={bloodData}
-        handleClick={(type) => setBloodType(type)}
+        handleClick={(type) => {
+          setBloodType(type);
+          setSelectedType(type);
+        }}
       />
+
       <FilterHeader
         title="Blood Whole"
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         bloodType={bloodType}
-        setBloodType={setBloodType}
+        setBloodType={(type) => {
+          setBloodType(type);
+          setSelectedType(''); // Reset khi bấm "Blood Whole"
+        }}
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
         statusOptions={statusOptions}
+        showEncouragementButton={shouldShowEncouragementButton()}
+        selectedType={selectedType}
+        handleSendEmail={handleSendEmail}
       />
+
       {/* List Whole */}
       <ListBloodType list={list} fetchList={fetchAPI} />
       <Pagination

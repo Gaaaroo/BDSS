@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -184,6 +185,11 @@ public class UserService {
 
     public void sendNotiToUser(int userId) {
         notificationService.createNotificationByUserId(userId, "We urgently need your help for a blood donation. If you have time, please come and donate as soon as possible. Your contribution can save lives!");
+    }
+
+    @Async
+    public void processEncouragementEmails(String bloodType) {
+        sendEncouragementToEligibleUsersByBloodType(bloodType);
     }
 
     public void sendEncouragementToEligibleUsersByBloodType(String bloodType) {
