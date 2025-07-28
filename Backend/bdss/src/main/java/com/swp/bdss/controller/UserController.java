@@ -110,6 +110,16 @@ public class UserController {
 
     }
 
+    @PutMapping("/activate-user")
+    public ApiResponse<UserResponse> activateUser(@RequestParam int userId) {
+        userService.activateUser(userId);
+        return ApiResponse.<UserResponse>builder()
+                .code(1000)
+                .message("User activate successfully")
+                .build();
+
+    }
+
     @GetMapping("/count-all")
     public ApiResponse<Long> countAllUsers() {
         return ApiResponse.<Long>builder()

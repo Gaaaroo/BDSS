@@ -3,6 +3,7 @@ import {
   getAllUserProfile,
   countAllUsers,
   banUser,
+  activateUser,
 } from '../services/api/userService';
 import MySearch from '../components/MySearch';
 import MemberDetail from '../components/MemberDetail';
@@ -42,12 +43,27 @@ export default function MemberManagement() {
     }
   };
 
+  const handleActivateUser = async (userId) => {
+    try {
+      await activateUser(userId);
+      toast.success('User activated successfully!');
+      // Sau khi kích hoạt xong thì refetch lại danh sách
+      const res = await getAllUserProfile(page, 12, searchTerm);
+      setUserList(res.content);
+      setTotalPages(res.totalPages);
+    } catch (err) {
+      console.error('Failed to activate user:', err);
+      toast.error('Failed to activate user');
+    }
+  };
+
   useEffect(() => {
     const fetchUsers = async () => {
       try {
         const res = await getAllUserProfile(page, 12, searchTerm);
         setUserList(res.content); // lấy danh sách user
         setTotalPages(res.totalPages); // tổng số trang
+        console.log('Fetched user list:', res);
       } catch (err) {
         console.log('Error fetching user list:', err);
       }
@@ -85,11 +101,11 @@ export default function MemberManagement() {
         Member Detail
       </h2>
 
-      <div className="overflow-x-auto rounded-2xl shadow-md">
+      <div className="overflow-x-auto  shadow-md">
         <table className="min-w-full table-auto border border-gray-300 text-sm text-gray-700">
           <thead className="bg-red-600 text-white">
             <tr>
-              <th className="py-2 text-center">No.</th>
+              <th className="py-2 text-center ml-5">No.</th>
               <th className="py-2 text-center">Fullname</th>
               <th className="py-2 text-center">Username</th>
               <th className="py-2 text-center">Gender</th>
@@ -118,15 +134,27 @@ export default function MemberManagement() {
                     : user.address}
                 </td>
                 <td className="py-2 text-center">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleBanUser(user.userId);
-                    }}
-                    className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-500 text-xs"
-                  >
-                    Ban
-                  </button>
+                  {user.status === 'BANNED' ? (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleActivateUser(user.userId);
+                      }}
+                      className="px-2 py-1 bg-green-600 text-white rounded hover:bg-green-500 text-xs"
+                    >
+                      Reactivate
+                    </button>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleBanUser(user.userId);
+                      }}
+                      className="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-500 text-xs"
+                    >
+                      Ban
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

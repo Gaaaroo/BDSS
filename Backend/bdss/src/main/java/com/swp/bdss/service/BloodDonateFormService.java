@@ -204,38 +204,82 @@ public class BloodDonateFormService {
         return bloodDonateFormRepository.countByRequestDateBetween(start, end);
     }
 
-    public Map<String, Long> getRequestStatistics(String mode){
-        LocalDate today = LocalDate.now();
+//    public Map<String, Long> getRequestStatistics(String mode){
+//        LocalDate today = LocalDate.now();
+//
+//        List<BloodDonateForm> requests = bloodDonateFormRepository.findAll();
+//
+//        switch (mode.toLowerCase()){
+//            case "day":
+//                return requests.stream()
+//                        .filter(r -> r.getRequestDate().toLocalDate()
+//                                .isAfter(today.minusDays(7)))
+//                        .collect(Collectors.groupingBy(
+//                                r -> r.getRequestDate().getDayOfWeek().toString(),
+//                                Collectors.counting()
+//                        ));
+//            case "month":
+//                return requests.stream()
+//                        .filter(r -> r.getRequestDate().getMonth() == today.getMonth()
+//                        && r.getRequestDate().getYear() == today.getYear())
+//                        .collect(Collectors.groupingBy(
+//                                r -> String.valueOf(r.getRequestDate().getDayOfMonth()),
+//                                Collectors.counting()
+//                        ));
+//            case "year":
+//                 return requests.stream()
+//                        .filter(r -> r.getRequestDate().getYear() == today.getYear())
+//                        .collect(Collectors.groupingBy(
+//                                r -> r.getRequestDate().getMonth().toString(),
+//                                Collectors.counting()
+//                        ));
+//            default:
+//                throw new AppException(ErrorCode.INVALID_MODE);
+//        }
+//    }
 
+    public Map<String, Long> getRequestStatistics(String mode) {
+        LocalDate today = LocalDate.now();
         List<BloodDonateForm> requests = bloodDonateFormRepository.findAll();
 
-        switch (mode.toLowerCase()){
+        Map<String, Long> resultMap;
+
+        switch (mode.toLowerCase()) {
             case "day":
-                return requests.stream()
-                        .filter(r -> r.getRequestDate().toLocalDate()
-                                .isAfter(today.minusDays(7)))
+                // Thống kê 7 ngày gần nhất, key là yyyy-MM-dd
+                resultMap = requests.stream()
+                        .filter(r -> !r.getRequestDate().toLocalDate().isBefore(today.minusDays(6)))
                         .collect(Collectors.groupingBy(
-                                r -> r.getRequestDate().getDayOfWeek().toString(),
+                                r -> r.getRequestDate().toLocalDate().toString(),
+                                TreeMap::new,
                                 Collectors.counting()
                         ));
+                break;
             case "month":
-                return requests.stream()
+                // Thống kê theo ngày trong tháng hiện tại, key là dd/MM
+                resultMap = requests.stream()
                         .filter(r -> r.getRequestDate().getMonth() == today.getMonth()
-                        && r.getRequestDate().getYear() == today.getYear())
+                                && r.getRequestDate().getYear() == today.getYear())
                         .collect(Collectors.groupingBy(
-                                r -> String.valueOf(r.getRequestDate().getDayOfMonth()),
+                                r -> String.format("%02d/%02d", r.getRequestDate().getDayOfMonth(), r.getRequestDate().getMonthValue()),
+                                TreeMap::new,
                                 Collectors.counting()
                         ));
+                break;
             case "year":
-                return requests.stream()
+                // Thống kê theo tháng trong năm hiện tại, key là MM/yyyy
+                resultMap = requests.stream()
                         .filter(r -> r.getRequestDate().getYear() == today.getYear())
                         .collect(Collectors.groupingBy(
-                                r -> r.getRequestDate().getMonth().toString(),
+                                r -> String.format("%02d/%d", r.getRequestDate().getMonthValue(), r.getRequestDate().getYear()),
+                                TreeMap::new,
                                 Collectors.counting()
                         ));
+                break;
             default:
                 throw new AppException(ErrorCode.INVALID_MODE);
         }
+        return resultMap;
     }
 
     public Long countBloodDonateFormByRequestDateBetween(LocalDate startDate, LocalDate endDate) {

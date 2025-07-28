@@ -34,7 +34,26 @@ export default function StaticsFormChart() {
       // Lấy tất cả label duy nhất từ cả 2
       const allLabels = Array.from(
         new Set([...Object.keys(donorObj), ...Object.keys(seekerObj)])
-      ).sort(); // Sắp xếp tăng dần nếu muốn
+      ).sort((a, b) => {
+        // Nếu là dạng ngày/tháng hoặc số, sort theo số
+        if (period === 'month') {
+          // dd/MM
+          const [da, ma] = a.split('/').map(Number);
+          const [db, mb] = b.split('/').map(Number);
+          return ma !== mb ? ma - mb : da - db;
+        }
+        if (period === 'year') {
+          // MM/yyyy
+          const [ma, ya] = a.split('/').map(Number);
+          const [mb, yb] = b.split('/').map(Number);
+          return ya !== yb ? ya - yb : ma - mb;
+        }
+        if (period === 'day') {
+          // yyyy-MM-dd
+          return new Date(a) - new Date(b);
+        }
+        return a.localeCompare(b);
+      }); // Sắp xếp tăng dần nếu muốn
 
       const donorValues = allLabels.map((label) => donorObj[label] || 0);
       const seekerValues = allLabels.map((label) => seekerObj[label] || 0);
@@ -51,6 +70,18 @@ export default function StaticsFormChart() {
     fetchData(period);
   }, [period]);
 
+  const a = () => {
+    let ahihi;
+    if (period === 'day') {
+      ahihi = 30;
+    } else if (period === 'month') {
+      ahihi = 15;
+    } else if (period === 'year') {
+      ahihi = 30;
+    }
+    return ahihi;
+  };
+
   const chartData = {
     labels,
     datasets: [
@@ -58,13 +89,13 @@ export default function StaticsFormChart() {
         label: 'Donors',
         data: donorCounts,
         backgroundColor: 'rgba(59, 130, 246, 0.7)', // blue
-        barThickness: 30,
+        barThickness: a,
       },
       {
         label: 'Seekers',
         data: seekerCounts,
         backgroundColor: 'rgba(244, 63, 94, 0.7)', // rose
-        barThickness: 30,
+        barThickness: a,
       },
     ],
   };
