@@ -10,7 +10,7 @@ import {
 } from '../services/api/forumService';
 import { createComment, deleteComment } from '../services/api/commentService';
 import { deletePostByAdmin } from '../services/api/forumService';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import ErrorModal from '../components/ErrorModal';
 import CustomModal from '../components/CustomModal';
@@ -24,6 +24,8 @@ import { BiTrash } from 'react-icons/bi';
 import { useApp } from '../Contexts/AppContext';
 
 function Forum() {
+  const { isLogged } = useApp();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [error, setError] = useState('');
   const [errorModal, setErrorModal] = useState({ open: false, message: '' });
@@ -39,7 +41,8 @@ function Forum() {
   const [statReload, setStatReload] = useState(0);
   const [isCommenting, setIsCommenting] = useState(false);
   const location = useLocation();
-  const { role } = useApp();
+  const { role, profile } = useApp();
+
   // Animation: track which posts are visible
   const [visiblePosts, setVisiblePosts] = useState([]);
   // Số lượng post hiển thị (infinite scroll)
@@ -71,7 +74,7 @@ function Forum() {
             comments: post.comments || [],
           }))
         );
-        console.log('My posts:', data);
+        // console.log('My posts:', data);
 
         setError('');
         setVisiblePosts([]);
@@ -277,7 +280,14 @@ function Forum() {
       {/* CTA Button */}
       <div className="flex justify-center mb-8">
         <button
-          onClick={handleOpenPost}
+          onClick={() => {
+            if (profile.status === 'BANNED') {
+              toast.error('You are banned from creating posts.');
+              return;
+            } else {
+              handleOpenPost();
+            }
+          }}
           className="px-6 py-2 bg-gradient-to-br from-[#FFA1A1] to-[#F76C6C] text-white font-bold rounded-full shadow hover:scale-105 transition flex items-center gap-2"
         >
           <PencilSquareIcon className="w-6 h-6 text-white" />
@@ -289,7 +299,14 @@ function Forum() {
         {!open && (
           <div
             className="w-14 h-14 bg-[#F76C6C] rounded-full flex items-center justify-center cursor-pointer text-3xl"
-            onClick={handleOpenPost}
+            onClick={() => {
+              if (profile.status === 'ACTIVE') {
+                toast.error('You are banned from creating posts.');
+                return;
+              } else {
+                handleOpenPost();
+              }
+            }}
           >
             <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
               +
@@ -303,16 +320,27 @@ function Forum() {
           </div>
         )}
 
-        {open && (
-          <PostModal
-            open={open}
-            title="New post"
-            formData={newPost}
-            setFormData={setNewPost}
-            onClose={handleClosePost}
-            onSubmit={handleCreatePost}
-          />
-        )}
+        {open ? (
+          isLogged ? (
+            <PostModal
+              open={open}
+              title="New post"
+              formData={newPost}
+              setFormData={setNewPost}
+              onClose={handleClosePost}
+              onSubmit={handleCreatePost}
+            />
+          ) : (
+            <CustomModal
+              onCancel={handleClosePost}
+              onOk={() => navigate('/login')}
+            >
+              <p className="text-gray-700 mb-6">
+                You must log in to create a post.
+              </p>
+            </CustomModal>
+          )
+        ) : null}
       </div>
 
       {error ? (

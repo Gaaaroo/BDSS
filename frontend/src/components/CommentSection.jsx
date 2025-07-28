@@ -3,6 +3,7 @@ import dayjs from 'dayjs';
 import { BiTrash } from 'react-icons/bi';
 import { jwtDecode } from 'jwt-decode';
 import { useApp } from '../Contexts/AppContext';
+import { toast } from 'react-toastify';
 
 export default function CommentSection({
   comments,
@@ -11,7 +12,7 @@ export default function CommentSection({
 }) {
   const [comment, setComment] = useState('');
   const [visibleCount, setVisibleCount] = useState(5);
-  const { role } = useApp();
+  const { role, profile } = useApp();
 
   let currentUserId = null;
   const token = localStorage.getItem('authToken');
@@ -28,9 +29,14 @@ export default function CommentSection({
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSendComment();
+    if (profile.status === 'BANNED') {
+      toast.error('You are banned from creating comments.');
+      return;
+    } else {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        handleSendComment();
+      }
     }
   };
 
@@ -58,7 +64,14 @@ export default function CommentSection({
         />
         <button
           className="ml-2 px-3 py-2 bg-[#F76C6C] text-white rounded hover:bg-[#ff8989] transition duration-200"
-          onClick={handleSendComment}
+          onClick={() => {
+            if (profile.status === 'BANNED') {
+              toast.error('You are banned from creating comments.');
+              return;
+            } else {
+              handleSendComment();
+            }
+          }}
         >
           Comment
         </button>

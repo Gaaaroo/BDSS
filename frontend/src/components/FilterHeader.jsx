@@ -1,6 +1,6 @@
 import React from 'react';
 import MySearch from './MySearch';
-import { Funnel } from 'lucide-react';
+import { Funnel, Mail } from 'lucide-react';
 
 export default function FilterHeader({
   title = 'Filter Section',
@@ -10,6 +10,9 @@ export default function FilterHeader({
   statusFilter,
   setStatusFilter,
   statusOptions,
+  showEncouragementButton = false,
+  selectedType = '',
+  handleSendEmail = () => {},
 }) {
   const handleStatusChange = (status) => {
     if (statusFilter.includes(status)) {
@@ -27,6 +30,24 @@ export default function FilterHeader({
       >
         {title}
       </h2>
+
+      <div className="w-10 flex justify-end relative overflow-visible">
+        {showEncouragementButton && (
+          <>
+            <div className="absolute -left-10 top-2 w-8 h-5 overflow-hidden">
+              <div className="animate-arrow text-red-500 font-bold">➤</div>
+            </div>
+
+            <button
+              onClick={() => handleSendEmail(selectedType)}
+              title={`Send encouragement for blood type ${selectedType}`}
+              className="text-rose-600 hover:text-rose-700 transition-all"
+            >
+              <Mail className="w-8 h-8" />
+            </button>
+          </>
+        )}
+      </div>
 
       <MySearch
         searchTerm={searchTerm}

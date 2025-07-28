@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -203,6 +204,11 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         emailService.sendNeedBloodUrgently(user.getEmail());
+    }
+
+    @Async
+    public void processEncouragementEmails(String bloodType) {
+        sendEncouragementToEligibleUsersByBloodType(bloodType);
     }
 
     public void sendEncouragementToEligibleUsersByBloodType(String bloodType) {
