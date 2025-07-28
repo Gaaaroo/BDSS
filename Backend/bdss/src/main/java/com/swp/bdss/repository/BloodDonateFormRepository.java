@@ -37,4 +37,7 @@ public interface BloodDonateFormRepository extends JpaRepository<BloodDonateForm
     Long countByUserBloodType(String bloodType);
 
     Long countByUserBloodTypeAndRequestDateBetween(String bloodType, LocalDateTime startDate, LocalDateTime endDate);
+
+    @Query("SELECT f FROM BloodDonateForm f JOIN FETCH f.user")
+    List<BloodDonateForm> findAllWithUser();
 }

@@ -293,7 +293,7 @@ function MyPosts() {
                     {/* Comment section */}
                     <div className="border-t border-[#FFA1A1] pt-4 mt-4">
                       <CommentSection
-                        comments={post.comments.reverse()}
+                        comments={post.comments}
                         handleDeleteComment={(commentId) =>
                           handleDeleteComment(post.id, commentId)
                         }
