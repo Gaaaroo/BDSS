@@ -43,9 +43,11 @@ public enum ErrorCode {
     BLOOD_UNIT_ALREADY_USED_OR_INVALID(1033, "Blood unit already used or invalid", HttpStatus.BAD_REQUEST),
     BLOOD_COMPONENT_ALREADY_USED_OR_INVALID(1033, "Blood component unit already used or invalid", HttpStatus.BAD_REQUEST),
     NOTIFICATION_NOT_FOUND(1034, "Notification not exist", HttpStatus.BAD_REQUEST),
-    FORUM_POST_BY_STAFF(1035, "You cannot delete forum post that created by another staff", HttpStatus.BAD_REQUEST),
-    COMMENT_POST_BY_STAFF(1036, "You cannot delete a comment that created by another staff", HttpStatus.BAD_REQUEST),
-
+    ALREADY_REGISTERED_PENDING_RECEIVE_FORM(1035, "You have already registered a blood receive form which is still being processed", HttpStatus.BAD_REQUEST),
+    BLOOD_DONATION_IN_PROGRESS(1036, "Your previous request is still in progress.", HttpStatus.BAD_REQUEST),
+    BLOOD_DONATION_RECOVERY_NOT_COMPLETE(1037, "You must wait 84 days between donations.", HttpStatus.BAD_REQUEST),
+      FORUM_POST_BY_STAFF(1038, "You cannot delete forum post that created by another staff", HttpStatus.BAD_REQUEST),
+    COMMENT_POST_BY_STAFF(1039, "You cannot delete a comment that created by another staff", HttpStatus.BAD_REQUEST),
     ;
 
     private final int code;

@@ -6,6 +6,7 @@ import MapFinder from './MapFinder';
 export default function MapPin() {
   const { profile, activeWidget, setActiveWidget } = useApp();
   const [showFinder, setShowFinder] = useState(false);
+  const { isLogged } = useApp();
 
   const handleOpenMap = () => {
     if (activeWidget !== 'map') {
@@ -26,7 +27,7 @@ export default function MapPin() {
   return (
     <>
       <div className="fixed bottom-40 right-5 flex flex-col z-50">
-        {!showFinder && activeWidget !== 'chat' && (
+        {isLogged && !showFinder && activeWidget !== 'chat' && (
           <div
             className="w-14 h-14 bg-red-500 rounded-full flex items-center justify-center cursor-pointer hover:bg-red-400 transition"
             onClick={handleOpenMap}
