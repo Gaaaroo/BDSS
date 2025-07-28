@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -185,16 +186,22 @@ public class BloodReceiveFormController {
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String status,
             @RequestParam(required = false) String priority,
+            @RequestParam(defaultValue = "receiveId") String sortField,
+            @RequestParam(defaultValue = "desc") String sortDir,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
+        Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortField);
+
         if (status != null && status.trim().isEmpty()) {
             status = null;
         }
-        Pageable pageable = PageRequest.of(page, size);
+        Pageable sortedPageable = PageRequest.of(page, size, sort);
+        System.out.println("sortField = " + sortField);
+        System.out.println("sortDir = " + sortDir);
         return ApiResponse.<Page<BloodReceiveFormResponse>>builder()
                 .code(1000)
-                .data(bloodReceiveFormService.getBloodReceiveForms(keyword, status, priority, pageable))
+                .data(bloodReceiveFormService.getBloodReceiveForms(keyword, status, priority, sortedPageable))
                 .message("Get blood seek forms successfully")
                 .build();
     }

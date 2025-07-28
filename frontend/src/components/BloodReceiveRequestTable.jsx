@@ -37,6 +37,9 @@ export default function BloodReceiveRequestTable({
   const [totalPages, setTotalPages] = useState(1);
   const [inputPage, setInputPage] = useState(1);
 
+  const [sortField, setSortField] = useState('receiveId');
+  const [sortDir, setSortDir] = useState('desc');
+
   // view all donate request and search posts by keyword
   const fetchRequests = useCallback(async () => {
     try {
@@ -45,6 +48,8 @@ export default function BloodReceiveRequestTable({
         keyword.trim(),
         selectedStatus,
         showUrgent ? 'Urgent' : undefined,
+        sortField,
+        sortDir,
         page,
         size
       );
@@ -61,7 +66,7 @@ export default function BloodReceiveRequestTable({
       console.error('Error fetching posts:', error);
       setReceiveRequests([]);
     }
-  }, [keyword, page, size, showUrgent, selectedStatus]);
+  }, [keyword, page, size, showUrgent, selectedStatus, sortField, sortDir]);
 
   useEffect(() => {
     setPage(0);
@@ -75,7 +80,7 @@ export default function BloodReceiveRequestTable({
       fetchRequests();
     }, 400);
     return () => clearTimeout(timeout);
-  }, [selectedStatus, keyword, triggerReloadCount, page, showUrgent]);
+  }, [selectedStatus, keyword, triggerReloadCount, page, showUrgent, sortField, sortDir]);
 
   // Modal handler for long hospital address
   const handleShowModal = (content) => {
@@ -120,42 +125,42 @@ export default function BloodReceiveRequestTable({
             placeholder="Search by fullname, phone, blood type"
           />
           <div className="flex items-center gap-3">
-            {/*Urgent button*/}
+            <select
+              className="px-3 text-sm flex items-center justify-center rounded
+      transition-colors duration-200 font-semibold border border-[#F9B3B3]
+      focus:outline-none bg-white text-black w-[130px] h-[31px]"
+              value={showUrgent ? 'Urgent' : 'All'}
+              onChange={(e) => {
+                const value = e.target.value;
+                setShowUrgent(value === 'Urgent');
+                setPage(0);
+                setInputPage(1);
+                setKeyword('');
+                if (onClearStatus) onClearStatus();
+              }}
+            >
+              <option value="All">All Requests</option>
+              <option value="Urgent">Urgent</option>
+            </select>
+
             <button
-              className={`rounded-full px-3 text-sm h-7 flex items-center justify-center
-    transition-colors duration-200 hover:text-white hover:font-bold 
-    hover:transform hover:scale-105 hover:bg-red-500 w-[105px]
-    ${
-      showUrgent
-        ? 'bg-red-500 text-white font-bold'
-        : 'bg-[#F9B3B3] text-black font-semibold'
-    }`}
+              className="px-3 py-1 h-[31px] bg-white text-black border border-[#F9B3B3] rounded
+              flex items-center justify-center
+               hover:bg-red-500 hover:text-white transition"
               onClick={() => {
-                setShowUrgent(true);
+                setSortField('requiredDate');
+                setSortDir((prev) => (prev === 'desc' ? 'asc' : 'desc'));
                 setPage(0);
                 setInputPage(1);
               }}
             >
-              Urgent
+              Sort by Required Date{' '}
+              {sortField === 'requiredDate'
+                ? sortDir === 'desc'
+                  ? '↓'
+                  : '↑'
+                : ''}
             </button>
-
-            <div className="flex items-center gap-2 mr-2">
-              <button
-                className="rounded-full px-3 text-sm h-7 flex items-center justify-center
-            transition-colors duration-200 hover:text-white hover:font-bold 
-            hover:transform hover:scale-105 hover:bg-red-500
-            bg-[#F9B3B3] text-black font-semibold w-[105px]"
-                onClick={() => {
-                  setShowUrgent(false);
-                  setKeyword('');
-                  setPage(0);
-                  setInputPage(1);
-                  if (onClearStatus) onClearStatus();
-                }}
-              >
-                All Requests
-              </button>
-            </div>
           </div>
         </div>
         {/* Table */}
@@ -163,7 +168,7 @@ export default function BloodReceiveRequestTable({
           <table className="min-w-full table-auto border border-gray-300 rounded-lg">
             <thead className="bg-red-600 text-white">
               <tr>
-                <th className="py-2 text-center">ReceiveId</th>
+                <th className="py-2 pl-4 text-center">#</th>
                 <th className="py-2 text-center">Fullname</th>
                 <th className="py-2 text-center">BloodType</th>
                 <th className="py-2 text-center">Component Type</th>
@@ -171,9 +176,9 @@ export default function BloodReceiveRequestTable({
                 <th className="py-2 text-center">Volume</th>
                 <th className="py-2 text-center">Hospital Address</th>
                 <th className="py-2 text-center">Priority</th>
-                {/* <th className="py-2 text-center">Require Day</th> */}
+                <th className="py-2 text-center">Required Day</th>
                 <th className="py-2 text-center">Status</th>
-                <th className="py-2 text-center">Action</th>
+                <th className="py-2 pr-2 text-center">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -186,7 +191,7 @@ export default function BloodReceiveRequestTable({
               ) : (
                 filteredRequests.map((request, idx) => (
                   <tr key={idx} className="even:bg-red-50 odd:bg-white">
-                    <td className="py-2 text-center">{request.receiveId}</td>
+                    <td className="py-2 text-center">{idx + 1}</td>
                     <td className="py-2 text-center">
                       {request.user?.fullName}
                     </td>
@@ -201,18 +206,20 @@ export default function BloodReceiveRequestTable({
                       {request.volume ?? 'Updating...'}
                     </td>
                     <td
-                      className="py-2 text-center max-w-[160px] truncate cursor-pointer"
+                      className="py-2 text-center max-w-[140px] truncate cursor-pointer"
                       title={request.hospitalAddress}
                       onClick={() => handleShowModal(request.hospitalAddress)}
                     >
                       {request.hospitalAddress}
                     </td>
                     <td className="py-2 text-center">{request.priority}</td>
-                    {/* <td className="py-2 text-center">
-                      {request.requireDate
-                        ? dayjs(request.requireDate).format('DD/MM/YYYY')
+                    <td className="py-2 text-center">
+                      {request.requiredDate
+                        ? dayjs(request.requiredDate).format(
+                            'DD/MM/YYYY - HH:mm'
+                          )
                         : ''}
-                    </td> */}
+                    </td>
                     <td className="py-2 text-center">
                       <span
                         className={`

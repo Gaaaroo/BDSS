@@ -35,6 +35,9 @@ public class BloodDonateForm {
     @Column(name = "requestDate", nullable = false)
     LocalDateTime requestDate;
 
+    @Column(name = "readyDate", nullable = true)
+    LocalDateTime readyDate;
+
     @OneToMany(mappedBy = "bloodDonateForm", cascade = CascadeType.ALL, orphanRemoval = true)
     List<DonationProcess> steps = new ArrayList<>();
 
