@@ -249,14 +249,14 @@ export default function ProfileUpdate({
           <button
             type="button"
             onClick={onCancel}
-            className="px-6 py-2 bg-red-300 rounded-xl hover:bg-red-400"
+            className="px-6 py-2 bg-red-300 rounded-xl hover:bg-red-400 cursor-pointer"
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={uploading}
-            className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700"
+            className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 cursor-pointer"
           >
             {uploading ? 'Loading...' : 'Save'}
           </button>
