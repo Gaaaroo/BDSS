@@ -87,6 +87,7 @@ public class BloodDonateFormService {
         UserResponse userResponse = userMapper.toUserResponse(user);
         bloodDonateForm.setUser(user);
         bloodDonateForm.setRequestDate(LocalDateTime.now());
+        bloodDonateForm.setReadyDate(request.getReadyDate());
         bloodDonateForm.setStatus("PENDING");
 
         BloodDonateFormResponse bloodDonateFormResponse = bloodDonateFormMapper
@@ -149,7 +150,7 @@ public class BloodDonateFormService {
         return bloodDonateFormMapper.toBloodDonateFormResponse(bloodDonateFormRepository.save(bloodDonateForm));
     }
 
-    /// //////////////////////////////
+        /// //////////////////////////////
 
     public Page<BloodDonateFormResponse> getBloodDonateForm(String keyword, String status, Pageable pageable) {
         Page<BloodDonateForm> page;
