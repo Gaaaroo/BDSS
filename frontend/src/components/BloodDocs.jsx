@@ -333,23 +333,17 @@ If you have O− blood, your donation matters more than you may realize. You are
     : bloodType;
 
   return (
-    <div className="w-full flex justify-center px-4">
-      <ul
-        className={`flex flex-wrap ${
-          filtered.length === 1 ? "justify-center" : "justify-center"
-        } gap-x-8 gap-y-8 list-none p-0 m-0`}
-      >
-        {filtered.map((bloods) => (
-          <li key={bloods.bloodType}>
-            <BloodDoc
-              bloodType={bloods.bloodType}
-              image={bloods.image}
-              description={bloods.description}
-              document={bloods.document}
-            />
-          </li>
-        ))}
-      </ul>
-    </div>
+    <>
+      {filtered.map((bloods) => (
+        <div key={bloods.bloodType}>
+          <BloodDoc
+            bloodType={bloods.bloodType}
+            image={bloods.image}
+            description={bloods.description}
+            document={bloods.document}
+          />
+        </div>
+      ))}
+    </>
   );
 }
