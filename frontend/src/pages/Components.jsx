@@ -4,6 +4,7 @@ import {
   countRequest,
   filterBloodComponentUnits,
 } from '../services/api/inventoryService';
+import { sendEncouragementEmailByBloodType } from '../services/api/userService';
 import Pagination from '../components/Pagination';
 import InventoryDetail from '../components/InventoryDetail';
 import BloodCardGrid from '../components/BloodCardGrid';
@@ -13,6 +14,7 @@ export default function Components() {
   // Card blood
   const bloodGroups = ['O+', 'A+', 'B+', 'AB+', 'O-', 'A-', 'B-', 'AB-'];
   const [bloodData, setBloodData] = useState({});
+  const [selectedType, setSelectedType] = useState('');
   //const [requestData, setRequestData] = useState({});
   //List component
   const [list, setList] = useState([]);
@@ -96,22 +98,47 @@ export default function Components() {
     }
   };
 
+  const shouldShowEncouragementButton = () => {
+    if (!selectedType) return false;
+    const { units = 0, requests = 0 } = bloodData[selectedType] || {};
+    return units === 0 || requests > units;
+  };
+
+  const handleSendEmail = async (bloodType) => {
+    try {
+      await sendEncouragementEmailByBloodType(bloodType);
+      alert(`Encouragement email sent to blood type ${bloodType}`);
+    } catch (error) {
+      alert('Failed to send encouragement email.');
+      console.error(error);
+    }
+  };
+
   return (
     <div className="p-5">
       <BloodCardGrid
         bloodGroups={bloodGroups}
         bloodData={bloodData}
-        handleClick={(type) => setBloodType(type)}
+        handleClick={(type) => {
+          setBloodType(type);
+          setSelectedType(type); // THÊM DÒNG NÀY
+        }}
       />
       <FilterHeader
         title="Blood Components"
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         bloodType={bloodType}
-        setBloodType={setBloodType}
+        setBloodType={(type) => {
+          setBloodType(type);
+          setSelectedType(''); // Reset nếu chọn All
+        }}
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
         statusOptions={statusOptions}
+        showEncouragementButton={shouldShowEncouragementButton()}
+        selectedType={selectedType}
+        handleSendEmail={handleSendEmail}
       />
       <table className="min-w-full table-auto border border-gray-300">
         <thead className="bg-red-600 text-white">
@@ -151,12 +178,12 @@ export default function Components() {
                 <td className="py-2 text-center">
                   <span
                     className={`px-2 py-1 rounded-full text-xs font-semibold 
-      ${
-        item.status === 'Stored'
-          ? 'text-green-700 bg-green-100'
-          : 'text-blue-700 bg-blue-300'
-      }
-    `}
+                    ${
+                      item.status === 'Stored'
+                        ? 'text-green-700 bg-green-100'
+                        : 'text-blue-700 bg-blue-300'
+                    }
+                  `}
                   >
                     {item.status}
                   </span>

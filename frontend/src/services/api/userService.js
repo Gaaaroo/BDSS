@@ -1,5 +1,24 @@
 import axiosClient from './axiosClient';
 
+export const sendEncouragementEmailByBloodType = async (bloodType) => {
+  try {
+    if (!bloodType || typeof bloodType !== 'string') {
+      throw new Error('Invalid blood type');
+    }
+
+    const response = await axiosClient.post('/users/send-encouragement', null, {
+      params: { bloodType },
+    });
+
+    return response;
+  } catch (error) {
+    console.error(
+      error?.response?.data?.message || 'Error sending encouragement email'
+    );
+    throw error;
+  }
+};
+
 export const sendInviteRequest = async (userId) => {
   try {
     if (!userId || isNaN(userId)) {
