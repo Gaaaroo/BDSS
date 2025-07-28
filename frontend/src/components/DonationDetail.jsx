@@ -37,6 +37,18 @@ export default function DonationDetail() {
     }
   };
 
+  function formatDateTime(dateTimeStr) {
+    if (!dateTimeStr) return '';
+    const d = new Date(dateTimeStr);
+
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+
+    return `${yyyy}/${mm}/${dd} ${hh}:${min}`;
+  }
   useEffect(() => {
     fetchDetail();
   }, [id]);
@@ -83,46 +95,51 @@ export default function DonationDetail() {
           <div className="space-y-4">
             <TextInput
               label="Full Name"
-              onChange={() => {}}
               value={detail.userResponse.fullName}
+              readOnly
             />
             <TextInput
               label="Date of Birth"
-              onChange={() => {}}
+              readOnly
               value={detail.userResponse.dob}
             />
             <TextInput
               label="Phone"
-              onChange={() => {}}
+              readOnly
               value={detail.userResponse.phone}
             />
             <TextInput
               label="Blood type"
-              onChange={() => {}}
+              readOnly
               value={detail.userResponse.bloodType}
+            />
+            <TextInput
+              label="Ready date"
+              readOnly
+              value={formatDateTime(detail.readyDate)}
             />
           </div>
           {/* Right Column */}
           <div className="space-y-4">
             <TextInput
               label="Gender"
-              onChange={() => {}}
+              readOnly
               value={detail.userResponse.gender}
             />
             <TextInput
               label="Email"
-              onChange={() => {}}
+              readOnly
               value={detail.userResponse.email}
             />
             <TextInput
               label="Address"
-              onChange={() => {}}
+              readOnly
               value={detail.userResponse.address}
             />
             <TextInput
               label="Any blood related disease"
+              readOnly
               value={detail.healthNotes}
-              onChange={() => {}}
             />
           </div>
         </div>

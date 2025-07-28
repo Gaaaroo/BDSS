@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import dayjs from 'dayjs';
+import { toast } from 'react-toastify';
 
 export default function BlogList({
   blogs,
@@ -17,7 +18,9 @@ export default function BlogList({
       onPageChange(pageNum - 1);
       setInputPage('');
     } else {
-      alert(`Please enter a valid page number between 1 and ${totalPages}`);
+      toast.error(
+        `Please enter a valid page number between 1 and ${totalPages}`
+      );
     }
   };
 

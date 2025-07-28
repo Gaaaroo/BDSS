@@ -49,7 +49,9 @@ export default function BlogManagement() {
       setPage(pageNum - 1);
       setInputPage('');
     } else {
-      alert(`Please enter a valid page number between 1 and ${totalPages}`);
+      toast.warning(
+        `Please enter a valid page number between 1 and ${totalPages}`
+      );
     }
   };
 
@@ -141,9 +143,11 @@ export default function BlogManagement() {
         </div>
         {/* Nút thêm blog */}
         <div className="flex justify-between mb-4">
-
-
-          <MySearch searchTerm={searchUsername} setSearchTerm={setSearchUsername} placeholder="Search by username"/>
+          <MySearch
+            searchTerm={searchUsername}
+            setSearchTerm={setSearchUsername}
+            placeholder="Search by username"
+          />
 
           <button
             onClick={handleAddClick}

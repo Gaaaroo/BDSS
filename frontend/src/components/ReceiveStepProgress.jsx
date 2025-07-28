@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { updateReceivingProcessStep } from '../services/api/bloodRequestService';
 import FindSuitableBlood from './FindSuitableBlood';
+import { toast } from 'react-toastify';
 
 const stepNames = [
   'Confirm information',
@@ -19,6 +20,8 @@ export default function StepProgress({
   onReload,
   receiveId,
   onReloadTable,
+  quantity,
+  bloodReceived = [],
 }) {
   const [openStepIdx, setOpenStepIdx] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(
@@ -53,7 +56,7 @@ export default function StepProgress({
     // If it's the first step
     if (openStepIdx === 0) {
       if (!allNextPending) {
-        alert('All following steps must be PENDING!');
+        toast.warning('All following steps must be PENDING!');
         setLoading(false);
         return;
       }
@@ -61,7 +64,7 @@ export default function StepProgress({
     // If it's the last step
     else if (openStepIdx === steps.length - 1) {
       if (!allPrevDone) {
-        alert('All previous steps must be DONE!');
+        toast.warning('All previous steps must be DONE!');
         setLoading(false);
         return;
       }
@@ -69,7 +72,7 @@ export default function StepProgress({
     // Any step in the middle
     else {
       if (!allPrevDone || !allNextPending) {
-        alert(
+        toast.warning(
           'All previous steps must be DONE and all following steps must be PENDING!'
         );
         setLoading(false);
@@ -92,7 +95,7 @@ export default function StepProgress({
       }
       setOpenStepIdx(null);
     } catch (error) {
-      alert(error?.response?.data?.message);
+      toast.error(error?.response?.data?.message);
     } finally {
       setLoading(false);
     }
@@ -170,7 +173,12 @@ export default function StepProgress({
       </div>
 
       {steps[0]?.status == 'DONE' && (
-        <FindSuitableBlood receiveId={receiveId} />
+        <FindSuitableBlood
+          receiveId={receiveId}
+          quantity={quantity}
+          bloodReceived={bloodReceived}
+          onReload={onReload}
+        />
       )}
 
       {/* Modal chi tiết step */}

@@ -10,7 +10,7 @@ import {
 } from '../services/api/forumService';
 import { createComment, deleteComment } from '../services/api/commentService';
 import { deletePostByAdmin } from '../services/api/forumService';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
 import ErrorModal from '../components/ErrorModal';
 import CustomModal from '../components/CustomModal';
@@ -24,6 +24,8 @@ import { BiTrash } from 'react-icons/bi';
 import { useApp } from '../Contexts/AppContext';
 
 function Forum() {
+  const { isLogged } = useApp();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [error, setError] = useState('');
   const [errorModal, setErrorModal] = useState({ open: false, message: '' });
@@ -71,7 +73,7 @@ function Forum() {
             comments: post.comments || [],
           }))
         );
-        console.log('My posts:', data);
+        // console.log('My posts:', data);
 
         setError('');
         setVisiblePosts([]);
@@ -303,16 +305,27 @@ function Forum() {
           </div>
         )}
 
-        {open && (
-          <PostModal
-            open={open}
-            title="New post"
-            formData={newPost}
-            setFormData={setNewPost}
-            onClose={handleClosePost}
-            onSubmit={handleCreatePost}
-          />
-        )}
+        {open ? (
+          isLogged ? (
+            <PostModal
+              open={open}
+              title="New post"
+              formData={newPost}
+              setFormData={setNewPost}
+              onClose={handleClosePost}
+              onSubmit={handleCreatePost}
+            />
+          ) : (
+            <CustomModal
+              onCancel={handleClosePost}
+              onOk={() => navigate('/login')}
+            >
+              <p className="text-gray-700 mb-6">
+                You must log in to create a post.
+              </p>
+            </CustomModal>
+          )
+        ) : null}
       </div>
 
       {error ? (

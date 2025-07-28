@@ -10,7 +10,7 @@ export default function SeekerForm() {
   const { profile } = useApp(); //lấy profile từ context
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
-  const [formErrors, setFormErrors] = useState({});
+  const [formError, setFormError] = useState({});
 
   const [isDisabled, setIsDisabled] = useState(false);
 
@@ -70,8 +70,8 @@ export default function SeekerForm() {
 
   const handleSeekerRegister = async (e) => {
     e.preventDefault();
+    setFormError({});
     try {
-      // await seekerFormSchema.validate(formData, { abortEarly: false });
       if (isDisabled) {
         return;
       } else {
@@ -81,8 +81,8 @@ export default function SeekerForm() {
           setIsDisabled(false);
         }, 5000);
       }
-
-      const res = await receiveForm({
+      await seekerFormSchema.validate(formData, { abortEarly: false });
+      await receiveForm({
         volume: formData.volume,
         bloodType: formData.bloodType,
         priority: formData.priority,
@@ -91,7 +91,6 @@ export default function SeekerForm() {
         hospitalAddress: formData.hospitalAddress,
         requiredDate: formData.requiredDate,
       });
-      console.log('Detail receive form:', res);
       toast.success('Register successful!');
       navigate('/');
     } catch (error) {
@@ -101,6 +100,7 @@ export default function SeekerForm() {
         error.inner.forEach((e) => {
           errors[e.path] = e.message;
         });
+        setFormError(errors);
         toast.error('Please fix the highlighted fields.');
         console.error('Validation errors:', errors);
       }
@@ -139,20 +139,20 @@ export default function SeekerForm() {
             label="Full Name"
             name="fullName"
             value={formData.fullName || ''}
-            onChange={() => {}}
+            readOnly
           />
           <TextInput
             label="Date of Birth"
             name="dob"
             value={formData.dob || ''}
-            onChange={() => {}}
+            readOnly
           />
           <TextInput
             label="Phone"
             name="phone"
             placeholder="Enter your phone number"
             value={formData.phone || ''}
-            onChange={() => {}}
+            readOnly
           />
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -162,7 +162,6 @@ export default function SeekerForm() {
               name="bloodType"
               value={formData.bloodType || ''}
               onChange={handleChange}
-              required
               className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
             >
               <option value="">Select blood type</option>
@@ -175,6 +174,9 @@ export default function SeekerForm() {
               <option value="O+">O+</option>
               <option value="O-">O-</option>
             </select>
+            {formError.bloodType && (
+              <p className="text-sm text-red-600 mt-1">{formError.bloodType}</p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -184,15 +186,34 @@ export default function SeekerForm() {
               name="volume"
               value={formData.volume || ''}
               onChange={handleChange}
-              required
               className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
             >
-              <option value="">Select volume (ml)</option>
-              <option value="350">350</option>
-              <option value="400">400</option>
-              <option value="450">450</option>
+              <option value="">
+                {formData.type && formData.type !== 'Whole'
+                  ? 'Select component volume'
+                  : 'Select volume (ml)'}
+              </option>
+              <option value="250">
+                {formData.type && formData.type !== 'Whole'
+                  ? 'Component derived from 250ml'
+                  : '250'}
+              </option>
+              <option value="350">
+                {formData.type && formData.type !== 'Whole'
+                  ? 'Component derived from 350ml'
+                  : '350'}
+              </option>
+              <option value="450">
+                {formData.type && formData.type !== 'Whole'
+                  ? 'Component derived from 450ml'
+                  : '450'}
+              </option>
             </select>
+            {formError.volume && (
+              <p className="text-sm text-red-600 mt-1">{formError.volume}</p>
+            )}
           </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Priority
@@ -201,13 +222,15 @@ export default function SeekerForm() {
               name="priority"
               value={formData.priority || ''}
               onChange={handleChange}
-              required
               className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
             >
               <option value="">Select priority</option>
               <option value="Urgent">Urgent</option>
               <option value="Medium">Medium</option>
             </select>
+            {formError.priority && (
+              <p className="text-sm text-red-600 mt-1">{formError.priority}</p>
+            )}
           </div>
         </div>
         {/* Left Column */}
@@ -216,15 +239,13 @@ export default function SeekerForm() {
             label="Gender"
             name="gender"
             value={formData.gender || ''}
-            onChange={() => {}}
-            disabled
-            required
+            readOnly
           />
           <TextInput
             label="Email"
             name="email"
             value={formData.email || ''}
-            onChange={() => {}}
+            readOnly
           />
           <TextInput
             label="Hospital Address"
@@ -232,8 +253,12 @@ export default function SeekerForm() {
             placeholder="Enter hospital address"
             value={formData.hospitalAddress || ''}
             onChange={handleChange}
-            required
           />
+          {formError.hospitalAddress && (
+            <p className="text-sm text-red-600 mt-1">
+              {formError.hospitalAddress}
+            </p>
+          )}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Component Type request
@@ -243,7 +268,6 @@ export default function SeekerForm() {
               name="type"
               value={formData.type || ''}
               onChange={handleChange}
-              required
               className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
             >
               <option value="">Select blood component type</option>
@@ -253,6 +277,9 @@ export default function SeekerForm() {
               <option value="Platelets">Platelets</option>
               <option value="Platelets">WBCs</option>
             </select>
+            {formError.type && (
+              <p className="text-sm text-red-600 mt-1">{formError.type}</p>
+            )}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -263,7 +290,6 @@ export default function SeekerForm() {
               name="quantity"
               value={formData.quantity || ''}
               onChange={handleChange}
-              required
               className="w-full text-lg px-3 py-3 border border-gray-300 shadow-sm focus:outline-none focus:ring-1 focus:ring-gray-500 focus:border-gray-200 transition"
             >
               <option value="">Select blood component type</option>
@@ -272,6 +298,9 @@ export default function SeekerForm() {
               <option value="3">3</option>
               <option value="4">4</option>
             </select>
+            {formError.quantity && (
+              <p className="text-sm text-red-600 mt-1">{formError.quantity}</p>
+            )}
           </div>
           <TextInput
             label="Required Date"
@@ -280,9 +309,9 @@ export default function SeekerForm() {
             value={formData.requiredDate || ''}
             onChange={handleChange}
           />
-          {formErrors.requiredDate && (
-            <p className="text-sm text-red-600 mt-1">
-              {formErrors.requiredDate}
+          {formError.requiredDate && (
+            <p className="text-sm text-red-600 mt-[-15px] ">
+              {formError.requiredDate}
             </p>
           )}
         </div>

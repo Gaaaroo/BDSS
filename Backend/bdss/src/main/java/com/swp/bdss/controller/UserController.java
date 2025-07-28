@@ -142,7 +142,7 @@ public class UserController {
     public ApiResponse<String> sendEncouragementEmailByBloodType(
             @RequestParam String bloodType
     ) {
-        userService.sendEncouragementToEligibleUsersByBloodType(bloodType);
+        userService.processEncouragementEmails(bloodType);
         return ApiResponse.<String>builder()
                 .code(1000)
                 .message("Encouragement emails sent successfully to eligible users with blood type " + bloodType)
