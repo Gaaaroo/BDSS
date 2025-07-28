@@ -5,6 +5,7 @@ import { nanoid } from 'nanoid';
 import { onValue, push, ref, set, remove } from 'firebase/database';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../Contexts/AppContext';
+import { toast } from 'react-toastify';
 
 export default function WidgetChat() {
   const [open, setOpen] = useState(false);
@@ -73,7 +74,7 @@ export default function WidgetChat() {
         } else {
           setMessages([]);
         }
-        console.log('Messages:', data);
+        // console.log('Messages:', data);
         return () => unsubscribe();
       },
       [roomId]
@@ -163,7 +164,7 @@ export default function WidgetChat() {
     const valid =
       tempName.trim().length >= 2 && !/[^a-zA-ZÀ-ỹ\s]/.test(tempName);
     if (!valid) {
-      alert(
+      toast.warning(
         'The name must be at least 2 characters long and cannot contain special characters!'
       );
       return;
@@ -200,7 +201,7 @@ export default function WidgetChat() {
 
   //  xử lý NAME sau login
   useEffect(() => {
-    console.log('Profile changed:', profile);
+    // console.log('Profile changed:', profile);
     if (
       profile?.fullName &&
       selectedRoom.id &&

@@ -147,7 +147,7 @@ function MyPosts() {
       setOpen(false);
       setEditingPost(null);
     } catch (err) {
-      alert('Cập nhật bài viết thất bại!');
+      toast.error('Update Post failed!');
     }
   };
 
