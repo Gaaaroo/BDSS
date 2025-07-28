@@ -2,6 +2,8 @@ package com.swp.bdss.service;
 
 import com.swp.bdss.dto.request.UserUpdateRequest;
 import com.swp.bdss.dto.response.UserResponse;
+import com.swp.bdss.entities.BloodDonateForm;
+import com.swp.bdss.entities.BloodUnit;
 import com.swp.bdss.entities.Notification;
 import com.swp.bdss.entities.User;
 import com.swp.bdss.exception.AppException;
@@ -14,11 +16,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -30,6 +36,7 @@ public class UserService {
     UserRepository userRepository;
     NotificationRepository notificationRepository;
     NotificationService notificationService;
+    EmailService emailService;
 
 
     public UserResponse createUserForLoginGoogle(String email, String username, String image_link) {
@@ -48,6 +55,10 @@ public class UserService {
 
     public Page<UserResponse> getUsers(String keyword, Pageable pageable) {
         if (keyword == null || keyword.trim().isEmpty()) {
+            if (!pageable.getSort().isSorted()) {
+                pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(Sort.Direction.DESC, "userId"));
+            }
+
             return userRepository
                     .findByUsernameNot("admin", pageable)
                     .map(userMapper::toUserResponse);
@@ -174,4 +185,52 @@ public class UserService {
     public void sendNotiToUser(int userId) {
         notificationService.createNotificationByUserId(userId, "We urgently need your help for a blood donation. If you have time, please come and donate as soon as possible. Your contribution can save lives!");
     }
+
+    public void sendEncouragementToEligibleUsersByBloodType(String bloodType) {
+        List<User> users = userRepository.findByBloodTypeAndIsActiveTrue(bloodType);
+
+        for (User user : users) {
+            if (user.getEmail() == null || user.getEmail().isEmpty()) continue;
+
+            List<BloodDonateForm> donateForms = user.getBloodDonateForms();
+            boolean shouldEncourage = false;
+
+            if (donateForms == null || donateForms.isEmpty()) {
+                shouldEncourage = true;
+            } else {
+                BloodDonateForm lastForm = donateForms.get(donateForms.size() - 1);
+                String status = lastForm.getStatus();
+
+                if ("REJECTED".equalsIgnoreCase(status)) {
+                    shouldEncourage = true;
+                } else if ("APPROVED".equalsIgnoreCase(status)) {
+                    BloodUnit bloodUnit = lastForm.getBloodUnit();
+                    if (bloodUnit != null && bloodUnit.getDonatedDate() != null) {
+                        long daysSinceLastDonate = ChronoUnit.DAYS.between(
+                                bloodUnit.getDonatedDate().toLocalDate(), LocalDate.now());
+
+                        if (daysSinceLastDonate > 84) {
+                            shouldEncourage = true;
+                        }
+                    }
+                }
+            }
+
+            if (shouldEncourage) {
+                // Gửi email
+                emailService.sendEncourageBloodDonationEmail(user.getEmail());
+
+                // Gửi thông báo
+                Notification notification = Notification.builder()
+                        .user(user)
+                        .content("We encourage you to donate blood. Your contribution can save lives!")
+                        .createdDate(LocalDateTime.now())
+                        .isRead(false)
+                        .build();
+                notificationRepository.save(notification);
+            }
+        }
+    }
+
+
 }
