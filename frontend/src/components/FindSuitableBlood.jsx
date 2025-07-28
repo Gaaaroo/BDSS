@@ -3,6 +3,7 @@ import { getSuitableBloodByReceiveId } from '../services/api/bloodRequestService
 import { assignBloodUnitToReceiveForm } from '../services/api/bloodUnitService';
 import { useApp } from '../Contexts/AppContext';
 import MapFinder from './MapFinder';
+import { toast } from 'react-toastify';
 
 export default function FindSuitableBlood({ receiveId }) {
   const { profile } = useApp();
@@ -69,9 +70,9 @@ export default function FindSuitableBlood({ receiveId }) {
       updatedList[index] = { ...blood, status: 'Used' };
       setSuitableBloodList(updatedList);
 
-      alert('Assigned successfully!');
+      toast.success('Assigned successfully!');
     } catch (error) {
-      alert('Failed to assign blood unit.');
+      toast.error('Failed to assign blood unit.');
       console.error(error);
     }
   };

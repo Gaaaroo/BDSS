@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import BloodDocs from './BloodDocs';
+import { toast } from 'react-toastify';
 
 export default function BloodCompatibilityChecker() {
   const [recipientBloodType, setRecipientBloodType] = useState('');
@@ -63,23 +64,23 @@ export default function BloodCompatibilityChecker() {
     e.preventDefault();
     if (!recipientBloodType) {
       setCompatibleDonors([]);
-      alert('Please select blood type!');
+      toast.warning('Please select blood type!');
       return;
     }
     if (!transfusionType) {
       setCompatibleDonors([]);
-      alert('Please select transfusion type!');
+      toast.warning('Please select transfusion type!');
       return;
     }
     if (!recipientBloodType && !transfusionType) {
       setCompatibleDonors([]);
-      alert('Please select both blood type and transfusion type!');
+      toast.warning('Please select both blood type and transfusion type!');
       return;
     }
     const result =
       bloodCompatibilityData[transfusionType][recipientBloodType] || [];
     setCompatibleDonors(result);
-    console.log('Compatible donors:', result);
+    // console.log('Compatible donors:', result);
   };
 
   return (

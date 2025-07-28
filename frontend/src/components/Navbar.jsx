@@ -14,10 +14,10 @@ function LogoNavbar() {
   const { role } = useApp();
 
   const handleClick = () => {
-    if (role === 'MEMBER' || role === 'GUEST') {
-      navigate('/');
-    } else if (role === 'STAFF') {
+    if (role === 'STAFF') {
       navigate('/dashboard/staff-home');
+    } else {
+      navigate('/');
     }
   };
 
@@ -230,11 +230,19 @@ function NotiIcon() {
 
 // Navbar
 export default function Navbar({ mode }) {
+  const { isLogged } = useApp();
   const navigate = useNavigate();
-
+  const [showModal, setShowModal] = useState(false);
   const handleLoginClick = () => navigate('/login');
 
-  const handleMyPostsClick = () => navigate('/forum/my-posts');
+  // const handleMyPostsClick = () => navigate('/forum/my-posts');
+  const handleMyPostsClick = () => {
+    if (isLogged) {
+      navigate('/my-posts');
+    } else {
+      setShowModal(true);
+    }
+  };
 
   const handleForumClick = () => navigate('/forum');
 
@@ -287,6 +295,16 @@ export default function Navbar({ mode }) {
             >
               My Posts
             </button>
+            {showModal && (
+              <CustomModal
+                onCancel={() => setShowModal(false)}
+                onOk={() => navigate('/login')}
+              >
+                <p className="text-gray-700 mb-6">
+                  You must log in to access My Posts.
+                </p>
+              </CustomModal>
+            )}
           </>
         );
       case 'my-posts':

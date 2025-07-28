@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { updateDonationProcessStep } from '../services/api/bloodRequestService';
 import { addBloodUnit } from '../services/api/bloodUnitService';
+import { toast } from 'react-toastify';
 
 const stepNames = [
   'Register for blood donation',
@@ -36,7 +37,7 @@ export default function StepProgress({
 
   const handleAddBloodUnit = async () => {
     if (!volume || isNaN(volume) || Number(volume) <= 0) {
-      alert('Please enter a valid volume!');
+      toast.error('Please enter a valid volume!');
       return;
     }
 
@@ -46,10 +47,10 @@ export default function StepProgress({
         volume: Number(volume),
       });
       console.log();
-      alert('Blood unit added successfully!');
+      toast.success('Blood unit added successfully!');
       setShowVolumeInput(false);
     } catch (error) {
-      alert(error?.response?.data?.message || 'Error adding blood unit');
+      toast.error(error?.response?.data?.message || 'Error adding blood unit');
     }
   };
 
@@ -83,7 +84,7 @@ export default function StepProgress({
     // If it's the first step
     if (openStepIdx === 0) {
       if (!allNextPending) {
-        alert('All following steps must be PENDING!');
+        toast.warning('All following steps must be PENDING!');
         setLoading(false);
         return;
       }
@@ -91,7 +92,7 @@ export default function StepProgress({
     // If it's the last step
     else if (openStepIdx === steps.length - 1) {
       if (!allPrevDone) {
-        alert('All previous steps must be DONE!');
+        toast.warning('All previous steps must be DONE!');
         setLoading(false);
         return;
       }
@@ -99,7 +100,7 @@ export default function StepProgress({
     // Any step in the middle
     else {
       if (!allPrevDone || !allNextPending) {
-        alert(
+        toast.warning(
           'All previous steps must be DONE and all following steps must be PENDING!'
         );
         setLoading(false);
@@ -119,9 +120,10 @@ export default function StepProgress({
       if (onReloadTable) {
         await onReloadTable();
       }
+      toast.success('Update Donation Process successfully');
       setOpenStepIdx(null);
     } catch (error) {
-      alert(error?.response?.data?.message);
+      toast.error(error?.response?.data?.message);
     } finally {
       setLoading(false);
     }

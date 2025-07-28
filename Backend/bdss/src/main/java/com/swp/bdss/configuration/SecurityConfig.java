@@ -39,7 +39,7 @@ public class SecurityConfig {
 
     private final String[] PUBLIC_URLS = {"/auth/login", "/auth/introspect", "/auth/logout",
             "/auth/refresh", "/users", "/auth/register", "/auth/verify", "/auth/resend-otp",
-            "/auth/loginWithTokenGoogle", "/blog", "blog/top3", "/auth/forgot-password", "/auth/reset-password",};
+            "/auth/loginWithTokenGoogle", "/blog", "blog/top3", "/auth/forgot-password", "/auth/reset-password", "/forum"};
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
