@@ -59,7 +59,7 @@ export default function ReceiveRequestProcessModal({ request, onReloadTable }) {
                 <div className="">
                   <div className="mb-4 flex justify-between gap-4">
                     {/* Donor name box */}
-                    <div className="flex items-center rounded-[50px] px-2 py-1 bg-[#F9B3B3] min-w-[140px] ml-3">
+                    <div className="flex items-center rounded-[50px] px-2 py-1  border bg-white border-[#F9B3B3] min-w-[140px] ml-3">
                       <span className="font-semibold text-gray-700 mr-1">
                         Donor name:
                       </span>
@@ -68,7 +68,7 @@ export default function ReceiveRequestProcessModal({ request, onReloadTable }) {
                       </span>
                     </div>
                     {/* Phone box */}
-                    <div className="flex items-center  rounded-[50px] px-2 py-1 bg-[#F9B3B3] min-w-[110px] mr-3">
+                    <div className="flex items-center  rounded-[50px] px-2 py-1 border bg-white border-[#F9B3B3] min-w-[110px] mr-3">
                       <span className="font-semibold text-gray-700 mr-1">
                         Phone:
                       </span>
