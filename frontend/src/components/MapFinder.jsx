@@ -11,6 +11,8 @@ import {
   getNearbyUsersWithBloodType,
   sendInviteRequest,
 } from '../services/api/userService';
+import { toast } from 'react-toastify';
+import { useApp } from '../Contexts/AppContext';
 
 const containerStyle = {
   width: '100%',
@@ -28,7 +30,7 @@ export default function MapFinder({ onClose, initialLocation }) {
   );
 
   const [marker] = useState(initialLocation || null);
-
+  const { role } = useApp();
   const [nearbyUsers, setNearbyUsers] = useState([]);
   const [addressText, setAddressText] = useState('');
   const [selectedLocation, setSelectedLocation] = useState(null);
@@ -280,12 +282,22 @@ export default function MapFinder({ onClose, initialLocation }) {
                     <div>{distanceText}</div>
                   </div>
                 </div>
-                <button
-                  onClick={() => sendInviteRequest(selectedUser.userId)}
-                  className="mt-3 px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition"
-                >
-                  Invite to donate
-                </button>
+                {role === 'STAFF' && (
+                  <button
+                    onClick={() => {
+                      sendInviteRequest(selectedUser.userId)
+                        .then(() => {
+                          toast.success('Invite successful!');
+                        })
+                        .catch(() => {
+                          toast.error('Invite failed!');
+                        });
+                    }}
+                    className="mt-3 px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700 transition"
+                  >
+                    Invite to donate
+                  </button>
+                )}
               </div>
             </InfoWindow>
           )}
