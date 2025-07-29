@@ -36,10 +36,11 @@ public class BloodComponentUnitService {
     BloodComponentUnitMapper bloodComponentUnitMapper;
     UserMapper userMapper;
     public String createComponentUnit(BloodComponentUnitRequest request) {
+        log.info("Received componentTypes: {}", request.getComponentTypes());
+        BloodUnit bloodUnit = bloodUnitRepository.findById(request.getBloodId())
+                .orElseThrow(() -> new AppException(ErrorCode.BLOOD_UNIT_NOT_EXIST));
         for (String componentType : request.getComponentTypes()) {
             BloodComponentUnit bloodComponentUnit = new BloodComponentUnit();
-            BloodUnit bloodUnit = bloodUnitRepository.findById(request.getBloodId())
-                    .orElseThrow(() -> new AppException(ErrorCode.BLOOD_UNIT_NOT_EXIST));
             if (bloodUnit.getStatus().equals("Stored")) {
                 bloodComponentUnit.setBloodType(bloodUnit.getBloodType());
                 bloodComponentUnit.setComponentType(componentType);
@@ -50,10 +51,10 @@ public class BloodComponentUnitService {
                 bloodComponentUnit.setNote("");
                 bloodComponentUnit.setBloodUnit(bloodUnit);
             }
-            bloodUnit.setStatus("Separated");
             bloodComponentUnitRepository.save(bloodComponentUnit);
             bloodUnitRepository.save(bloodUnit);
         }
+        bloodUnit.setStatus("Separated");
         return "Separate successful";
     }
 
