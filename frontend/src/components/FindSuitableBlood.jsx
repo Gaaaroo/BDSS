@@ -26,6 +26,7 @@ export default function FindSuitableBlood({
     setError('');
     try {
       const res = await getSuitableBloodByReceiveId(receiveId, pageNumber, 10);
+      console.log('Fetched suitable blood:', res);
       setSuitableBloodList(res.content || []);
       setTotalPages(res.totalPages || 0);
     } catch (err) {
@@ -180,7 +181,7 @@ export default function FindSuitableBlood({
                         <th className="px-3 py-2 border">Component Type</th>
                         <th className="px-3 py-2 border">Volume</th>
                         <th className="px-3 py-2 border">Status</th>
-                        <th className="px-3 py-2 border">Created Date</th>
+                        <th className="px-3 py-2 border">Donate Date</th>
                         <th className="px-3 py-2 border">Expiry Date</th>
                         <th className="px-3 py-2 border">Note</th>
                         <th className="px-3 py-2 border">Actions</th>
@@ -211,7 +212,7 @@ export default function FindSuitableBlood({
                             {blood.status}
                           </td>
                           <td className="border px-2 py-1 text-center">
-                            {blood.createdDate?.slice(0, 10)}
+                            {blood.donatedDate?.slice(0, 10)}
                           </td>
                           <td className="border px-2 py-1 text-center">
                             {blood.expiryDate?.slice(0, 10)}
