@@ -51,14 +51,16 @@ export default function Sidebar() {
           />
         </div>
         {/* Icons */}
-        <div className="flex items-center gap-4 justify-between">
-          <Link to="/forum">
-            <MessagesSquare className="w-7 h-7 text-pink-500" />
-          </Link>
-          <Link to="/rep">
-            <BiChat className="w-7 h-7 text-pink-500" />
-          </Link>
-        </div>
+        {role === 'STAFF' && (
+          <div className="flex items-center gap-4 justify-between">
+            <Link to="/forum">
+              <MessagesSquare className="w-7 h-7 text-pink-500" />
+            </Link>
+            <Link to="/rep">
+              <BiChat className="w-7 h-7 text-pink-500" />
+            </Link>
+          </div>
+        )}
         {/* Staff label */}
         <div className="w-58 mb-8 mt-5 ">
           <div className="w-full h-12 py-2 rounded-full bg-[#F76C6C] text-white font-bold text-2xl flex items-center justify-center shadow gap-5">
