@@ -4,13 +4,18 @@ import { BiTrash } from 'react-icons/bi';
 import { jwtDecode } from 'jwt-decode';
 import { useApp } from '../Contexts/AppContext';
 import { toast } from 'react-toastify';
+import CustomModal from './CustomModal';
 
 export default function CommentSection({
   comments,
   handleAddComment,
   handleDeleteComment,
+  setShowLoginModal,
+  showLoginModal,
 }) {
+  const { isLogged } = useApp();
   const [comment, setComment] = useState('');
+  // const [showLoginModal, setShowLoginModal] = useState(false);
   const [visibleCount, setVisibleCount] = useState(5);
   const { role, profile } = useApp();
 
@@ -29,7 +34,7 @@ export default function CommentSection({
   };
 
   const handleKeyDown = (e) => {
-    if (profile.status === 'BANNED') {
+    if (profile?.status === 'BANNED') {
       toast.error('You are banned from creating comments.');
       return;
     } else {
@@ -65,7 +70,11 @@ export default function CommentSection({
         <button
           className="ml-2 px-3 py-2 bg-[#F76C6C] text-white rounded hover:bg-[#ff8989] transition duration-200"
           onClick={() => {
-            if (profile.status === 'BANNED') {
+            if (!isLogged) {
+              setShowLoginModal(true);
+              return;
+            }
+            if (profile?.status === 'BANNED') {
               toast.error('You are banned from creating comments.');
               return;
             } else {
@@ -125,6 +134,7 @@ export default function CommentSection({
           </div>
         )}
       </div>
+    
     </div>
   );
 }

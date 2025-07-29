@@ -9,7 +9,7 @@ export default function MiniForumStatProps({ reload }) {
       try {
         const response = await countStoredBloodUnit();
         setBloodStats(response || {});
-        console.log('Forum stats fetched successfully:', response);
+        // console.log('Forum stats fetched successfully:', response);
       } catch (err) {
         console.error('Error fetching forum stats:', err);
       }
@@ -27,7 +27,7 @@ export default function MiniForumStatProps({ reload }) {
             key={type}
             className="flex flex-row items-center justify-center gap-1 px-3 py-2 border rounded-lg bg-[#FDE4E4] w-[100px]"
           >
-            <span className="font-bold text-[#F76C6C] text-lg">{type} :</span> 
+            <span className="font-bold text-[#F76C6C] text-lg">{type} :</span>
             <span className="text-black text-base ml-1">
               {bloodStats[type] ?? 0}
             </span>
