@@ -92,13 +92,6 @@ export default function BloodCompatibilityChecker() {
       bg-[#FFDEDE] hover:scale-103 transition duration-300"
           onSubmit={handleSubmit}
         >
-          {/* <input
-            type="text"
-            placeholder="Search for blood documents..."
-            className="absolute left-1/13 p-2 rounded-[50px]  border-gray-300 w-130 
-            hover:scale-100 transition duration-300 focus:outline-none focus:underline focus:underline-offset-4 
-            text-base text-[17px]"
-          /> */}
           <label className="absolute left-1/15 text-black">
             Choose a bloodtype:
           </label>
@@ -160,31 +153,31 @@ export default function BloodCompatibilityChecker() {
         </h2>
       </div>
       {compatibleDonors.length === 0 ? (
-        <>
-          <div className="absolute top-[370px] transform items-center flex flex-row ">
+        <div className="flex flex-col justify-center items-center">
+          <div className="grid grid-cols-4 justify-items-center gap-2">
             <BloodDocs />
           </div>
-        </>
+        </div>
       ) : (
-        <div>
-          <div className="absolute left-1/2 top-[355px] transform -translate-x-1/2 w-[600px] bg-white bg-opacity-90 rounded-xl shadow-lg border-2 border-[#FFA1A1] p-6 mt-8 flex flex-col items-center">
-            <ul className="flex flex-wrap gap-3 justify-center">
+        <div className="flex flex-col justify-center items-center">
+          <div className="w-[600px] bg-white bg-opacity-90 rounded-xl shadow-lg border-2 border-[#FFA1A1] p-6 m-2 items-center">
+            <div className="flex flex-wrap gap-3 justify-center">
               {compatibleDonors.length === 0 ? (
                 <li className="text-gray-400 italic">No result</li>
               ) : (
                 compatibleDonors.map((blood) => (
-                  <li
+                  <div
                     key={blood}
                     className="bg-[#FFA1A1] text-white font-semibold px-4 py-2 rounded-full shadow hover:bg-[#FD3131] transition"
                   >
                     {blood}
-                  </li>
+                  </div>
                 ))
               )}
-            </ul>
+            </div>
           </div>
 
-          <div className="absolute top-[495px] transform items-center flex flex-row ">
+          <div className="grid grid-cols-4 justify-items-center">
             {compatibleDonors.map((blood) => (
               <BloodDocs key={blood} bloodT={blood} />
             ))}
