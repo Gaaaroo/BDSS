@@ -11,7 +11,7 @@ import {
   countAllPosts,
 } from '../services/api/forumService';
 
-export default function MiniForumStatProps({reload}) {
+export default function MiniForumStatProps({ reload }) {
   const [postCount, setPostCount] = useState(0);
   const [commentCount, setCommentCount] = useState(0);
   const [memberCount, setMemberCount] = useState(0);
@@ -27,11 +27,11 @@ export default function MiniForumStatProps({reload}) {
         setPostCount(posts);
         setCommentCount(comments);
         setMemberCount(users);
-        console.log('Forum stats fetched successfully:', {
-          posts: posts.data,
-          comments: comments.data,
-          users: users.data,
-        });
+        // console.log('Forum stats fetched successfully:', {
+        //   posts: posts.data,
+        //   comments: comments.data,
+        //   users: users.data,
+        // });
       } catch (err) {
         console.error('Error fetching forum stats:', err);
       }

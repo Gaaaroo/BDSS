@@ -30,6 +30,7 @@ function Forum() {
   const [error, setError] = useState('');
   const [errorModal, setErrorModal] = useState({ open: false, message: '' });
   const [showModal, setShowModal] = useState(false);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState({
     postId: null,
     commentId: null,
@@ -281,7 +282,7 @@ function Forum() {
       <div className="flex justify-center mb-8">
         <button
           onClick={() => {
-            if (profile.status === 'BANNED') {
+            if (profile?.status === 'BANNED' || profile !== null) {
               toast.error('You are banned from creating posts.');
               return;
             } else {
@@ -300,7 +301,7 @@ function Forum() {
           <div
             className="w-14 h-14 bg-[#F76C6C] rounded-full flex items-center justify-center cursor-pointer text-3xl"
             onClick={() => {
-              if (profile.status === 'ACTIVE') {
+              if (profile?.status === 'BANNED' || profile !== null) {
                 toast.error('You are banned from creating posts.');
                 return;
               } else {
@@ -429,6 +430,8 @@ function Forum() {
                     handleAddComment={(comment) =>
                       handleAddComment(post.id, comment)
                     }
+                    showLoginModal={showLoginModal}
+                    setShowLoginModal={setShowLoginModal}
                   />
                 </div>
               </div>
@@ -447,6 +450,17 @@ function Forum() {
         >
           <p className="text-gray-700 mb-6">
             Are you sure you want to delete this comment?
+          </p>
+        </CustomModal>
+      )}
+      {showLoginModal && (
+        <CustomModal
+          title="Please login"
+          onCancel={() => setShowLoginModal(false)}
+          onOk={() => navigate('/login')}
+        >
+          <p className="text-gray-700 mb-6">
+            You must log in to comment this post.
           </p>
         </CustomModal>
       )}
